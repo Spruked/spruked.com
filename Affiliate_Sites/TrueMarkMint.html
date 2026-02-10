@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Spruked Mint - Cryptographically verified NFT minting. Truth-stamped. Permanently stored. Zero compromise.">
+    <title>Spruked Mint | Cryptographic Asset Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --near-black: #0a0a0a;
+            --dark-gray: #1a1a1a;
+            --mid-gray: #333333;
+            --light-gray: #666666;
+            --white: #ffffff;
+            --off-white: #f5f5f5;
+            --truth-red: #ff0000;
+            --truth-dim: #cc0000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Archivo', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Grain texture overlay */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(to bottom, var(--black), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-text {
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            text-transform: lowercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 8rem 5% 4rem;
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid var(--mid-gray);
+            color: var(--light-gray);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            background: var(--near-black);
+        }
+
+        .hero h1 {
+            font-weight: 400;
+            font-size: clamp(3rem, 7vw, 6rem);
+            line-height: 1.05;
+            margin-bottom: 2rem;
+            color: var(--white);
+            max-width: 900px;
+            letter-spacing: -0.03em;
+        }
+
+        .hero h1 .strike {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1 .strike::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -5%;
+            width: 110%;
+            height: 3px;
+            background: var(--truth-red);
+            transform: translateY(-50%) rotate(-2deg);
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--light-gray);
+            max-width: 650px;
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--white);
+            color: var(--black);
+            padding: 1.1rem 2.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cta-primary:hover {
+            background: var(--truth-red);
+            color: var(--white);
+        }
+
+        .cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+            padding: 1.1rem 2rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid var(--mid-gray);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-weight: 500;
+            background: transparent;
+        }
+
+        .cta-secondary:hover {
+            border-color: var(--white);
+        }
+
+        /* Encryption Section */
+        .encryption-section {
+            padding: 8rem 5%;
+            background: var(--near-black);
+            border-top: 1px solid var(--mid-gray);
+            border-bottom: 1px solid var(--mid-gray);
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 5rem;
+        }
+
+        .section-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--truth-red);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--light-gray);
+            max-width: 700px;
+            line-height: 1.7;
+        }
+
+        .encryption-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--mid-gray);
+            border: 1px solid var(--mid-gray);
+        }
+
+        .encryption-card {
+            padding: 3rem;
+            background: var(--black);
+            position: relative;
+        }
+
+        .encryption-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--truth-red);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .encryption-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--mid-gray);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .encryption-card h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--white);
+            letter-spacing: -0.01em;
+        }
+
+        .encryption-card p {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-spec {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--mid-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 1rem;
+            border-top: 1px solid var(--dark-gray);
+        }
+
+        /* Certificate Section */
+        .certificate-section {
+            padding: 8rem 5%;
+            background: var(--black);
+        }
+
+        .certificate-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            border: 1px solid var(--mid-gray);
+            background: var(--mid-gray);
+        }
+
+        .certificate-layer {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            background: var(--black);
+            border-bottom: 1px solid var(--mid-gray);
+            transition: background 0.2s ease;
+        }
+
+        .certificate-layer:last-child {
+            border-bottom: none;
+        }
+
+        .certificate-layer:hover {
+            background: var(--near-black);
+        }
+
+        .layer-number-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--mid-gray);
+            background: var(--near-black);
+        }
+
+        .layer-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--mid-gray);
+            font-weight: 500;
+        }
+
+        .layer-content {
+            padding: 2rem 2.5rem;
+        }
+
+        .layer-content h4 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        .layer-content p {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 8rem 5%;
+            background: var(--near-black);
+            border-top: 1px solid var(--mid-gray);
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .process-step {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .process-step::after {
+            content: '→';
+            position: absolute;
+            right: -1.5rem;
+            top: 3rem;
+            color: var(--mid-gray);
+            font-size: 1.5rem;
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--truth-red);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1;
+        }
+
+        .process-step h4 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .process-step p {
+            color: var(--light-gray);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 5rem 5%;
+            background: var(--black);
+            border-top: 1px solid var(--mid-gray);
+            border-bottom: 1px solid var(--mid-gray);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 5%;
+            background: var(--black);
+            border-top: 1px solid var(--mid-gray);
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-logo .logo-mark {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: var(--mid-gray);
+            letter-spacing: 0.5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .encryption-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .process-step::after {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .certificate-layer {
+                grid-template-columns: 60px 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .certificate-layer {
+                grid-template-columns: 1fr;
+            }
+
+            .layer-number-container {
+                border-right: none;
+                border-bottom: 1px solid var(--mid-gray);
+                padding: 1rem 0;
+            }
+        }
+
+        /* Focus states */
+        :focus-visible {
+            outline: 2px solid var(--truth-red);
+            outline-offset: 2px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--truth-red);
+            color: var(--white);
+            padding: 8px 16px;
+            text-decoration: none;
+            z-index: 10000;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <div class="grain"></div>
+
+    <nav role="navigation">
+        <a href="/" class="logo-container">
+            <svg class="logo-mark" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 40 60 L 40 120 Q 40 160 70 160 L 130 160 Q 160 160 160 120 L 160 60" 
+                      stroke="currentColor" stroke-width="12" stroke-linecap="round" 
+                      stroke-linejoin="round" fill="none"/>
+                <line x1="55" y1="145" x2="145" y2="55" stroke="#ff0000" 
+                      stroke-width="10" stroke-linecap="round"/>
+            </svg>
+            <span class="logo-text">spruked</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#encryption">Encryption</a></li>
+            <li><a href="#certificate">Certificate</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#mint">Mint</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <section class="hero" role="banner">
+            <div class="hero-badge fade-in">CRYPTOGRAPHIC ASSET VERIFICATION</div>
+            <h1 class="fade-in delay-1">
+                Mint with certainty.<br>
+                Verify with <span class="strike">cryptography</span>.
+            </h1>
+            <p class="hero-description fade-in delay-2">
+                ChaCha20-Poly1305 authenticated encryption applied before permanent storage. 
+                Ten-layer certificate of authenticity. Zero-trust verification. 
+                Your asset is truth-stamped before it touches the blockchain.
+            </p>
+            <div class="cta-group fade-in delay-3">
+                <a href="#mint" class="cta-primary">Begin Minting</a>
+                <a href="#encryption" class="cta-secondary">Explore Security</a>
+            </div>
+        </section>
+
+        <section class="encryption-section" id="encryption">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-label">MILITARY-GRADE ENCRYPTION</div>
+                    <h2 class="section-title">Encryption before storage</h2>
+                    <p class="section-subtitle">
+                        Plaintext never touches permanent storage. Client-side ChaCha20-Poly1305 encryption 
+                        ensures your asset is protected before it reaches Arweave or IPFS.
+                    </p>
+                </div>
+
+                <div class="encryption-grid">
+                    <article class="encryption-card">
+                        <div class="card-number">[01]</div>
+                        <h3>ChaCha20-Poly1305 AEAD</h3>
+                        <p>
+                            Authenticated Encryption with Associated Data. 256-bit keys. 128-bit authentication tags. 
+                            Any tampering—down to a single bit—is detected immediately.
+                        </p>
+                        <div class="tech-spec">256-BIT KEY • 96-BIT NONCE • 16-BYTE TAG • RFC 7539</div>
+                    </article>
+
+                    <article class="encryption-card">
+                        <div class="card-number">[02]</div>
+                        <h3>Pre-upload encryption</h3>
+                        <p>
+                            Encryption occurs client-side before transmission. Storage layers receive only ciphertext 
+                            and authentication metadata. Your plaintext remains under your control.
+                        </p>
+                        <div class="tech-spec">CLIENT-SIDE • ZERO-KNOWLEDGE • TAMPER-EVIDENT</div>
+                    </article>
+
+                    <article class="encryption-card">
+                        <div class="card-number">[03]</div>
+                        <h3>Permanent storage</h3>
+                        <p>
+                            Encrypted assets stored on Arweave for permanence. IPFS indexing for accessibility. 
+                            Dual-redundancy ensures retrieval regardless of single-point failures.
+                        </p>
+                        <div class="tech-spec">ARWEAVE PERMANENCE • IPFS DISTRIBUTION • MULTI-NODE</div>
+                    </article>
+
+                    <article class="encryption-card">
+                        <div class="card-number">[04]</div>
+                        <h3>Deterministic verification</h3>
+                        <p>
+                            Each mint produces cryptographic proof that can be independently verified. 
+                            No trusted third parties. Mathematics provides the guarantee, not institutions.
+                        </p>
+                        <div class="tech-spec">ZERO-TRUST • MATHEMATICALLY VERIFIABLE • DECENTRALIZED</div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="certificate-section" id="certificate">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-label">AUTHENTICITY VERIFICATION</div>
+                    <h2 class="section-title">Ten-layer certificate</h2>
+                    <p class="section-subtitle">
+                        Each NFT receives a comprehensive certificate comprising ten distinct verification layers. 
+                        Redundant by design. Tamper-evident by mathematics.
+                    </p>
+                </div>
+
+                <div class="certificate-grid">
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">01</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Cryptographic hash (SHA-256)</h4>
+                            <p>Immutable fingerprint of the original asset. Any modification produces a completely different hash.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">02</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Creator digital signature</h4>
+                            <p>Elliptic curve signature proving creator authorization. Bound to wallet and timestamped.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">03</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Timestamp authority</h4>
+                            <p>Cryptographic proof of existence at a specific point in time, anchored to multiple timestamping services.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">04</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Storage location proof</h4>
+                            <p>Arweave transaction ID and IPFS content identifier permanently linking encrypted asset to location.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">05</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Encryption metadata</h4>
+                            <p>Complete record of ChaCha20-Poly1305 parameters: nonce, authentication tag, key derivation.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">06</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Visual fingerprint</h4>
+                            <p>Perceptual hash resistant to minor transformations while detecting meaningful alterations.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">07</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Provenance chain</h4>
+                            <p>Complete lineage from creation through all transfers, each transaction cryptographically linked.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">08</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Metadata integrity</h4>
+                            <p>Separate authentication of NFT metadata ensuring alignment with the asset.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">09</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Smart contract binding</h4>
+                            <p>Cryptographic commitment to the specific smart contract and token standard governing the NFT.</p>
+                        </div>
+                    </div>
+
+                    <div class="certificate-layer">
+                        <div class="layer-number-container">
+                            <div class="layer-number">10</div>
+                        </div>
+                        <div class="layer-content">
+                            <h4>Certificate signature</h4>
+                            <p>Master signature binding all nine previous layers into a single, verifiable certificate issued by Spruked.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="process-section" id="process">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-label">MINTING WORKFLOW</div>
+                    <h2 class="section-title">Four stages to permanence</h2>
+                    <p class="section-subtitle">
+                        From upload to permanent, verified asset. Encrypted. Certified. Stored.
+                    </p>
+                </div>
+
+                <div class="process-grid">
+                    <div class="process-step">
+                        <div class="step-number">01</div>
+                        <h4>Upload</h4>
+                        <p>Asset uploaded to Spruked. Client-side processing begins immediately.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">02</div>
+                        <h4>Encrypt</h4>
+                        <p>ChaCha20-Poly1305 encryption applied. Authentication tag generated.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">03</div>
+                        <h4>Certify</h4>
+                        <p>Ten-layer certificate constructed and cryptographically signed.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">04</div>
+                        <h4>Store</h4>
+                        <p>Encrypted asset stored permanently on Arweave. IPFS indexing enabled.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">256-bit</div>
+                    <div class="stat-label">Encryption Keys</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">10-layer</div>
+                    <div class="stat-label">Certificate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">Permanent</div>
+                    <div class="stat-label">Storage</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">Zero-trust</div>
+                    <div class="stat-label">Verification</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <svg class="logo-mark" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 40 60 L 40 120 Q 40 160 70 160 L 130 160 Q 160 160 160 120 L 160 60" 
+                          stroke="currentColor" stroke-width="12" stroke-linecap="round" 
+                          stroke-linejoin="round" fill="none"/>
+                    <line x1="55" y1="145" x2="145" y2="55" stroke="#ff0000" 
+                          stroke-width="10" stroke-linecap="round"/>
+                </svg>
+                <span class="footer-text">© 2026 Spruked. Truth with teeth.</span>
+            </div>
+            <div class="footer-text">Cryptographic verification platform</div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // Observe elements that should animate on scroll
+        document.querySelectorAll('.encryption-card, .certificate-layer, .process-step, .stat-item').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

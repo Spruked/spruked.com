@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
+  <rect width="600" height="200" fill="transparent" />
+  <path d="M 40 60 L 40 120 Q 40 160 70 160 L 130 160 Q 160 160 160 120 L 160 60" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="55" y1="145" x2="145" y2="55" stroke="#FF0000" stroke-width="16" stroke-linecap="round" />
+  <text x="220" y="130" fill="#FFFFFF" font-family="Helvetica Neue, Arial, sans-serif" font-size="96" font-weight="500" letter-spacing="-2">
+    spruked
+  </text>
+</svg>

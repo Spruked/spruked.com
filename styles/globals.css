@@ -1,0 +1,14 @@
+:root {
+  --spruked-grid: linear-gradient(transparent 24px, rgba(255, 255, 255, 0.04) 25px), linear-gradient(90deg, transparent 24px, rgba(255, 255, 255, 0.04) 25px);
+}
+
+.body-grid::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--spruked-grid);
+  background-size: 25px 25px;
+  opacity: 0.15;
+  z-index: -1;
+}
