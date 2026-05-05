@@ -27,3 +27,6 @@ Current motion constants and mechanics (do not alter unless intentional):
 Snapshot policy:
 - Accessibility updates can add alternate open/voice controls.
 - Movement/physics block should remain unchanged unless explicitly requested.
+
+Related operational docs:
+- `doc/admin-crm.md` for ORB admin routing and CRM assistant behavior.

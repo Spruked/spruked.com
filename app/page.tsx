@@ -20,8 +20,14 @@ export default function Home() {
         <p className="mb-6 max-w-2xl text-2xl font-bold text-white uppercase tracking-widest sm:text-3xl">
           "If better is possible, good is simply not enough."
         </p>
-        <p className="mb-12 max-w-2xl text-xl text-gray-400 sm:text-2xl">
+        <p className="mb-6 max-w-2xl text-xl text-gray-400 sm:text-2xl">
           Truth with teeth. Precision correction. No fluff. No mercy.
+        </p>
+        <p className="mb-3 max-w-3xl text-2xl font-semibold text-white sm:text-3xl">
+          Spruked <span className="text-truth">-</span> Where Objects Tell the Truth.
+        </p>
+        <p className="mb-12 max-w-3xl text-xl text-gray-300 sm:text-2xl">
+          A registry for verified records, provenance, and intelligent object profiles.
         </p>
         <div className="mb-16 flex flex-col gap-6 sm:flex-row">
           <Button size="lg" asChild>
@@ -285,21 +291,36 @@ export default function Home() {
 
       <Section id="waitlist" className="bg-gradient-to-b from-dark to-black">
         <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-5 text-lg text-gray-300 sm:text-xl">
+            Become a Spruikster - someone who doesn&rsquo;t just talk things up, but sets things straight.
+          </p>
           <h2 className="mb-8 text-5xl font-black uppercase leading-tight sm:text-7xl">
             Ready to be <span className="text-truth">Spruked</span>?
           </h2>
           <p className="mb-10 text-lg text-gray-400">Join the private waitlist. First 100 receive lifetime status.</p>
-          <form className="mx-auto flex max-w-xl flex-col gap-4">
+          <form action="/api/waitlist" method="post" className="mx-auto flex max-w-xl flex-col gap-4">
+            <select
+              id="waitlist-lead-type"
+              name="leadType"
+              defaultValue="promoter"
+              className="rounded-full border border-gray-700 bg-black px-5 py-5 text-center text-sm font-semibold uppercase tracking-[0.2em] text-light"
+            >
+              <option value="promoter">Promoter</option>
+              <option value="investor">Investor</option>
+              <option value="marketing">Marketing Contact</option>
+              <option value="business">Business Contact</option>
+            </select>
             <Input
               id="waitlist-email"
-              name="waitlistEmail"
+              name="email"
               type="email"
               autoComplete="email"
               placeholder="you@truth.com"
               required
               className="py-5 text-lg"
             />
-            <Button size="lg" className="py-5 text-lg">
+            <input id="waitlist-source" name="source" type="hidden" value="homepage_waitlist" />
+            <Button size="lg" className="w-full justify-center py-5 text-lg text-center">
               Secure My Spot
             </Button>
           </form>

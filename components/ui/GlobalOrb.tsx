@@ -2,79 +2,198 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { OrbService } from '@/Orb_Assistant/api/OrbService';
-import { MotionGovernor } from '@/lib/orbital_behavior_skg/core/MotionGovernor';
-import type { OrbSnapshot } from '@/lib/orbital_behavior_skg/core/types';
 
-type LogEntry = { id: string; mind: string; conf: number; text: string };
+const IDLE_TIMEOUT_MS = 300000;
+const DRIFT_MIN_MS = 5000;
+const DRIFT_MAX_MS = 9000;
+const ORB_SIZE = 106;
+const CURSOR_AVOID_RADIUS = 120;
+const EVADE_COOLDOWN_MS = 240;
+const EVADE_DISTANCE = 165;
+const VIEWPORT_PADDING = 20;
+const DRIFT_MAX_HEIGHT_RATIO = 0.58;
 
 export default function GlobalOrb() {
-  const [isOpen, setIsOpen] = useState(false);
   const [pulseColor, setPulseColor] = useState('white');
   const [status, setStatus] = useState('Awaiting epistemic stimulus...');
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isDesktopShell, setIsDesktopShell] = useState(false);
-  const [meshState, setMeshState] = useState('Mesh link pending');
-  const [showBackComms, setShowBackComms] = useState(false);
-
-  const [heardText, setHeardText] = useState('');
   const [bubbleText, setBubbleText] = useState('Click the orb and speak.');
-  const [bubbleMind, setBubbleMind] = useState('CALI');
-  const [bubbleConfidence, setBubbleConfidence] = useState(0);
-  const [log, setLog] = useState<LogEntry[]>([]);
-
-  const orbRef = useRef<HTMLDivElement>(null);
-  const isOpenRef = useRef(false);
-  const governorRef = useRef<MotionGovernor | null>(null);
-  const isIdle = useRef(false);
-  const lastVisualSync = useRef(0);
+  const [isAwake, setIsAwake] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [orbPosition, setOrbPosition] = useState({ x: 0, y: 0 });
+  const orbPositionRef = useRef({ x: 0, y: 0 });
   const recognitionRef = useRef<any>(null);
   const isProcessingRef = useRef(false);
+  const isAwakeRef = useRef(false);
+  const isListeningRef = useRef(false);
+  const isSpeakingRef = useRef(false);
   const sendPromptRef = useRef<(text: string) => Promise<void> | void>(() => {});
+  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const driftTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const evadeCooldownRef = useRef(0);
 
-  const [isVivid, setIsVivid] = useState(false);
+  const sleepPosition = () => {
+    if (typeof window === 'undefined') return { x: 0, y: 0 };
+    const orbSize = ORB_SIZE + 14;
+    const x = Math.max(VIEWPORT_PADDING, window.innerWidth - orbSize - VIEWPORT_PADDING);
+    return { x, y: VIEWPORT_PADDING };
+  };
+
+  const pickWaypoint = () => {
+    if (typeof window === 'undefined') return { x: 0, y: 0 };
+    const orbSize = ORB_SIZE + 14;
+    const maxX = Math.max(VIEWPORT_PADDING, window.innerWidth - orbSize - VIEWPORT_PADDING);
+    const maxY = Math.max(
+      VIEWPORT_PADDING,
+      Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - orbSize,
+    );
+    const x = Math.floor(VIEWPORT_PADDING + Math.random() * (maxX - VIEWPORT_PADDING));
+    const y = Math.floor(VIEWPORT_PADDING + Math.random() * (maxY - VIEWPORT_PADDING));
+    return { x, y };
+  };
+
+  const clampPosition = (x: number, y: number) => {
+    if (typeof window === 'undefined') return { x, y };
+    const orbSize = ORB_SIZE + 14;
+    const maxX = Math.max(VIEWPORT_PADDING, window.innerWidth - orbSize - VIEWPORT_PADDING);
+    const maxY = Math.max(
+      VIEWPORT_PADDING,
+      Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - orbSize,
+    );
+    return {
+      x: Math.min(maxX, Math.max(VIEWPORT_PADDING, x)),
+      y: Math.min(maxY, Math.max(VIEWPORT_PADDING, y)),
+    };
+  };
+
+  const maybeEvadeCursor = (cursorX: number, cursorY: number) => {
+    const now = Date.now();
+    if (now - evadeCooldownRef.current < EVADE_COOLDOWN_MS) return;
+
+    const centerX = orbPositionRef.current.x + ORB_SIZE / 2;
+    const centerY = orbPositionRef.current.y + ORB_SIZE / 2;
+    const dx = centerX - cursorX;
+    const dy = centerY - cursorY;
+    const distance = Math.hypot(dx, dy);
+
+    if (distance > CURSOR_AVOID_RADIUS) return;
+
+    const safeDx = distance < 1 ? 1 : dx / distance;
+    const safeDy = distance < 1 ? -0.6 : dy / distance;
+    const targetX = centerX + safeDx * EVADE_DISTANCE - ORB_SIZE / 2;
+    const targetY = centerY + safeDy * EVADE_DISTANCE - ORB_SIZE / 2;
+    const next = clampPosition(targetX, targetY);
+
+    evadeCooldownRef.current = now;
+    setOrbPosition(next);
+    wakeOrb();
+    queueNextDrift();
+  };
+
+  const queueNextDrift = () => {
+    if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
+    const delay = DRIFT_MIN_MS + Math.floor(Math.random() * (DRIFT_MAX_MS - DRIFT_MIN_MS));
+    driftTimerRef.current = setTimeout(() => {
+      if (isProcessingRef.current || isListeningRef.current || isSpeakingRef.current) {
+        queueNextDrift();
+        return;
+      }
+      if (!isAwakeRef.current) {
+        setOrbPosition(sleepPosition());
+        queueNextDrift();
+        return;
+      }
+      setOrbPosition(pickWaypoint());
+      queueNextDrift();
+    }, delay);
+  };
+
+  const wakeOrb = () => {
+    setIsAwake(true);
+    isAwakeRef.current = true;
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      isAwakeRef.current = false;
+      setIsAwake(false);
+      setShowSettings(false);
+      setOrbPosition(sleepPosition());
+    }, IDLE_TIMEOUT_MS);
+  };
 
   useEffect(() => {
     isProcessingRef.current = isProcessing;
   }, [isProcessing]);
 
   useEffect(() => {
+    orbPositionRef.current = orbPosition;
+  }, [orbPosition]);
+
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
+
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
+
+  useEffect(() => {
+    isAwakeRef.current = isAwake;
+  }, [isAwake]);
+
+  useEffect(() => {
     setIsMounted(true);
-
     if (typeof window === 'undefined') return;
-    setIsDesktopShell(Boolean((window as any)?.electronAPI));
 
-    const updateFromGovernor = (snapshot: OrbSnapshot) => {
-      if (!isOpenRef.current && orbRef.current) {
-        orbRef.current.style.transform = `translate3d(${snapshot.position.x}px, ${snapshot.position.y}px, 0)`;
-      }
+    setOrbPosition(sleepPosition());
 
-      const now = Date.now();
-      if (now - lastVisualSync.current < 120) return;
-      lastVisualSync.current = now;
-
-      isIdle.current = snapshot.isIdle;
-      const vivid = !snapshot.isIdle || snapshot.intent === 'offering' || snapshot.intent === 'curious' || snapshot.intent === 'alert';
-      const nextColor = governorRef.current?.getIntentColor() || 'white';
-      setIsVivid(vivid);
-      setPulseColor((prev) => (prev === nextColor ? prev : nextColor));
+    const handleWake = (event: MouseEvent) => {
+      wakeOrb();
+      maybeEvadeCursor(event.clientX, event.clientY);
+    };
+    const handleResize = () => {
+      setOrbPosition((prev) => {
+        const orbSize = ORB_SIZE + 14;
+        const maxX = Math.max(VIEWPORT_PADDING, window.innerWidth - orbSize - VIEWPORT_PADDING);
+        const maxY = Math.max(
+          VIEWPORT_PADDING,
+          Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - orbSize,
+        );
+        return {
+          x: Math.min(maxX, Math.max(VIEWPORT_PADDING, prev.x)),
+          y: Math.min(maxY, Math.max(VIEWPORT_PADDING, prev.y)),
+        };
+      });
     };
 
-    const governor = new MotionGovernor({
-      siteId: 'spruked',
-      onState: updateFromGovernor,
-    });
-    governorRef.current = governor;
-    governor.start();
+    window.addEventListener('mousemove', handleWake, { passive: true });
+    window.addEventListener('click', handleWake, { passive: true });
+    window.addEventListener('resize', handleResize);
+    wakeOrb();
+    queueNextDrift();
 
     return () => {
-      governor.destroy();
-      governorRef.current = null;
+      window.removeEventListener('mousemove', handleWake);
+      window.removeEventListener('click', handleWake);
+      window.removeEventListener('resize', handleResize);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    const closeMenu = () => setShowSettings(false);
+    if (showSettings) {
+      window.addEventListener('click', closeMenu);
+    }
+    return () => {
+      window.removeEventListener('click', closeMenu);
+    };
+  }, [showSettings]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -106,13 +225,12 @@ export default function GlobalOrb() {
 
       const interimTrimmed = interim.trim();
       if (interimTrimmed) {
-        setHeardText(interimTrimmed);
         setStatus('Listening...');
+        wakeOrb();
       }
 
       const finalTrimmed = finalText.trim();
       if (finalTrimmed && !isProcessingRef.current) {
-        setHeardText(finalTrimmed);
         try {
           recognition.stop();
         } catch {}
@@ -143,34 +261,6 @@ export default function GlobalOrb() {
     };
   }, []);
 
-  useEffect(() => {
-    isOpenRef.current = isOpen;
-    governorRef.current?.setPaused(isOpen);
-  }, [isOpen]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    OrbService.getStatus()
-      .then((snapshot: any) => {
-        if (cancelled) return;
-        const instanceId = snapshot?.orb_status?.instance_id || 'web';
-        const meshRoot = snapshot?.mesh?.mesh_root || snapshot?.orb_status?.shared_mesh_root || null;
-        setStatus(`Website orb linked as ${String(instanceId).toUpperCase()}.`);
-        setMeshState(meshRoot ? 'Mesh linked' : 'Mesh offline');
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return;
-        setStatus('Website orb online, mesh still resolving...');
-        setMeshState('Mesh resolving');
-        console.error(error);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const getMindColor = (mind: string) => {
     switch (mind.toLowerCase()) {
       case 'cali': return '#ffffff';
@@ -187,18 +277,6 @@ export default function GlobalOrb() {
     }
   };
 
-  const appendSystemLog = (mind: string, conf: number, text: string) => {
-    setLog((prev) => [
-      ...prev,
-      {
-        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-        mind,
-        conf,
-        text,
-      },
-    ]);
-  };
-
   const startListening = () => {
     if (!speechSupported || !recognitionRef.current) {
       setStatus('Speech recognition unavailable in this browser.');
@@ -212,6 +290,7 @@ export default function GlobalOrb() {
       recognitionRef.current.start();
       setIsListening(true);
       setStatus('Listening...');
+      wakeOrb();
     } catch {
       setStatus('Unable to start speech recognition');
     }
@@ -240,34 +319,34 @@ export default function GlobalOrb() {
     setIsProcessing(true);
     setStatus('Transmitting...');
     setPulseColor('white');
-    appendSystemLog('user', 1, trimmed);
+    wakeOrb();
 
     try {
       const response = await OrbService.sendMessage(trimmed, (color: string, mind: string) => {
         setPulseColor(getMindColor(mind) || color);
         setStatus('Processing...');
-      }, { speak: voiceEnabled });
+      }, {
+        speak: voiceEnabled,
+        onSpeechState: (active: boolean, meta: { text?: string } = {}) => {
+          setIsSpeaking(active);
+          if (meta?.text) {
+            setBubbleText(String(meta.text));
+          }
+          if (active) {
+            wakeOrb();
+          }
+        },
+      });
 
-      const responseMind = String(response?.metadata?.leading_mind || response?.metadata?.provider || 'cali');
-      const confidence = Number(response?.metadata?.confidence || 0);
       const msgText = String(response?.response || response?.text || 'No response text available.');
-
-      appendSystemLog(responseMind, confidence, msgText);
-      setBubbleMind(responseMind.toUpperCase());
-      setBubbleConfidence(confidence);
       setBubbleText(msgText);
-      setMeshState('Mesh linked');
       setStatus('Response ready.');
-      setPulseColor(getMindColor(responseMind));
+      setPulseColor(getMindColor(String(response?.metadata?.leading_mind || 'cali')));
     } catch (err) {
       console.error(err);
       const failure = 'Connection failed. Provider unavailable or offline.';
-      appendSystemLog('system', 0, failure);
-      setBubbleMind('SYSTEM');
-      setBubbleConfidence(0);
       setBubbleText(failure);
       setStatus('Connection failed');
-      setMeshState('Mesh unavailable');
       setPulseColor('red');
     } finally {
       setIsProcessing(false);
@@ -275,219 +354,86 @@ export default function GlobalOrb() {
   };
   sendPromptRef.current = sendPrompt;
 
-  const dockToTrayStation = async () => {
-    if (typeof window === 'undefined') return;
-
-    const electronApi = (window as any)?.electronAPI;
-    if (!electronApi?.setOrbState) {
-      setStatus('Tray docking is available in desktop shell mode.');
-      appendSystemLog('system', 1, 'Browser runtime detected. Tray docking is delegated to desktop Orb shell.');
-      return;
-    }
-
-    try {
-      await electronApi.setOrbState('browser_access', false);
-      await electronApi.setOrbState('desktop_access', true);
-      if (electronApi.minimizeWindow) {
-        await electronApi.minimizeWindow();
-      }
-      setStatus('Docking station linked through system tray.');
-      appendSystemLog('system', 1, 'Tray dock connected. Orb-first mode remains active.');
-      setIsOpen(false);
-    } catch (error) {
-      console.error(error);
-      setStatus('Tray docking command failed.');
-      appendSystemLog('system', 1, 'Tray docking command failed. Check desktop shell bridge.');
-    }
-  };
-
-  const openDockingStation = () => {
-    if (typeof window === 'undefined') return;
-
-    const electronApi = (window as any)?.electronAPI;
-    if (electronApi?.openSettings) {
-      electronApi.openSettings();
-      setStatus('Docking station opened via desktop shell.');
-      appendSystemLog('system', 1, 'Desktop docking station command sent.');
-      return;
-    }
-
-    window.open('/orb', '_blank', 'noopener,noreferrer');
-    setStatus('Opened docking station preview in new tab.');
-    appendSystemLog('system', 1, 'Web preview opened. Full tray docking is available in desktop shell.');
-  };
-
-  const openAndStartVoice = () => {
-    setIsOpen(true);
-    setTimeout(() => {
-      startListening();
-    }, 80);
-  };
-
   if (!isMounted) return null;
 
   return (
-    <>
-      {!isOpen && (
+    <div
+      className="fixed left-0 top-0 z-[9999] flex items-start gap-3 pointer-events-none transition-transform duration-[5200ms] ease-in-out"
+      style={{ transform: `translate3d(${orbPosition.x}px, ${orbPosition.y}px, 0)` }}
+    >
+      {isSpeaking && (
         <div
-          ref={orbRef}
-          className="fixed left-0 top-0 z-[9999] pointer-events-none will-change-transform"
+          className="hidden sm:block max-w-[360px] rounded-2xl border border-gray-800 bg-black/80 px-4 py-3 text-sm leading-relaxed text-gray-100 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-xl"
+          style={{ borderColor: `${pulseColor}4d` }}
         >
-          <button
-            onClick={openAndStartVoice}
-            onMouseEnter={() => setIsVivid(true)}
-            onMouseLeave={() => setIsVivid(!isIdle.current)}
-            className="pointer-events-auto flex items-center justify-center relative cursor-crosshair group transition-all duration-[800ms] ease-out"
-            style={{
-              width: '128px',
-              height: '128px',
-              opacity: isVivid ? 1 : 0.35,
-              transform: `scale(${isVivid ? 1.05 : 0.9})`,
-              filter: `saturate(${isVivid ? 1.3 : 0.4})`,
-            }}
-          >
-            <div
-              className="w-full h-full rounded-full absolute mix-blend-screen transition-all duration-1000 will-change-transform"
-              style={{
-                boxShadow: `0 0 ${isVivid ? '50px' : '20px'} ${pulseColor}`,
-                animation: isVivid ? 'pulse 1.5s infinite ease-in-out' : 'pulse 4s infinite ease-in-out',
-                opacity: isIdle.current ? 0.3 : 0.8,
-              }}
-            ></div>
-
-            <div className="w-[80px] h-[80px] sm:w-[90px] sm:h-[90px] rounded-full border border-white/20 bg-black/80 flex items-center justify-center z-10 relative overflow-hidden backdrop-blur-md transition-all duration-700">
-              <div className="w-full h-full absolute transition-colors duration-700" style={{ background: `radial-gradient(ellipse at center, ${pulseColor}44 0%, transparent 70%)` }}></div>
-              <div className={`w-[50px] h-[50px] rounded-full blur-[4px] absolute transition-all duration-700 ${!isIdle.current ? 'animate-ping opacity-60' : 'animate-spin-slow opacity-20'}`} style={{ backgroundColor: pulseColor }}></div>
-              <div className="w-3 h-3 rounded-full bg-white absolute shadow-[0_0_20px_white] transition-transform duration-700" style={{ transform: isVivid ? 'scale(1.3)' : 'scale(1)' }}></div>
-            </div>
-          </button>
+          {bubbleText}
         </div>
       )}
 
-      {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[9999] w-[520px] max-w-[calc(100vw-24px)] animate-in fade-in slide-in-from-bottom-10 duration-200">
+      <div className="pointer-events-auto relative">
+        <button
+          type="button"
+          onClick={toggleListening}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            wakeOrb();
+            setShowSettings((value) => !value);
+          }}
+          onMouseEnter={wakeOrb}
+          aria-label={isListening ? 'Stop listening' : 'Start voice listening'}
+          className="relative flex items-center justify-center rounded-full transition-all duration-500 ease-out"
+          style={{
+            width: '106px',
+            height: '106px',
+            opacity: isAwake ? 1 : 0.2,
+            transform: `scale(${isAwake ? 1 : 0.78})`,
+            filter: `saturate(${isAwake ? 1.1 : 0.4})`,
+          }}
+          title={isListening ? 'Listening' : 'Click to wake and speak'}
+        >
           <div
-            className="w-full rounded-2xl border border-gray-800 bg-black/95 shadow-[0_0_60px_rgba(0,0,0,0.9)] overflow-hidden font-mono relative backdrop-blur-2xl transition-all duration-500"
-            style={{ boxShadow: `0 0 44px ${pulseColor}1f`, borderColor: `${pulseColor}44` }}
-          >
-            <div className="bg-[#050505] px-4 py-3 border-b border-gray-900 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_10px_currentColor]" style={{ backgroundColor: pulseColor, color: pulseColor }}></div>
-                <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: pulseColor }}>Orb Voice</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="border border-gray-800 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-gray-300 hover:text-white transition-colors"
-                  onClick={() => setVoiceEnabled((current) => !current)}
-                >
-                  {voiceEnabled ? 'Voice On' : 'Voice Off'}
-                </button>
-                <button
-                  type="button"
-                  className="border border-gray-800 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-gray-300 hover:text-white transition-colors disabled:opacity-40"
-                  disabled={!speechSupported || isProcessing}
-                  onClick={toggleListening}
-                >
-                  {isListening ? 'Stop Mic' : 'Talk'}
-                </button>
-                <button
-                  type="button"
-                  className="text-[16px] text-gray-600 hover:text-white leading-none"
-                  onClick={() => {
-                    stopListening();
-                    setIsOpen(false);
-                  }}
-                  aria-label="Close orb panel"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
+            className="absolute h-full w-full rounded-full mix-blend-screen transition-all duration-700"
+            style={{
+              boxShadow: `0 0 ${isAwake ? '44px' : '18px'} ${pulseColor}`,
+              animation: isAwake ? 'pulse 1.5s infinite ease-in-out' : 'pulse 4s infinite ease-in-out',
+            }}
+          ></div>
 
-            <div className="px-3 py-3 border-b border-gray-900 flex flex-wrap items-center gap-2 bg-[#040404]">
-              <button
-                type="button"
-                className="border border-gray-700 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-gray-300 hover:text-white transition-colors"
-                onClick={() => setShowBackComms((current) => !current)}
-              >
-                {showBackComms ? 'Hide Back Comms' : 'Back Comms'}
-              </button>
-              <button
-                type="button"
-                className="border border-gray-700 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-gray-300 hover:text-white transition-colors"
-                onClick={dockToTrayStation}
-              >
-                Dock To Tray
-              </button>
-              <button
-                type="button"
-                className="border border-gray-700 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-gray-300 hover:text-white transition-colors"
-                onClick={openDockingStation}
-              >
-                Open Dock
-              </button>
-              <span className="text-[9px] uppercase tracking-[0.14em] text-gray-500">{meshState}</span>
-              <span className="text-[9px] uppercase tracking-[0.14em] text-gray-600">{isDesktopShell ? 'Desktop Link' : 'Web Link'}</span>
-            </div>
-
-            <div className="p-4 bg-[#030303]">
-              <div className="flex items-start gap-4">
-                <button
-                  type="button"
-                  onClick={toggleListening}
-                  disabled={!speechSupported || isProcessing}
-                  className="shrink-0 w-[96px] h-[96px] rounded-full border border-white/20 bg-black/80 flex items-center justify-center relative overflow-hidden backdrop-blur-md transition-all duration-700 disabled:opacity-45"
-                  title={isListening ? 'Stop listening' : 'Start listening'}
-                >
-                  <div className="w-full h-full absolute" style={{ background: `radial-gradient(ellipse at center, ${pulseColor}55 0%, transparent 72%)` }}></div>
-                  <div
-                    className={`w-[48px] h-[48px] rounded-full blur-[4px] absolute transition-all duration-700 ${isListening || isProcessing ? 'animate-pulse opacity-70' : 'opacity-30'}`}
-                    style={{ backgroundColor: pulseColor }}
-                  ></div>
-                  <div className="relative z-10 text-[10px] uppercase tracking-[0.18em] text-gray-200">
-                    {isProcessing ? 'Think' : isListening ? 'Live' : 'Talk'}
-                  </div>
-                </button>
-
-                <div className="flex-1 min-h-[96px] border border-gray-800 rounded-2xl px-4 py-3 bg-black/70 relative overflow-hidden">
-                  <div className="text-[9px] uppercase tracking-[0.14em] mb-2 flex items-center gap-3" style={{ color: pulseColor }}>
-                    <span>{bubbleMind}</span>
-                    <span className="opacity-65">CONF {bubbleConfidence.toFixed(2)}</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-gray-100 whitespace-pre-wrap">{bubbleText}</p>
-                </div>
-              </div>
-
-              <div className="mt-3 border border-gray-900 rounded-lg px-3 py-2 bg-black/40">
-                <p className="text-[9px] uppercase tracking-[0.14em] text-gray-500 mb-1">Heard</p>
-                <p className="text-xs text-gray-300 min-h-[18px]">{heardText || (isListening ? 'Listening for speech...' : 'Click orb and speak')}</p>
-              </div>
-
-              <p className="mt-3 text-[10px] uppercase tracking-[0.14em]" style={{ color: pulseColor }}>
-                {status}
-              </p>
-            </div>
-
-            {showBackComms && (
-              <div className="border-t border-gray-900 bg-[#020202] px-4 py-3 max-h-[160px] overflow-y-auto space-y-2">
-                {log.length === 0 ? (
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-gray-600">No back comms events yet.</p>
-                ) : (
-                  log.slice(-8).map((entry) => (
-                    <div key={entry.id} className="text-[11px] leading-relaxed border-l pl-2" style={{ borderColor: getMindColor(entry.mind) }}>
-                      <span className="uppercase tracking-[0.12em] text-[9px] mr-2" style={{ color: getMindColor(entry.mind) }}>
-                        {entry.mind}
-                      </span>
-                      <span className="text-gray-300">{entry.text}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+          <div className="relative z-10 flex h-[76px] w-[76px] items-center justify-center rounded-full border border-white/20 bg-black/80 backdrop-blur-md">
+            <div
+              className={`absolute h-[42px] w-[42px] rounded-full blur-[4px] ${isListening || isProcessing || isSpeaking ? 'animate-ping opacity-70' : 'opacity-30'}`}
+              style={{ backgroundColor: pulseColor }}
+            ></div>
+            <div className="h-3 w-3 rounded-full bg-white shadow-[0_0_16px_white]"></div>
           </div>
-        </div>
-      )}
-    </>
+        </button>
+
+        {showSettings && (
+          <div
+            className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-gray-800 bg-black/90 p-2 text-xs text-gray-200 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="block w-full rounded-md px-2 py-1.5 text-left hover:bg-white/5"
+              onClick={() => setVoiceEnabled((value) => !value)}
+            >
+              Voice: {voiceEnabled ? 'On' : 'Off'}
+            </button>
+            <button
+              type="button"
+              className="mt-1 block w-full rounded-md px-2 py-1.5 text-left hover:bg-white/5"
+              onClick={() => {
+                setOrbPosition(pickWaypoint());
+                setShowSettings(false);
+              }}
+            >
+              Nudge Path
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

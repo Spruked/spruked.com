@@ -755,17 +755,44 @@ export async function POST(request: NextRequest) {
       }
 
       const provider = cognitionProvider();
+      const caliPersonal = await queryCaliPersonal(request, prompt, body).catch(() => null);
+      if (caliPersonal) {
+        const normalizedResponseText = normalizeCompanionText(String(caliPersonal?.response || ''), prompt);
+        if (normalizedResponseText) {
+          caliPersonal.response = normalizedResponseText;
+          if (typeof caliPersonal?.text === 'string') {
+            caliPersonal.text = normalizedResponseText;
+          }
+        }
+
+        await publishWebArtifact(
+          'insight',
+          {
+            kind: 'query_response',
+            prompt,
+            response: caliPersonal.response,
+            leading_mind: caliPersonal.metadata?.leading_mind || 'cali',
+            confidence: caliPersonal.metadata?.confidence || 0,
+          },
+          {
+            target_orb: 'shared',
+            confidence: caliPersonal.metadata?.confidence || 0.5,
+            tags: ['website_orb', 'query'],
+          }
+        );
+
+        await reportSprukedOrbState(request, body, action, caliPersonal);
+        return NextResponse.json(caliPersonal);
+      }
+
       if (classifyCognitionMode(prompt) === 'tool_required') {
         const response = localToolRequiredResponse(prompt, provider);
         await reportSprukedOrbState(request, body, action, response);
         return NextResponse.json(response);
       }
 
-      const caliPersonal =
-        provider === 'kaygee_hybrid' ? null : await queryCaliPersonal(request, prompt, body).catch(() => null);
       const response =
-        caliPersonal ||
-        (await queryByProvider(prompt, body?.context || {}, body?.emotion || 'thoughtful_warm'));
+        await queryByProvider(prompt, body?.context || {}, body?.emotion || 'thoughtful_warm');
       if (response?.metadata?.cognition_mode !== 'deep_reasoning') {
         const normalizedResponseText = normalizeCompanionText(String(response?.response || ''), prompt);
         if (normalizedResponseText) {

@@ -2,6 +2,11 @@
 
 This project now ships with a lightweight content backend powered by Supabase. You can edit landing-page copy without redeploying by updating the records stored inside a single `page_content` table.
 
+## Scope note
+
+This document covers content CMS only (`/api/page-content`).
+Admin CRM and operations workflows are documented in `doc/admin-crm.md`.
+
 ## 1. Environment variables
 
 Copy `.env.example` to `.env.local` and provide Supabase credentials plus an admin token used for API writes:
@@ -47,5 +52,11 @@ For production, gate the route behind authentication or protected hosting (e.g.,
 ## 5. Consuming content
 
 Server components call `getPageContent(slug)` to pull data. If Supabase credentials are missing, the helper automatically falls back to the defaults declared in `data/page-content.ts`, so local development remains zero-config.
+
+## 6. Admin coexistence
+
+- The `/admin` route now includes both CMS editing and operational CRM controls.
+- CMS write calls (`PUT /api/page-content`) remain separately token-protected via `ADMIN_ACCESS_TOKEN`.
+- CRM calls are routed through `/api/cali/*` and use the same bearer-token model.
 
 Happy editing.

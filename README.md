@@ -2,20 +2,23 @@
 
 Truth with teeth.
 
-A modern web application built with Next.js, featuring a brand identity system and content management capabilities.
+A modern web application built with Next.js, featuring brand identity, ORB cognition routing, content management, and an integrated admin CRM and operations hub.
 
 ## Production Readiness Status
 
 - Build status: `npm run build` passes
 - Lint status: `npm run lint` passes (warnings only for `<img>` optimization)
 - Core commerce routes live: `/cart`, `/checkout`
-- Orb API routing active: `/api/orb` with `kaygee_hybrid` support
+- Orb API routing active: `/api/orb` with admin-context routing support
 - Founder and About content published under `/about`
+- Admin CRM pipeline, appointment scheduling, and inbound mailbox poll integrated
 
 ## Features
 
 - **Brand Identity System**: Comprehensive brand guidelines and assets
 - **Content Management**: Dynamic content powered by Supabase
+- **Admin CRM Hub**: Lead pipeline, stage tracking, activity logging, appointments, and mail connector
+- **Inbound Email Ingestion**: IMAP mailbox poll that auto-creates CRM activities and lead contacts
 - **Modern UI**: Built with Tailwind CSS and React
 - **Type-Safe**: Full TypeScript implementation
 - **Responsive Design**: Mobile-first approach
@@ -90,6 +93,47 @@ A modern web application built with Next.js, featuring a brand identity system a
 - `/checkout`
 - `/admin`
 
+## Admin System (Integrated)
+
+The `/admin` route includes a full operations console with a token-protected backend.
+
+### Tabs
+
+- `overview`
+- `leads`
+- `contacts`
+- `financial`
+- `calendar`
+- `verification`
+- `tasks`
+
+### CRM Features
+
+- Lead categories: `promoter`, `investor`, `marketing`, `business`
+- CRM stages: `prospect`, `qualified`, `contacted`, `meeting_scheduled`, `proposal`, `won`, `lost`
+- Stage update controls (owner, follow-up timestamp, notes)
+- CRM activity logging per contact
+- Appointment scheduler connected to calendar + CRM follow-up tasking
+- Waitlist capture wired into CRM contact creation
+
+### Email + Mailbox Features
+
+- Business email connector settings in admin
+- Connector status endpoint and readiness checks
+- Inbound IMAP poll endpoint and UI trigger
+- Automatic inbound email ingestion:
+   - dedupe by `message-id`
+   - match/create contact by sender email
+   - create CRM `email_inbound` activities
+
+### ORB Admin Assistant Capabilities
+
+In admin context (`x-cali-context=admin`), ORB can actively query and operate CRM-aware CALI routes, including:
+
+- CRM pipeline status
+- Email connector status
+- Mailbox poll intent path
+
 ## Production Checklist
 
 Run this before each release:
@@ -101,10 +145,15 @@ Run this before each release:
    - `CALI_API_URL`
    - `SPRUKED_ORB_COGNITION_PROVIDER`
    - `SPRUKED_ORB_PROVIDER_TIMEOUT_MS`
+   - `ADMIN_ACCESS_TOKEN` or `CALI_ADMIN_TOKEN`
+   - `BUSINESS_EMAIL_APP_PASSWORD` (required for live IMAP poll)
    - Supabase keys
 5. Smoke test:
    - `GET /`
    - `POST /api/orb`
+   - `GET /api/cali/crm/pipeline` (admin token)
+   - `GET /api/cali/crm/email/status` (admin token)
+   - `POST /api/cali/crm/email/poll` (admin token + mailbox password env)
    - `/cart` and `/checkout` render
 6. Start production server:
    - `npm run start`
@@ -121,8 +170,23 @@ The site orb UI/behavior can stay unchanged while cognition/voice is routed by A
 - `CALIXONE_INTERACT_PATH` (default `/api/interact`)
 - `CALI_API_URL` (default `http://127.0.0.1:8002`)
 - `KAYGEE_HYBRID_RESPOND_PATH` (default `/cali/orb/respond`)
+- `ADMIN_ACCESS_TOKEN` or `CALI_ADMIN_TOKEN` for admin/CALI protected operations
+- `BUSINESS_EMAIL_APP_PASSWORD` (or `EMAIL_APP_PASSWORD`) for IMAP mailbox polling
 
 The provider switch is handled under `app/api/orb/route.ts`; orb visuals are not required to change.
+
+## Core Admin/CRM Endpoints
+
+All `/api/cali/*` admin endpoints require bearer admin token.
+
+- `GET /api/cali/crm/pipeline`
+- `PATCH /api/cali/crm/leads/stage`
+- `POST /api/cali/crm/activities`
+- `GET /api/cali/crm/activities/{contact_id}`
+- `POST /api/cali/crm/appointments`
+- `POST /api/cali/crm/email/connect`
+- `GET /api/cali/crm/email/status`
+- `POST /api/cali/crm/email/poll`
 
 ## Contributing
 

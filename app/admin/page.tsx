@@ -44,6 +44,30 @@ type SystemScanResult = {
   last_modified: string | null;
 };
 
+type VaultEntry = {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+type VaultCategory = {
+  key: string;
+  label: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  entries: VaultEntry[];
+};
+
+type VaultData = {
+  schema_version: string;
+  updated_at: string;
+  categories: VaultCategory[];
+};
+
 const slugLabels: Record<PageSlug, string> = {
   'true-mark-mint': 'True Mark Mint',
   goat: 'The GOAT',
@@ -149,6 +173,15 @@ export default function AdminPage() {
   const [orbLoading, setOrbLoading] = useState(false);
   const [orbStatus, setOrbStatus] = useState<string | null>(null);
   const [orbStates, setOrbStates] = useState<OrbState[]>([]);
+  const [vaultLoading, setVaultLoading] = useState(false);
+  const [vaultStatus, setVaultStatus] = useState<string | null>(null);
+  const [vaultData, setVaultData] = useState<VaultData | null>(null);
+  const [selectedVaultCategory, setSelectedVaultCategory] = useState('');
+  const [newCategoryLabel, setNewCategoryLabel] = useState('');
+  const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  const [newEntryTitle, setNewEntryTitle] = useState('');
+  const [newEntryBody, setNewEntryBody] = useState('');
+  const [newEntryTags, setNewEntryTags] = useState('');
   const [strategicGoals, setStrategicGoals] = useState<string[]>([
     'Build Spruked + TrueMark + Orb ecosystem to stable production',
     'Operationalize ProPrime financial systems into admin workflows',
@@ -181,6 +214,28 @@ export default function AdminPage() {
     () => sessionPanels.find((panel) => panel.id === sessionPanel) ?? sessionPanels[0],
     [sessionPanel],
   );
+
+  const activeVaultCategory = useMemo(() => {
+    const categories = vaultData?.categories || [];
+    if (categories.length === 0) {
+      return null;
+    }
+    return categories.find((category) => category.key === selectedVaultCategory) || categories[0];
+  }, [selectedVaultCategory, vaultData]);
+
+  const applyVaultData = (next: VaultData) => {
+    setVaultData(next);
+    if (!next.categories.length) {
+      setSelectedVaultCategory('');
+      return;
+    }
+    setSelectedVaultCategory((current) => {
+      if (current && next.categories.some((category) => category.key === current)) {
+        return current;
+      }
+      return next.categories[0].key;
+    });
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -279,6 +334,161 @@ export default function AdminPage() {
       setOrbStatus((error as Error).message);
     } finally {
       setOrbLoading(false);
+    }
+  };
+
+  const handleRefreshVault = async () => {
+    setVaultLoading(true);
+    setVaultStatus('Loading admin vault...');
+    try {
+      if (!token.trim()) {
+        throw new Error('Enter Admin Token before loading vault.');
+      }
+
+      const response = await fetch('/api/admin/vault', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: 'no-store',
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Vault load failed.');
+      }
+
+      applyVaultData(data as VaultData);
+      setVaultStatus(`Vault loaded. ${Array.isArray(data.categories) ? data.categories.length : 0} categories.`);
+    } catch (error) {
+      setVaultStatus((error as Error).message);
+    } finally {
+      setVaultLoading(false);
+    }
+  };
+
+  const handleCreateVaultCategory = async () => {
+    setVaultLoading(true);
+    setVaultStatus('Creating category...');
+    try {
+      if (!token.trim()) {
+        throw new Error('Enter Admin Token before creating a category.');
+      }
+      if (!newCategoryLabel.trim()) {
+        throw new Error('Category label is required.');
+      }
+
+      const response = await fetch('/api/admin/vault', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'upsert-category',
+          label: newCategoryLabel,
+          description: newCategoryDescription,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create category.');
+      }
+
+      applyVaultData(data.data as VaultData);
+      setNewCategoryLabel('');
+      setNewCategoryDescription('');
+      setVaultStatus('Category saved.');
+    } catch (error) {
+      setVaultStatus((error as Error).message);
+    } finally {
+      setVaultLoading(false);
+    }
+  };
+
+  const handleAddVaultEntry = async () => {
+    setVaultLoading(true);
+    setVaultStatus('Saving vault entry...');
+    try {
+      if (!token.trim()) {
+        throw new Error('Enter Admin Token before saving a vault entry.');
+      }
+      if (!activeVaultCategory) {
+        throw new Error('Create or select a category first.');
+      }
+      if (!newEntryTitle.trim()) {
+        throw new Error('Entry title is required.');
+      }
+
+      const tags = newEntryTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+
+      const response = await fetch('/api/admin/vault', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'add-entry',
+          category_key: activeVaultCategory.key,
+          title: newEntryTitle,
+          body: newEntryBody,
+          tags,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save vault entry.');
+      }
+
+      applyVaultData(data.data as VaultData);
+      setNewEntryTitle('');
+      setNewEntryBody('');
+      setNewEntryTags('');
+      setVaultStatus('Entry added.');
+    } catch (error) {
+      setVaultStatus((error as Error).message);
+    } finally {
+      setVaultLoading(false);
+    }
+  };
+
+  const handleDeleteVaultEntry = async (categoryKey: string, entryId: string) => {
+    setVaultLoading(true);
+    setVaultStatus('Deleting vault entry...');
+    try {
+      if (!token.trim()) {
+        throw new Error('Enter Admin Token before deleting a vault entry.');
+      }
+
+      const response = await fetch('/api/admin/vault', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'delete-entry',
+          category_key: categoryKey,
+          entry_id: entryId,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete vault entry.');
+      }
+
+      applyVaultData(data.data as VaultData);
+      setVaultStatus('Entry removed.');
+    } catch (error) {
+      setVaultStatus((error as Error).message);
+    } finally {
+      setVaultLoading(false);
     }
   };
 
@@ -390,6 +600,154 @@ export default function AdminPage() {
       ) : (
         <>
           <CaliOperationsHub adminToken={token} />
+
+          <section className="rounded-2xl border border-gray-900 bg-black/70 p-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Knowledge Preservation</p>
+                <h3 className="text-2xl font-semibold">Admin Vault (Categorical)</h3>
+                <p className="mt-1 text-sm text-gray-400">
+                  Persist operational knowledge by category for repeatable admin workflows.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRefreshVault}
+                disabled={vaultLoading}
+                className="rounded-full bg-truth px-7 py-3 text-sm font-semibold uppercase tracking-widest text-dark transition disabled:opacity-50"
+              >
+                {vaultLoading ? 'Working...' : 'Refresh Vault'}
+              </button>
+            </div>
+
+            {vaultStatus && <p className="mt-4 text-sm text-gray-300">{vaultStatus}</p>}
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <article className="rounded-xl border border-gray-900 bg-[#050505] p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Create Category</p>
+                <div className="mt-3 grid gap-2">
+                  <input
+                    id="vault-category-label"
+                    name="vaultCategoryLabel"
+                    value={newCategoryLabel}
+                    onChange={(event) => setNewCategoryLabel(event.target.value)}
+                    placeholder="Category label (ex: Financial Controls)"
+                    className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"
+                  />
+                  <input
+                    id="vault-category-description"
+                    name="vaultCategoryDescription"
+                    value={newCategoryDescription}
+                    onChange={(event) => setNewCategoryDescription(event.target.value)}
+                    placeholder="Category description"
+                    className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCreateVaultCategory}
+                    className="rounded-full bg-truth px-5 py-2 text-xs font-semibold uppercase tracking-widest text-dark"
+                  >
+                    Save Category
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs uppercase tracking-[0.2em] text-gray-500">Categories</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(vaultData?.categories || []).map((category) => (
+                    <button
+                      key={category.key}
+                      type="button"
+                      onClick={() => setSelectedVaultCategory(category.key)}
+                      className={`rounded-full px-3 py-1 text-xs uppercase tracking-widest ${
+                        activeVaultCategory?.key === category.key
+                          ? 'bg-truth text-dark'
+                          : 'border border-gray-700 text-gray-400 hover:border-light hover:text-light'
+                      }`}
+                    >
+                      {category.label} ({category.entries.length})
+                    </button>
+                  ))}
+                  {(vaultData?.categories || []).length === 0 && (
+                    <p className="text-sm text-gray-500">No categories yet. Create one to begin.</p>
+                  )}
+                </div>
+              </article>
+
+              <article className="rounded-xl border border-gray-900 bg-[#050505] p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Add Entry</p>
+                <div className="mt-3 grid gap-2">
+                  <input
+                    id="vault-entry-title"
+                    name="vaultEntryTitle"
+                    value={newEntryTitle}
+                    onChange={(event) => setNewEntryTitle(event.target.value)}
+                    placeholder="Entry title"
+                    className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"
+                  />
+                  <textarea
+                    id="vault-entry-body"
+                    name="vaultEntryBody"
+                    value={newEntryBody}
+                    onChange={(event) => setNewEntryBody(event.target.value)}
+                    placeholder="Entry body"
+                    className="min-h-[120px] rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"
+                  />
+                  <input
+                    id="vault-entry-tags"
+                    name="vaultEntryTags"
+                    value={newEntryTags}
+                    onChange={(event) => setNewEntryTags(event.target.value)}
+                    placeholder="Tags (comma separated)"
+                    className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddVaultEntry}
+                    className="rounded-full bg-truth px-5 py-2 text-xs font-semibold uppercase tracking-widest text-dark"
+                  >
+                    Save Entry
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            <div className="mt-4 grid gap-3">
+              {activeVaultCategory ? (
+                activeVaultCategory.entries.length > 0 ? (
+                  activeVaultCategory.entries.map((entry) => (
+                    <article key={entry.id} className="rounded-xl border border-gray-900 bg-[#050505] p-4">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">{activeVaultCategory.label}</p>
+                          <h4 className="mt-1 text-lg font-semibold">{entry.title}</h4>
+                          <p className="mt-2 whitespace-pre-line text-sm text-gray-300">{entry.body || 'No body content.'}</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {entry.tags.map((tag) => (
+                              <span key={tag} className="rounded-full border border-gray-800 px-2 py-1 text-xs text-gray-400">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="mt-2 text-xs text-gray-500">Updated: {new Date(entry.updated_at).toLocaleString()}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteVaultEntry(activeVaultCategory.key, entry.id)}
+                          className="rounded-full border border-red-800 px-3 py-1 text-xs uppercase tracking-widest text-red-300 hover:bg-red-900/20"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No entries in this category yet.</p>
+                )
+              ) : (
+                <p className="text-sm text-gray-500">Select a category to view entries.</p>
+              )}
+            </div>
+          </section>
 
           <section className="rounded-2xl border border-gray-900 bg-black/70 p-6">
             <div className="flex flex-wrap gap-2">

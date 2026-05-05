@@ -534,6 +534,52 @@ class ContactCreate(BaseModel):
     address: Optional[str] = None
     notes: Optional[str] = None
     priority: int = 0
+    crm_stage: Optional[str] = None
+    lead_source: Optional[str] = None
+    owner: Optional[str] = None
+    next_follow_up_at: Optional[str] = None
+
+
+class CRMStageUpdate(BaseModel):
+    contact_id: str
+    stage: str
+    next_follow_up_at: Optional[str] = None
+    owner: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class CRMActivityCreate(BaseModel):
+    contact_id: str
+    activity_type: str
+    summary: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class CRMAppointmentCreate(BaseModel):
+    contact_id: str
+    title: str
+    start_time: str
+    end_time: Optional[str] = None
+    location: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class EmailConnectorCreate(BaseModel):
+    provider: str = "imap_smtp"
+    email: str
+    imap_host: Optional[str] = None
+    imap_port: int = 993
+    smtp_host: Optional[str] = None
+    smtp_port: int = 587
+    calendar_provider: str = "local"
+    notes: Optional[str] = None
+
+
+class EmailPollRequest(BaseModel):
+    mailbox: str = "INBOX"
+    limit: int = 25
+    since_hours: int = 72
+    unseen_only: bool = True
 
 
 class FinancialAccountCreate(BaseModel):
@@ -599,6 +645,10 @@ def add_contact(payload: ContactCreate, _: str = Depends(verify_admin)) -> Dict[
         address=payload.address,
         notes=payload.notes,
         priority=payload.priority,
+        crm_stage=payload.crm_stage,
+        lead_source=payload.lead_source,
+        owner=payload.owner,
+        next_follow_up_at=payload.next_follow_up_at,
     )
 
 
@@ -702,6 +752,99 @@ def get_tasks(category: Optional[str] = None, _: str = Depends(verify_admin)) ->
 def complete_task(task_id: str, _: str = Depends(verify_admin)) -> Dict[str, Any]:
     cali = get_cali_skg()
     return cali.complete_task(task_id)
+
+
+@router.get("/crm/pipeline")
+def crm_pipeline(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    return cali.get_crm_pipeline()
+
+
+@router.patch("/crm/leads/stage")
+def crm_update_stage(payload: CRMStageUpdate, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    result = cali.update_contact_stage(
+        contact_id=payload.contact_id,
+        stage=payload.stage,
+        next_follow_up_at=payload.next_follow_up_at,
+        owner=payload.owner,
+        notes=payload.notes,
+    )
+    if not result.get("success"):
+        raise HTTPException(status_code=404, detail=result.get("message", "Lead not found."))
+    return result
+
+
+@router.post("/crm/activities")
+def crm_log_activity(payload: CRMActivityCreate, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    return cali.log_crm_activity(
+        contact_id=payload.contact_id,
+        activity_type=payload.activity_type,
+        summary=payload.summary,
+        metadata=payload.metadata,
+    )
+
+
+@router.get("/crm/activities/{contact_id}")
+def crm_contact_activities(contact_id: str, limit: int = 40, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    activities = cali.get_contact_activities(contact_id=contact_id, limit=limit)
+    return {"activities": activities, "count": len(activities)}
+
+
+@router.post("/crm/appointments")
+def crm_schedule_appointment(payload: CRMAppointmentCreate, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    result = cali.schedule_contact_appointment(
+        contact_id=payload.contact_id,
+        title=payload.title,
+        start_time=payload.start_time,
+        end_time=payload.end_time,
+        location=payload.location,
+        notes=payload.notes,
+    )
+    if not result.get("success"):
+        raise HTTPException(status_code=404, detail=result.get("message", "Contact not found."))
+    return result
+
+
+@router.post("/crm/email/connect")
+def crm_email_connect(payload: EmailConnectorCreate, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    return cali.configure_email_connector(
+        provider=payload.provider,
+        email=payload.email,
+        imap_host=payload.imap_host,
+        imap_port=payload.imap_port,
+        smtp_host=payload.smtp_host,
+        smtp_port=payload.smtp_port,
+        calendar_provider=payload.calendar_provider,
+        notes=payload.notes,
+    )
+
+
+@router.get("/crm/email/status")
+def crm_email_status(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    return cali.get_email_connector_status()
+
+
+@router.post("/crm/email/poll")
+def crm_email_poll(payload: EmailPollRequest, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    cali = get_cali_skg()
+    result = cali.poll_inbound_mailbox(
+        mailbox=payload.mailbox,
+        limit=payload.limit,
+        since_hours=payload.since_hours,
+        unseen_only=payload.unseen_only,
+    )
+    if not result.get("success"):
+        status = str(result.get("status") or "error")
+        if status in {"not_configured", "connector_incomplete", "password_missing"}:
+            raise HTTPException(status_code=400, detail=result.get("message", status))
+        raise HTTPException(status_code=502, detail=result.get("message", status))
+    return result
 
 
 @router.post("/query")

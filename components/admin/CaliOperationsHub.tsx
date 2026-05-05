@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-type HubTab = 'overview' | 'contacts' | 'financial' | 'calendar' | 'verification' | 'tasks';
+type HubTab = 'overview' | 'leads' | 'contacts' | 'financial' | 'calendar' | 'verification' | 'tasks';
 
 type CaliOperationsHubProps = { adminToken: string };
 
@@ -42,6 +42,8 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
   const [events, setEvents] = useState<AnyRecord[]>([]);
   const [calls, setCalls] = useState<AnyRecord[]>([]);
   const [tasks, setTasks] = useState<AnyRecord[]>([]);
+  const [crmPipeline, setCrmPipeline] = useState<AnyRecord | null>(null);
+  const [emailConnectorStatus, setEmailConnectorStatus] = useState<AnyRecord | null>(null);
   const [assistantQuery, setAssistantQuery] = useState('');
   const [assistantReply, setAssistantReply] = useState('');
 
@@ -65,6 +67,36 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
   const [taskTitle, setTaskTitle] = useState('');
   const [taskPriority, setTaskPriority] = useState('1');
 
+  const [leadContactId, setLeadContactId] = useState('');
+  const [leadStage, setLeadStage] = useState('prospect');
+  const [leadFollowUpAt, setLeadFollowUpAt] = useState('');
+  const [leadOwner, setLeadOwner] = useState('bryan@spruked.com');
+  const [leadStageNote, setLeadStageNote] = useState('');
+
+  const [appointmentContactId, setAppointmentContactId] = useState('');
+  const [appointmentTitle, setAppointmentTitle] = useState('Lead Appointment');
+  const [appointmentStart, setAppointmentStart] = useState('');
+  const [appointmentEnd, setAppointmentEnd] = useState('');
+  const [appointmentLocation, setAppointmentLocation] = useState('');
+  const [appointmentNotes, setAppointmentNotes] = useState('');
+
+  const [mailProvider, setMailProvider] = useState('imap_smtp');
+  const [businessEmail, setBusinessEmail] = useState('bryan@spruked.com');
+  const [imapHost, setImapHost] = useState('imap.gmail.com');
+  const [imapPort, setImapPort] = useState('993');
+  const [smtpHost, setSmtpHost] = useState('smtp.gmail.com');
+  const [smtpPort, setSmtpPort] = useState('587');
+  const [calendarProvider, setCalendarProvider] = useState('local');
+  const [connectorNotes, setConnectorNotes] = useState('Primary business mailbox for CRM follow-up.');
+  const [mailPollSummary, setMailPollSummary] = useState('');
+
+  const leadContacts = contacts.filter((contact) => isLeadType(contact));
+  const crmLeads = (crmPipeline?.leads || leadContacts) as AnyRecord[];
+  const crmStageCounts = (crmPipeline?.stages || {}) as Record<string, number>;
+  const promoterContacts = crmLeads.filter((contact) => normalizeType(contact) === 'promoter');
+  const investorContacts = crmLeads.filter((contact) => normalizeType(contact) === 'investor');
+  const marketingContacts = crmLeads.filter((contact) => normalizeType(contact) === 'marketing');
+
   const loadOverview = async () => {
     if (!adminToken.trim()) return;
     try {
@@ -83,18 +115,26 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
   const loadAll = async () => {
     if (!adminToken.trim()) return;
     try {
-      const [c, f, e, v, t] = await Promise.all([
+      const [c, f, e, v, t, p, m] = await Promise.all([
         callCali<{ contacts: AnyRecord[] }>('/api/cali/contacts', adminToken),
         callCali<AnyRecord>('/api/cali/financial/summary', adminToken),
         callCali<{ events: AnyRecord[] }>('/api/cali/calendar/upcoming?days=30', adminToken),
         callCali<{ calls: AnyRecord[] }>('/api/cali/verification/queue', adminToken),
         callCali<{ tasks: AnyRecord[] }>('/api/cali/tasks', adminToken),
+        callCali<AnyRecord>('/api/cali/crm/pipeline', adminToken),
+        callCali<AnyRecord>('/api/cali/crm/email/status', adminToken),
       ]);
       setContacts(c.contacts || []);
       setFinancial(f);
       setEvents(e.events || []);
       setCalls(v.calls || []);
       setTasks(t.tasks || []);
+      setCrmPipeline(p);
+      setEmailConnectorStatus(m);
+
+      const firstLead = (p?.leads || [])[0];
+      if (firstLead && !leadContactId) setLeadContactId(String(firstLead.id || ''));
+      if (firstLead && !appointmentContactId) setAppointmentContactId(String(firstLead.id || ''));
     } catch (error) {
       setStatus((error as Error).message);
     }
@@ -132,7 +172,7 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {(['overview', 'contacts', 'financial', 'calendar', 'verification', 'tasks'] as HubTab[]).map((value) => (
+        {(['overview', 'leads', 'contacts', 'financial', 'calendar', 'verification', 'tasks'] as HubTab[]).map((value) => (
           <button
             key={value}
             type="button"
@@ -201,6 +241,12 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
 
       {tab === 'overview' ? (
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Card label="Lead Contacts" value={leadContacts.length} />
+          <Card label="Promoters" value={promoterContacts.length} />
+          <Card label="Investors" value={investorContacts.length} />
+          <Card label="Marketing" value={marketingContacts.length} />
+          <Card label="Prospects" value={Number(crmStageCounts.prospect || 0)} />
+          <Card label="Meeting Scheduled" value={Number(crmStageCounts.meeting_scheduled || 0)} />
           <Card label="Contacts" value={stats?.contacts || 0} />
           <Card label="Financial Accounts" value={stats?.financial_accounts || 0} />
           <Card label="Events" value={stats?.events || 0} />
@@ -213,6 +259,184 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
               <p className="mt-2 whitespace-pre-line text-sm text-gray-200">{briefing.briefing_text}</p>
             </article>
           ) : null}
+        </div>
+      ) : null}
+
+      {tab === 'leads' ? (
+        <div className="mt-4 space-y-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <form
+              className="rounded-lg border border-gray-900 bg-[#050505] p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!leadContactId) {
+                  setStatus('Select a lead first.');
+                  return;
+                }
+                void callCali('/api/cali/crm/leads/stage', adminToken, {
+                  method: 'PATCH',
+                  body: JSON.stringify({
+                    contact_id: leadContactId,
+                    stage: leadStage,
+                    next_follow_up_at: iso(leadFollowUpAt),
+                    owner: leadOwner || null,
+                    notes: leadStageNote || null,
+                  }),
+                })
+                  .then(() => {
+                    setLeadStageNote('');
+                    setStatus('Lead stage updated.');
+                    return loadAll();
+                  })
+                  .catch((error) => setStatus((error as Error).message));
+              }}
+            >
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-500">CRM Stage Management</p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <select value={leadContactId} onChange={(event) => setLeadContactId(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light">
+                  <option value="">Select lead</option>
+                  {crmLeads.map((contact) => (
+                    <option key={contact.id} value={contact.id}>{contact.name}</option>
+                  ))}
+                </select>
+                <select value={leadStage} onChange={(event) => setLeadStage(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light">
+                  <option value="prospect">Prospect</option>
+                  <option value="qualified">Qualified</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="meeting_scheduled">Meeting Scheduled</option>
+                  <option value="proposal">Proposal</option>
+                  <option value="won">Won</option>
+                  <option value="lost">Lost</option>
+                </select>
+                <input type="datetime-local" value={leadFollowUpAt} onChange={(event) => setLeadFollowUpAt(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input value={leadOwner} onChange={(event) => setLeadOwner(event.target.value)} placeholder="Owner" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input value={leadStageNote} onChange={(event) => setLeadStageNote(event.target.value)} placeholder="Stage update note" className="md:col-span-2 rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <button type="submit" className="md:col-span-2 rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black">Update Lead Stage</button>
+              </div>
+            </form>
+
+            <form
+              className="rounded-lg border border-gray-900 bg-[#050505] p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!appointmentContactId) {
+                  setStatus('Select a lead for the appointment.');
+                  return;
+                }
+                if (!appointmentStart) {
+                  setStatus('Pick an appointment start date/time.');
+                  return;
+                }
+                void callCali('/api/cali/crm/appointments', adminToken, {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    contact_id: appointmentContactId,
+                    title: appointmentTitle || 'Lead Appointment',
+                    start_time: iso(appointmentStart),
+                    end_time: iso(appointmentEnd),
+                    location: appointmentLocation || null,
+                    notes: appointmentNotes || null,
+                  }),
+                })
+                  .then(() => {
+                    setAppointmentNotes('');
+                    setStatus('Appointment scheduled and linked to CRM + calendar.');
+                    return loadAll();
+                  })
+                  .catch((error) => setStatus((error as Error).message));
+              }}
+            >
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-500">CRM Appointment Scheduler</p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <select value={appointmentContactId} onChange={(event) => setAppointmentContactId(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light">
+                  <option value="">Select lead</option>
+                  {crmLeads.map((contact) => (
+                    <option key={contact.id} value={contact.id}>{contact.name}</option>
+                  ))}
+                </select>
+                <input value={appointmentTitle} onChange={(event) => setAppointmentTitle(event.target.value)} placeholder="Appointment title" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input type="datetime-local" value={appointmentStart} onChange={(event) => setAppointmentStart(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input type="datetime-local" value={appointmentEnd} onChange={(event) => setAppointmentEnd(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input value={appointmentLocation} onChange={(event) => setAppointmentLocation(event.target.value)} placeholder="Location / meeting link" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <input value={appointmentNotes} onChange={(event) => setAppointmentNotes(event.target.value)} placeholder="Appointment notes" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+                <button type="submit" className="md:col-span-2 rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black">Schedule Appointment</button>
+              </div>
+            </form>
+          </div>
+
+          <form
+            className="rounded-lg border border-gray-900 bg-[#050505] p-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void callCali('/api/cali/crm/email/connect', adminToken, {
+                method: 'POST',
+                body: JSON.stringify({
+                  provider: mailProvider,
+                  email: businessEmail,
+                  imap_host: imapHost || null,
+                  imap_port: Number(imapPort || '993'),
+                  smtp_host: smtpHost || null,
+                  smtp_port: Number(smtpPort || '587'),
+                  calendar_provider: calendarProvider,
+                  notes: connectorNotes || null,
+                }),
+              })
+                .then(() => {
+                  setStatus('Email connector saved.');
+                  return loadAll();
+                })
+                .catch((error) => setStatus((error as Error).message));
+            }}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Business Email + Calendar Connector</p>
+              <p className="text-xs text-gray-400">Status: {String(emailConnectorStatus?.status || 'not_configured')}</p>
+            </div>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <input value={businessEmail} onChange={(event) => setBusinessEmail(event.target.value)} placeholder="Business email" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <select value={mailProvider} onChange={(event) => setMailProvider(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"><option value="imap_smtp">IMAP/SMTP</option></select>
+              <select value={calendarProvider} onChange={(event) => setCalendarProvider(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"><option value="local">Local CRM Calendar</option><option value="google">Google Calendar (metadata)</option><option value="microsoft">Microsoft 365 (metadata)</option></select>
+              <input value={imapHost} onChange={(event) => setImapHost(event.target.value)} placeholder="IMAP host" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <input value={imapPort} onChange={(event) => setImapPort(event.target.value)} placeholder="IMAP port" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <input value={smtpHost} onChange={(event) => setSmtpHost(event.target.value)} placeholder="SMTP host" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <input value={smtpPort} onChange={(event) => setSmtpPort(event.target.value)} placeholder="SMTP port" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <input value={connectorNotes} onChange={(event) => setConnectorNotes(event.target.value)} placeholder="Connector notes" className="md:col-span-2 rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
+              <button type="submit" className="rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black">Save Connector</button>
+              <button
+                type="button"
+                className="rounded-full border border-emerald-700 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-emerald-200 hover:border-emerald-500"
+                onClick={() => {
+                  setMailPollSummary('Polling inbox...');
+                  void callCali<AnyRecord>('/api/cali/crm/email/poll', adminToken, {
+                    method: 'POST',
+                    body: JSON.stringify({ mailbox: 'INBOX', limit: 25, since_hours: 72, unseen_only: true }),
+                  })
+                    .then((result) => {
+                      setMailPollSummary(
+                        `Processed ${Number(result?.processed || 0)} messages. ` +
+                          `Activities: ${Number(result?.created_activities || 0)}, ` +
+                          `New contacts: ${Number(result?.created_contacts || 0)}, ` +
+                          `Duplicates: ${Number(result?.duplicates || 0)}.`
+                      );
+                      return loadAll();
+                    })
+                    .catch((error) => {
+                      setMailPollSummary(`Poll failed: ${(error as Error).message}`);
+                    });
+                }}
+              >
+                Poll Inbound Mailbox
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">Set BUSINESS_EMAIL_APP_PASSWORD in environment to enable authenticated mailbox login checks.</p>
+            {mailPollSummary ? <p className="mt-2 text-xs text-gray-400">{mailPollSummary}</p> : null}
+          </form>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <LeadColumn title="Promoters" count={promoterContacts.length} contacts={promoterContacts} />
+            <LeadColumn title="Investors" count={investorContacts.length} contacts={investorContacts} />
+            <LeadColumn title="Marketing" count={marketingContacts.length} contacts={marketingContacts} />
+          </div>
         </div>
       ) : null}
 
@@ -236,7 +460,7 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
             }}
           >
             <input id="cali-name" name="caliName" required value={name} onChange={(event) => setName(event.target.value)} placeholder="Name" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
-            <select id="cali-contact-type" name="caliContactType" value={contactType} onChange={(event) => setContactType(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"><option value="personal">Personal</option><option value="financial">Financial</option><option value="business">Business</option><option value="family">Family</option></select>
+            <select id="cali-contact-type" name="caliContactType" value={contactType} onChange={(event) => setContactType(event.target.value)} className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light"><option value="personal">Personal</option><option value="financial">Financial</option><option value="business">Business</option><option value="family">Family</option><option value="marketing">Marketing</option><option value="promoter">Promoter</option><option value="investor">Investor</option></select>
             <input id="cali-phone" name="caliPhone" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Phone" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
             <input id="cali-email" name="caliEmail" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email" className="rounded border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-light" />
             <button type="submit" className="md:col-span-2 rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-black">Add Contact</button>
@@ -400,6 +624,54 @@ function Item({ title, subtitle }: { title: string; subtitle: string }) {
     <article className="rounded-lg border border-gray-900 bg-[#050505] p-3">
       <p className="text-sm font-semibold text-light">{title}</p>
       <p className="mt-1 text-xs text-gray-400">{subtitle}</p>
+    </article>
+  );
+}
+
+function normalizeType(contact: AnyRecord): string {
+  return String(contact.type || contact.contact_type || '').trim().toLowerCase();
+}
+
+function isLeadType(contact: AnyRecord): boolean {
+  const type = normalizeType(contact);
+  return type === 'promoter' || type === 'investor' || type === 'marketing' || type === 'business';
+}
+
+function contactSubtitle(contact: AnyRecord): string {
+  const type = normalizeType(contact) || 'unknown';
+  return `${type} • ${contact.phone || contact.email || 'No contact info'}`;
+}
+
+function contactNotes(contact: AnyRecord): string {
+  const raw = String(contact.notes || '').trim();
+  if (!raw) return 'No notes yet.';
+  return raw;
+}
+
+function LeadColumn({ title, count, contacts }: { title: string; count: number; contacts: AnyRecord[] }) {
+  return (
+    <article className="rounded-lg border border-gray-900 bg-[#050505] p-4">
+      <div className="mb-3 flex items-center justify-between gap-3 border-b border-gray-900 pb-2">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-light">{title}</h3>
+        <span className="rounded-full border border-emerald-900/50 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">{count}</span>
+      </div>
+
+      {contacts.length === 0 ? (
+        <p className="text-xs text-gray-500">No contacts in this category.</p>
+      ) : (
+        <div className="space-y-2">
+          {contacts.map((contact) => (
+            <article key={contact.id} className="rounded border border-gray-900 bg-black/50 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-light">{contact.name || 'Unnamed Contact'}</p>
+                <span className="rounded-full border border-gray-800 px-2 py-1 text-[10px] uppercase tracking-[0.15em] text-gray-400">{String(contact.crm_stage || 'prospect')}</span>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">{contactSubtitle(contact)}</p>
+              <p className="mt-2 text-xs text-gray-500">{contactNotes(contact)}</p>
+            </article>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
