@@ -16,14 +16,24 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-6 uppercase tracking-widest text-sm text-gray-500">
-            <Link href="/brand" className="hover:text-light">
+            {/* <Link href="/brand" className="hover:text-light">
               Brand Bible
+            </Link> */}
+            <Link href="/about" className="hover:text-light">
+              About
             </Link>
-            <Link href="/true-mark-mint" className="hover:text-light">
-              True Mark Mint
+            <Link href="/products" className="hover:text-light">
+              Products
             </Link>
-            <Link href="/goat" className="hover:text-light">
-              The GOAT
+            <Link href="/products/alpha-certsig" className="hover:text-light">
+              Alpha CertSig
+            </Link>
+            <Link href="/products/truemark-mint" className="hover:text-light">
+              TrueMark
+            </Link>
+            <Link href="/artifacts" className="hover:text-light flex items-center gap-2 text-truth">
+              <span className="w-1.5 h-1.5 rounded-full bg-truth animate-pulse"></span>
+              Evidence
             </Link>
             <a href="mailto:bryan@spruked.com" className="hover:text-light">
               Contact

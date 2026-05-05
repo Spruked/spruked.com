@@ -28,14 +28,17 @@ export default async function GoatPage() {
           <p className="mx-auto max-w-3xl text-lg text-gray-300">{hero.description}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href={hero.primaryCta.href}
+              href={hero.primaryCta.href as any}>
+            <p>
+               The phrase &quot;truth with teeth&quot; represents the Spruked philosophy.
+            </p>
               className="rounded-full bg-light px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-dark hover:bg-truth hover:text-light"
-            >
+              {'>'}
               {hero.primaryCta.label}
             </Link>
             {hero.secondaryCta && (
               <Link
-                href={hero.secondaryCta.href}
+               href={hero.secondaryCta.href as any}
                 className="rounded-full border border-gray-700 px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-gray-200"
               >
                 {hero.secondaryCta.label}
@@ -103,13 +106,13 @@ export default async function GoatPage() {
           <p className="text-gray-400">{closingCta.body}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href={closingCta.primaryCta.href}
+             href={closingCta.primaryCta.href as any}
               className="rounded-full bg-truth px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-light"
             >
               {closingCta.primaryCta.label}
             </Link>
             <Link
-              href={closingCta.secondaryCta.href}
+             href={closingCta.secondaryCta.href as any}            
               className="rounded-full border border-gray-700 px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-gray-300"
             >
               {closingCta.secondaryCta.label}

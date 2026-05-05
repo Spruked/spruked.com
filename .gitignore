@@ -83,3 +83,14 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Local runtime/tooling artifacts
+.orb-web-runtime/
+Orb_Assistant/
+venv/
+spruked.com@1.0.0
+nohup.out
+nohup_*.log
+cali-api.log
+spruked-*.log
+test-*.log

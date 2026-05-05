@@ -1,0 +1,3 @@
+{"timestamp": "2026-03-28T09:00:40.966375", "category": "contact", "content": {"action": "add", "contact_id": "contact_ddb056d5e686c706", "name": "Test Financial Contact", "type": "financial"}, "hash_id": "e656a1003bdfe7be", "confidence": 0.9, "source": "system"}
+{"timestamp": "2026-03-28T11:15:52.274405", "category": "task", "content": {"action": "add_task", "task_id": "task_760739bbb0b3117f", "title": "call the bank tomorrow"}, "hash_id": "22bd6dd975e2c059", "confidence": 0.9, "source": "system"}
+{"timestamp": "2026-03-28T11:22:13.905437", "category": "task", "content": {"action": "add_task", "task_id": "task_4bb1af049910476e", "title": "call bank at 3pm"}, "hash_id": "7b256c857eae2e76", "confidence": 0.9, "source": "system"}
