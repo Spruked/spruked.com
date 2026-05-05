@@ -94,3 +94,9 @@ nohup_*.log
 cali-api.log
 spruked-*.log
 test-*.log
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.db
