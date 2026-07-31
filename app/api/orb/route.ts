@@ -1,20 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { mkdir, writeFile } from 'fs/promises';
+import { spawn } from 'child_process';
+import { existsSync } from 'fs';
+import path from 'path';
+import { createHash } from 'crypto';
 import {
+  getOrbPaths,
   getWebMeshStatus,
   importOtherOrbArtifact,
   listOtherOrbExports,
   publishWebArtifact,
-  runWebOrbCommand,
   submitWebTask,
 } from '@/lib/orb-server';
 import { updateOrbState, type OrbReasoningMode } from '@/lib/orb-introspection';
-import primitiveResponseCache from '@/orb_core_standard/primitive_response_cache.json';
-import primitiveNormalizationAliases from '@/orb_core_standard/primitive_normalization_aliases.json';
+import primitiveResponseCache from '@/Orb_Assistant/orb_core_standard/primitive_response_cache.json';
+import primitiveNormalizationAliases from '@/Orb_Assistant/orb_core_standard/primitive_normalization_aliases.json';
+import { ORB_CAPABILITIES, selectWebsiteTool } from '@/lib/orb-capability-registry';
+import { publicSiteWorld } from '@/lib/orb-site-world';
+import { findPointerTarget } from '@/lib/orb-pointer-map-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-type CognitionProvider = 'native' | 'kaygee' | 'calixone' | 'kaygee_hybrid';
+type CognitionProvider = 'cali_skg' | 'calixone';
+
+const QWEN_TTS_PROVIDER = 'qwen';
+const KOKORO_TTS_PROVIDER = 'kokoro';
+const TTS_UNAVAILABLE_MESSAGE = 'Voice is temporarily unavailable, but I can still help here in text.';
 
 function badRequest(message: string) {
   return NextResponse.json({ status: 'error', message }, { status: 400 });
@@ -30,6 +42,345 @@ function normalizeAudioUrl(audioUrl: unknown, baseUrl: string): string | null {
   if (raw.startsWith('data:') || raw.startsWith('blob:')) return raw;
   if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
   return `${trimTrailingSlash(baseUrl)}${raw.startsWith('/') ? '' : '/'}${raw}`;
+}
+
+function qwenSpeakUrl(): string {
+  const configured = trimTrailingSlash(
+    process.env.QWEN_TTS_BASE_URL || process.env.QWEN_TTS_URL || 'http://127.0.0.1:9880/speak',
+  );
+  try {
+    const url = new URL(configured);
+    if (!url.pathname || url.pathname === '/') url.pathname = '/speak';
+    return url.toString();
+  } catch {
+    return 'http://127.0.0.1:9880/speak';
+  }
+}
+
+function qwenHealthUrl(): string {
+  const configured = String(process.env.QWEN_TTS_HEALTH_URL || '').trim();
+  if (configured) return configured;
+  const url = new URL(qwenSpeakUrl());
+  url.pathname = '/health';
+  url.search = '';
+  return url.toString();
+}
+
+function qwenVoice(): string {
+  return String(process.env.QWEN_TTS_VOICE || 'cali_voice_profile').trim() || 'cali_voice_profile';
+}
+
+function qwenTimeoutMs(): number {
+  const value = Number(process.env.QWEN_TTS_TIMEOUT_MS || '220000');
+  return Number.isFinite(value) ? Math.max(5000, value) : 220000;
+}
+
+function kokoroSpeakUrl(): string {
+  return trimTrailingSlash(process.env.ORB_TTS_KOKORO_URL || 'http://127.0.0.1:8880/speak');
+}
+
+function kokoroHealthUrl(): string {
+  const configured = String(process.env.ORB_TTS_KOKORO_HEALTH_URL || '').trim();
+  if (configured) return configured;
+  try {
+    const url = new URL(kokoroSpeakUrl());
+    url.pathname = '/health';
+    url.search = '';
+    return url.toString();
+  } catch {
+    return 'http://127.0.0.1:8880/health';
+  }
+}
+
+function kokoroVoice(): string {
+  return String(process.env.ORB_TTS_KOKORO_VOICE || 'af_heart').trim() || 'af_heart';
+}
+
+function kokoroModel(): string {
+  return String(process.env.ORB_TTS_KOKORO_MODEL || 'kokoro').trim() || 'kokoro';
+}
+
+function kokoroFormat(): string {
+  return String(process.env.ORB_TTS_KOKORO_FORMAT || 'wav').trim() || 'wav';
+}
+
+function kokoroSpeed(): number {
+  const value = Number(process.env.ORB_TTS_KOKORO_SPEED || '1.05');
+  return Number.isFinite(value) ? value : 1.05;
+}
+
+function kokoroTimeoutMs(): number {
+  const value = Number(process.env.ORB_TTS_KOKORO_TIMEOUT_MS || process.env.SPRUKED_ORB_TTS_TIMEOUT_MS || '45000');
+  return Number.isFinite(value) ? Math.max(2000, value) : 45000;
+}
+
+async function checkQwenHealth(): Promise<boolean> {
+  try {
+    const response = await fetch(qwenHealthUrl(), {
+      method: 'GET',
+      signal: AbortSignal.timeout(Math.min(5000, qwenTimeoutMs())),
+    });
+    if (!response.ok) return false;
+    const data = await response.json().catch(() => ({}));
+    return String(data?.status || '').toLowerCase() === 'ok';
+  } catch {
+    return false;
+  }
+}
+
+function isWavAudio(bytes: Uint8Array): boolean {
+  if (bytes.length < 12) return false;
+  const riff = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+  const wave = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+  return riff === 'RIFF' && wave === 'WAVE';
+}
+
+function voiceCacheIdentity(provider: string, text: string, profile: string): { fileName: string; filePath: string; audioUrl: string } {
+  const { webSystemRoot } = getOrbPaths();
+  const voiceCacheRoot = path.resolve(webSystemRoot, 'CALI_System', 'voice_cache');
+  const digest = createHash('sha256')
+    .update(provider)
+    .update(profile)
+    .update(text)
+    .digest('hex')
+    .slice(0, 24);
+  const fileName = `${provider}-${digest}.wav`;
+  return {
+    fileName,
+    filePath: path.join(voiceCacheRoot, fileName),
+    audioUrl: `/api/orb/audio?file=${encodeURIComponent(fileName)}`,
+  };
+}
+
+async function saveVoiceWav(bytes: Uint8Array, provider: string, text: string, profile: string): Promise<string> {
+  const cache = voiceCacheIdentity(provider, text, profile);
+  await mkdir(path.dirname(cache.filePath), { recursive: true });
+  await writeFile(cache.filePath, bytes);
+  return cache.audioUrl;
+}
+
+function cachedVoiceUrl(provider: string, text: string, profile: string): string | null {
+  const cache = voiceCacheIdentity(provider, text, profile);
+  return existsSync(cache.filePath) ? cache.audioUrl : null;
+}
+
+async function synthesizeQwen(text: string): Promise<Record<string, any>> {
+  const spokenText = String(text || '').trim();
+  const startedAt = Date.now();
+  if (!spokenText) {
+    return { tts_provider: null, tts_error: TTS_UNAVAILABLE_MESSAGE, voice_ready: false };
+  }
+
+  const cachedAudioUrl = cachedVoiceUrl(QWEN_TTS_PROVIDER, spokenText, qwenVoice());
+  if (cachedAudioUrl) {
+    return {
+      audio_url: cachedAudioUrl,
+      tts_audio_url: cachedAudioUrl,
+      tts_provider: QWEN_TTS_PROVIDER,
+      audio_engine: 'qwen3-tts-06b-base',
+      voice_ready: true,
+      voice: {
+        engine: 'qwen3-tts-06b-base',
+        provider: QWEN_TTS_PROVIDER,
+        profile: qwenVoice(),
+        voice: qwenVoice(),
+        audio_url: cachedAudioUrl,
+        text: spokenText,
+      },
+      metadata: {
+        audio_engine: 'qwen3-tts-06b-base',
+        voice: qwenVoice(),
+        voice_ready: true,
+        tts_provider: QWEN_TTS_PROVIDER,
+        tts_cache_hit: true,
+        tts_ms: Date.now() - startedAt,
+      },
+    };
+  }
+
+  try {
+    if (!(await checkQwenHealth())) throw new Error('qwen tts health check failed');
+    const response = await fetch(qwenSpeakUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: spokenText,
+        language: 'English',
+        mode: 'voice_clone',
+      }),
+      signal: AbortSignal.timeout(qwenTimeoutMs()),
+    });
+    if (!response.ok) throw new Error(`qwen tts unavailable (${response.status})`);
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (!isWavAudio(bytes)) throw new Error('qwen returned non-wav audio');
+
+    const audioUrl = await saveVoiceWav(bytes, QWEN_TTS_PROVIDER, spokenText, qwenVoice());
+    const engine = String(response.headers.get('x-tts-engine') || 'qwen3-tts-06b-base');
+    return {
+      audio_url: audioUrl,
+      tts_audio_url: audioUrl,
+      tts_provider: QWEN_TTS_PROVIDER,
+      audio_engine: engine,
+      voice_ready: true,
+      voice: {
+        engine,
+        provider: QWEN_TTS_PROVIDER,
+        profile: qwenVoice(),
+        voice: qwenVoice(),
+        audio_url: audioUrl,
+        text: spokenText,
+      },
+      metadata: {
+        audio_engine: engine,
+        voice: qwenVoice(),
+        voice_ready: true,
+        tts_provider: QWEN_TTS_PROVIDER,
+        tts_cache_hit: false,
+        tts_ms: Date.now() - startedAt,
+      },
+    };
+  } catch (error: any) {
+    const message = error?.message || TTS_UNAVAILABLE_MESSAGE;
+    return {
+      tts_provider: null,
+      tts_audio_url: null,
+      audio_url: null,
+      audio_engine: QWEN_TTS_PROVIDER,
+      tts_error: message,
+      voice_ready: false,
+      metadata: {
+        audio_engine: QWEN_TTS_PROVIDER,
+        voice: qwenVoice(),
+        voice_ready: false,
+        tts_error: message,
+        tts_ms: Date.now() - startedAt,
+      },
+    };
+  }
+}
+
+async function synthesizeKokoro(text: string): Promise<Record<string, any>> {
+  const spokenText = String(text || '').trim();
+  const startedAt = Date.now();
+  if (!spokenText) {
+    return {
+      tts_provider: null,
+      tts_error: TTS_UNAVAILABLE_MESSAGE,
+      voice_ready: false,
+    };
+  }
+
+  try {
+    const response = await fetch(kokoroSpeakUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: spokenText,
+        text: spokenText,
+        model: kokoroModel(),
+        voice: kokoroVoice(),
+        response_format: kokoroFormat(),
+        speed: kokoroSpeed(),
+      }),
+      signal: AbortSignal.timeout(kokoroTimeoutMs()),
+    });
+
+    if (!response.ok) throw new Error('kokoro synthesis unavailable');
+    const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (!contentType.includes('audio/wav') || !isWavAudio(bytes)) {
+      throw new Error('kokoro returned non-wav audio');
+    }
+
+    const audioUrl = await saveVoiceWav(bytes, KOKORO_TTS_PROVIDER, spokenText, kokoroVoice());
+    return {
+      audio_url: audioUrl,
+      tts_audio_url: audioUrl,
+      tts_provider: KOKORO_TTS_PROVIDER,
+      audio_engine: KOKORO_TTS_PROVIDER,
+      voice_ready: true,
+      voice: {
+        engine: KOKORO_TTS_PROVIDER,
+        provider: KOKORO_TTS_PROVIDER,
+        profile: kokoroVoice(),
+        voice: kokoroVoice(),
+        audio_url: audioUrl,
+        text: spokenText,
+      },
+      metadata: {
+        audio_engine: KOKORO_TTS_PROVIDER,
+        voice: kokoroVoice(),
+        voice_ready: true,
+        tts_ms: Date.now() - startedAt,
+      },
+    };
+  } catch (error: any) {
+    const message = error?.message || TTS_UNAVAILABLE_MESSAGE;
+    return {
+      tts_provider: null,
+      tts_audio_url: null,
+      audio_url: null,
+      audio_engine: KOKORO_TTS_PROVIDER,
+      tts_error: message,
+      voice_ready: false,
+      voice: {
+        engine: KOKORO_TTS_PROVIDER,
+        provider: KOKORO_TTS_PROVIDER,
+        profile: kokoroVoice(),
+        voice: kokoroVoice(),
+        text: spokenText,
+        error: message,
+      },
+      metadata: {
+        audio_engine: KOKORO_TTS_PROVIDER,
+        voice: kokoroVoice(),
+        voice_ready: false,
+        tts_error: message,
+        tts_ms: Date.now() - startedAt,
+      },
+    };
+  }
+}
+
+async function synthesizeServerVoice(text: string): Promise<Record<string, any>> {
+  const qwenResult = await synthesizeQwen(text);
+  if (qwenResult.voice_ready) {
+    return {
+      ...qwenResult,
+      metadata: {
+        ...(qwenResult.metadata || {}),
+        voice_priority: [QWEN_TTS_PROVIDER, KOKORO_TTS_PROVIDER],
+        fallback_used: false,
+      },
+    };
+  }
+
+  const kokoroResult = await synthesizeKokoro(text);
+  return {
+    ...kokoroResult,
+    metadata: {
+      ...(kokoroResult.metadata || {}),
+      voice_priority: [QWEN_TTS_PROVIDER, KOKORO_TTS_PROVIDER],
+      fallback_used: Boolean(kokoroResult.voice_ready),
+      primary_tts_error: qwenResult.tts_error || 'qwen tts unavailable',
+    },
+  };
+}
+
+async function withServerVoice(response: Record<string, any>, textOverride?: string): Promise<Record<string, any>> {
+  const spokenText = String(textOverride || response?.response || response?.text || response?.voice?.text || '').trim();
+  const voiceResult = await synthesizeServerVoice(spokenText);
+  return {
+    ...response,
+    ...voiceResult,
+    text: response?.text || response?.response || spokenText,
+    metadata: {
+      ...(response?.metadata || {}),
+      ...(voiceResult?.metadata || {}),
+      tts_provider: voiceResult.tts_provider,
+      tts_error: voiceResult.tts_error || null,
+    },
+  };
 }
 
 
@@ -102,6 +453,45 @@ function routeLocalPrimitive(prompt: string): LocalPrimitiveRoute | null {
   return null;
 }
 
+function deterministicIdentityResponse(prompt: string): Record<string, any> | null {
+  const normalized = normalizeLocalPrimitivePrompt(prompt);
+  if (/\b(who are you|what are you|what'?s your name|tell me about yourself)\b/i.test(normalized)) {
+    const response = "I'm the Spruked ORB. I help visitors understand Spruked, TrueMark, CertSig, GOAT, and the systems behind verified digital knowledge.";
+    return {
+      status: 'success',
+      response,
+      text: response,
+      provider: 'deterministic_identity',
+      llm_source: 'deterministic-identity',
+      metadata: {
+        provider: 'deterministic_identity',
+        leading_mind: 'cali',
+        confidence: 1,
+        truth_likelihood: 1,
+        cognition_mode: 'identity',
+      },
+    };
+  }
+  if (/\b(what is your purpose|what'?s your purpose|your purpose|what do you do|what can you do|primary function|primary role)\b/i.test(normalized)) {
+    const response = 'My purpose is to give visitors clear answers about Spruked, route useful questions, and speak with corrective precision without pretending to know what I do not know.';
+    return {
+      status: 'success',
+      response,
+      text: response,
+      provider: 'deterministic_identity',
+      llm_source: 'deterministic-identity',
+      metadata: {
+        provider: 'deterministic_identity',
+        leading_mind: 'cali',
+        confidence: 1,
+        truth_likelihood: 1,
+        cognition_mode: 'identity',
+      },
+    };
+  }
+  return null;
+}
+
 function normalizeCompanionText(rawText: string, prompt: string): string {
   const promptLower = String(prompt || '').toLowerCase();
   let text = String(rawText || '').trim();
@@ -115,10 +505,6 @@ function normalizeCompanionText(rawText: string, prompt: string): string {
   if (filteredLines.length > 0) {
     text = filteredLines.join(' ');
   }
-  if (/offers the strongest frame for/i.test(text)) {
-    text = '';
-  }
-
   if (/\b(what(?:'s| is)? your name|who are you)\b/.test(promptLower)) {
     return "I'm Cali. I'm here with you.";
   }
@@ -156,25 +542,32 @@ function normalizeCompanionText(rawText: string, prompt: string): string {
 }
 
 function cognitionProvider(): CognitionProvider {
-  const raw = String(process.env.SPRUKED_ORB_COGNITION_PROVIDER || 'native').trim().toLowerCase();
-  if (raw === 'kaygee' || raw === 'calixone' || raw === 'kaygee_hybrid' || raw === 'native') return raw;
-  return 'native';
+  const raw = String(process.env.SPRUKED_ORB_COGNITION_PROVIDER || 'cali_skg').trim().toLowerCase();
+  if (raw === 'calixone') return 'calixone';
+  return 'cali_skg';
 }
 
-function providerFallbackEnabled(): boolean {
-  return String(process.env.SPRUKED_ORB_PROVIDER_FALLBACK || '1').trim() !== '0';
+function primitiveCacheEnabled(): boolean {
+  return String(process.env.SPRUKED_ORB_PRIMITIVE_CACHE_ENABLED || '0').trim() === '1';
 }
 
-function kaygeeBase(): string {
-  return trimTrailingSlash(process.env.KAYGEE_API_BASE || 'http://127.0.0.1:8011');
+function caliOllamaModel(): string {
+  return String(
+    process.env.CALI_OLLAMA_MODEL_NAME
+    || process.env.LLAMA_SERVER_MODEL
+    || process.env.OLLAMA_MODEL
+    || 'ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF'
+  ).trim() || 'ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF';
 }
 
-function kaygeeVoiceEnabled(): boolean {
-  return String(process.env.KAYGEE_VOICE_ENABLED || '1').trim() === '1';
-}
-
-function kaygeeVoice(): string {
-  return String(process.env.KAYGEE_VOICE || 'af_bella').trim() || 'af_bella';
+function ollamaBase(): string {
+  return trimTrailingSlash(
+    process.env.CALI_LLM_BASE_URL
+    || process.env.LLAMA_SERVER_BASE_URL
+    || process.env.LLAMA_CPP_BASE_URL
+    || process.env.OLLAMA_BASE_URL
+    || 'http://127.0.0.1:8012'
+  );
 }
 
 function caliXOneBase(): string {
@@ -184,44 +577,6 @@ function caliXOneBase(): string {
 function caliXOneInteractPath(): string {
   const raw = String(process.env.CALIXONE_INTERACT_PATH || '/api/interact').trim();
   return raw.startsWith('/') ? raw : `/${raw}`;
-}
-
-async function queryKayGee(prompt: string, context: Record<string, unknown>, emotion: string) {
-  const base = kaygeeBase();
-  const timeoutMs = Number(process.env.SPRUKED_ORB_PROVIDER_TIMEOUT_MS || '18000') || 18000;
-
-  const response = await fetch(`${base}/api/interact`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      text: prompt,
-      context,
-      emotion,
-      voice_enabled: kaygeeVoiceEnabled(),
-      voice_response: kaygeeVoiceEnabled(),
-      voice: kaygeeVoice(),
-    }),
-    signal: AbortSignal.timeout(Math.max(2000, timeoutMs)),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data?.detail || data?.message || `KayGee request failed (${response.status})`);
-  }
-
-  const text = String(data?.response || data?.text || '').trim();
-  return {
-    status: 'success',
-    response: text,
-    metadata: {
-      leading_mind: 'kaygee',
-      confidence: Number(data?.confidence ?? data?.stats?.confidence ?? 0.78),
-      truth_likelihood: Number(data?.truth_likelihood ?? 0.78),
-      provider: 'kaygee',
-    },
-    audio_url: normalizeAudioUrl(data?.audio_url, base),
-    audio_engine: data?.audio_engine || null,
-  };
 }
 
 async function queryCaliXOne(prompt: string, context: Record<string, unknown>, emotion: string) {
@@ -255,17 +610,103 @@ async function queryCaliXOne(prompt: string, context: Record<string, unknown>, e
       truth_likelihood: Number(data?.truth_likelihood ?? 0.75),
       provider: 'calixone',
     },
-    audio_url: normalizeAudioUrl(data?.audio_url, base),
-    audio_engine: data?.audio_engine || null,
+    audio_url: null,
+    audio_engine: QWEN_TTS_PROVIDER,
   };
 }
 
+const DEFAULT_CALI_API_PORT = '8022';
+
 function caliApiBase(): string {
-  return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8002');
+  return trimTrailingSlash(process.env.CALI_API_URL || `http://127.0.0.1:${DEFAULT_CALI_API_PORT}`);
 }
 
-function kayGeeHybridRespondPath(): string {
-  const raw = String(process.env.KAYGEE_HYBRID_RESPOND_PATH || '/cali/orb/respond').trim();
+function caliCandidatePorts(): string[] {
+  return Array.from(new Set([
+    process.env.CALI_API_PORT,
+    process.env.SPRUKED_CALI_API_PORT,
+    DEFAULT_CALI_API_PORT,
+    '8002',
+    process.env.CALI_API_BACKEND_PORT,
+  ]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean)));
+}
+
+function caliLocalApiBase(port = caliApiPort()): string {
+  return `http://127.0.0.1:${port}`;
+}
+
+function caliAutoStartEnabled(): boolean {
+  return String(process.env.SPRUKED_ORB_AUTO_START_CALI || '1').trim() !== '0';
+}
+
+function caliApiPort(): string {
+  const explicitPort = String(process.env.CALI_API_PORT || process.env.SPRUKED_CALI_API_PORT || '').trim();
+  if (explicitPort) return explicitPort;
+  try {
+    const parsed = new URL(caliApiBase());
+    if (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost') {
+      return parsed.port || DEFAULT_CALI_API_PORT;
+    }
+  } catch {
+    return DEFAULT_CALI_API_PORT;
+  }
+  return DEFAULT_CALI_API_PORT;
+}
+
+async function caliHealthOk(base = caliApiBase()): Promise<boolean> {
+  try {
+    const response = await fetch(`${base}/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(1200),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveCaliSkgBase(): Promise<string> {
+  const configuredBase = caliApiBase();
+  const localBase = caliLocalApiBase();
+  const bases = Array.from(new Set([
+    configuredBase,
+    ...caliCandidatePorts().map((port) => caliLocalApiBase(port)),
+  ]));
+
+  for (const base of bases) {
+    if (await caliHealthOk(base)) return base;
+  }
+
+  if (!caliAutoStartEnabled()) return configuredBase;
+
+  const { siteRoot } = getOrbPaths();
+  const starter = path.join(siteRoot, 'scripts', 'start-cp3.sh');
+  if (!existsSync(starter)) return configuredBase;
+
+  const child = spawn(starter, {
+    cwd: siteRoot,
+    detached: true,
+    stdio: 'ignore',
+    env: {
+      ...process.env,
+      CALI_API_PORT: caliApiPort(),
+    },
+  });
+  child.unref();
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    if (await caliHealthOk(localBase)) return localBase;
+    if (await caliHealthOk(configuredBase)) return configuredBase;
+  }
+
+  return configuredBase;
+}
+
+function caliSkgRespondPath(): string {
+  const raw = String(process.env.CALI_SKG_RESPOND_PATH || '/cali/orb/respond').trim();
   const normalized = raw.startsWith('/') ? raw : `/${raw}`;
   if (normalized === '/orb/respond') {
     return '/cali/orb/respond';
@@ -284,60 +725,6 @@ function classifyCognitionMode(prompt: string): 'tool_required' | 'normal_chat' 
   return 'normal_chat';
 }
 
-function localToolRequiredResponse(prompt: string, provider: CognitionProvider): Record<string, any> {
-  const response = 'That needs a live tool route. I did not send it into philosopher mode or generate a guessed current-info answer.';
-  return {
-    status: 'success',
-    response,
-    text: response,
-    provider: 'local_tool_router',
-    metadata: {
-      provider_selected: provider,
-      provider_used: 'local_tool_router',
-      fallback_reason: 'live tool route unavailable',
-      bridge_used: 'none',
-      cognition_mode: 'tool_required',
-      primitive_bypassed: false,
-      provider: 'local_tool_router',
-      confidence: 0.2,
-      leading_mind: 'tool_router',
-      prompt,
-    },
-  };
-}
-
-function localFallbackResponse(
-  prompt: string,
-  provider: CognitionProvider,
-  providerError: string,
-): Record<string, any> | null {
-  const cognitionMode = classifyCognitionMode(prompt);
-  if (cognitionMode === 'deep_reasoning') return null;
-
-  const response = cognitionMode === 'tool_required'
-    ? 'That needs a live tool route. The selected cognition provider is unavailable, so I did not send it into philosopher mode.'
-    : 'I can help with that, but the selected cognition provider is unavailable. I did not send this into philosopher mode.';
-
-  return {
-    status: 'success',
-    response,
-    text: response,
-    provider: `${provider}:fallback-local`,
-    metadata: {
-      provider_selected: provider,
-      provider_used: 'local_fallback',
-      fallback_reason: providerError,
-      bridge_used: 'none',
-      cognition_mode: cognitionMode,
-      primitive_bypassed: false,
-      provider: `${provider}:fallback-local`,
-      provider_error: providerError,
-      confidence: 0.2,
-      leading_mind: 'local_router',
-    },
-  };
-}
-
 function annotateProviderResponse(
   response: Record<string, any>,
   metadata: Record<string, unknown>,
@@ -351,24 +738,62 @@ function annotateProviderResponse(
   };
 }
 
-async function queryKayGeeHybrid(prompt: string, context: Record<string, unknown>, emotion: string) {
-  const base = caliApiBase();
-  const timeoutMs = Number(process.env.SPRUKED_ORB_PROVIDER_TIMEOUT_MS || '18000') || 18000;
+function visitorSafeResponse(response: Record<string, any>): Record<string, any> {
+  const metadata = response?.metadata && typeof response.metadata === 'object'
+    ? { ...response.metadata }
+    : {};
+  for (const key of [
+    'bridge_used',
+    'provider_error',
+    'llm_core',
+    'cognition',
+    'governance_wrapper',
+    'fallback_reason',
+    'provider_selected',
+    'provider_used',
+    'instance_id',
+    'shared_mesh_root',
+    'weights',
+  ]) {
+    delete metadata[key];
+  }
+  if (metadata.provider && !['primitive_response_cache', 'local_tool_router'].includes(String(metadata.provider))) {
+    metadata.provider = 'orb';
+  }
+  return {
+    ...response,
+    provider: response?.provider && String(response.provider).includes('fallback') ? 'orb' : response?.provider,
+    metadata,
+  };
+}
 
-  const response = await fetch(`${base}${kayGeeHybridRespondPath()}`, {
+async function queryCaliSkg(prompt: string, context: Record<string, unknown>, emotion: string) {
+  const base = await resolveCaliSkgBase();
+  const timeoutMs = Number(context?.providerTimeoutMs || process.env.SPRUKED_ORB_PROVIDER_TIMEOUT_MS || '120000') || 120000;
+
+  const response = await fetch(`${base}${caliSkgRespondPath()}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       prompt,
       context,
       emotion,
+      model: caliOllamaModel(),
+      ollama_model: caliOllamaModel(),
+      ollama_base_url: ollamaBase(),
+      llm_base_url: ollamaBase(),
+      voice_enabled: false,
+      voice_response: false,
+      voice: '',
+      tts_engine: '',
+      tts_base_url: '',
     }),
     signal: AbortSignal.timeout(Math.max(2000, timeoutMs)),
   });
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data?.detail || data?.message || `KayGee hybrid request failed (${response.status})`);
+    throw new Error(data?.detail || data?.message || 'CALI SKG request failed');
   }
 
   const text = String(data?.response || data?.response_text || data?.text || '').trim();
@@ -379,18 +804,22 @@ async function queryKayGeeHybrid(prompt: string, context: Record<string, unknown
       leading_mind: String(data?.metadata?.leading_mind || 'cali'),
       confidence: Number(data?.metadata?.confidence ?? 0.82),
       truth_likelihood: Number(data?.metadata?.truth_likelihood ?? 0.82),
-      provider: String(data?.metadata?.provider || 'kaygee_hybrid'),
-      cognition: String(data?.metadata?.cognition || 'qwen-core + kaygee-governance + cali-skg-articulation'),
-      llm_core: String(data?.metadata?.llm_core || 'gpt4all:qwen2-1_5b-instruct-q4_0.gguf'),
+      provider: String(data?.metadata?.provider || 'cali_skg'),
+      cognition: String(data?.metadata?.cognition || 'llama3.2:1b + cali-skg-articulation'),
+      llm_core: String(data?.metadata?.llm_core || `ollama:${caliOllamaModel()}`),
+      audio_engine: QWEN_TTS_PROVIDER,
+      voice: qwenVoice(),
       doctrine_ddr: Number(data?.metadata?.doctrine_ddr ?? 0),
       doctrine_state: String(data?.metadata?.doctrine_state || ''),
       governance_wrapper: data?.metadata?.governance_wrapper || null,
       mcp_required: Boolean(data?.metadata?.mcp_required ?? false),
+      bridge_used: `${base}${caliSkgRespondPath()}`,
     },
     data: data?.data || null,
     intent: data?.intent || null,
-    audio_url: normalizeAudioUrl(data?.audio_url, base),
-    audio_engine: data?.audio_engine || null,
+    memory: data?.memory || null,
+    audio_url: null,
+    audio_engine: QWEN_TTS_PROVIDER,
   };
 }
 
@@ -418,7 +847,9 @@ async function queryCaliPersonal(
     return null;
   }
 
-  const response = await fetch(`${caliApiBase()}/cali/query`, {
+  const base = await resolveCaliSkgBase();
+
+  const response = await fetch(`${base}/cali/query`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -447,11 +878,12 @@ async function queryCaliPersonal(
     data: data?.data || null,
     intent: data?.intent || null,
     metadata: {
-      leading_mind: 'kaygee',
+      leading_mind: 'cali',
       confidence: 0.9,
       truth_likelihood: 0.9,
       provider: 'cali-personal',
-      cognition: 'kaygee-1.0',
+      cognition: 'cali-skg-personal',
+      bridge_used: `${base}/cali/query`,
     },
   };
 }
@@ -460,7 +892,7 @@ async function queryCaliPersonal(
 function providerReasoningMode(providerValue: string): OrbReasoningMode {
   if (providerValue.includes('fallback')) return 'shared';
   if (providerValue === 'native' || providerValue === 'cali-personal') return 'local';
-  if (providerValue === 'kaygee_hybrid') return 'hybrid';
+  if (providerValue === 'cali_skg') return 'hybrid';
   return 'shared';
 }
 
@@ -476,36 +908,35 @@ function providerReasoningProfile(providerValue: string, response: Record<string
   const metadata = response?.metadata || {};
   if (metadata.cognition) return String(metadata.cognition);
   if (metadata.llm_core) return String(metadata.llm_core);
-  if (providerValue === 'native') return 'CALISKG web runtime via Orb_Assistant/api/web_orb_bridge.py';
-  if (providerValue === 'cali-personal') return 'kaygee-1.0 admin CALI personal query';
-  if (providerValue === 'kaygee') return 'KayGee /api/interact';
+  if (providerValue === 'native') return 'CALI SKG website runtime';
+  if (providerValue === 'cali-personal') return 'CALI personal query';
   if (providerValue === 'calixone') return 'Cali X One /api/interact';
-  if (providerValue === 'kaygee_hybrid') return 'qwen-core + kaygee-governance + cali-skg-articulation';
+  if (providerValue === 'cali_skg') return `ollama:${caliOllamaModel()} + cali-skg-articulation`;
   return providerValue || 'unknown';
 }
 
 function responseProvider(provider: CognitionProvider, response: Record<string, any> | null): string {
-  return String(response?.metadata?.provider || provider || 'native');
+  return String(response?.metadata?.provider || provider || 'cali_skg');
 }
 
 function responseVoiceEngine(response: Record<string, any> | null, action: string): string {
   const engine = response?.audio_engine || response?.voice?.engine || response?.metadata?.audio_engine;
   if (engine) return String(engine);
-  if (action === 'speak') return 'CALISKG native speak bridge';
-  return kaygeeVoiceEnabled() ? 'server audio when provider returns audio_url; browser SpeechSynthesis fallback' : 'browser SpeechSynthesis fallback';
+  if (action === 'query' || action === 'speak') return QWEN_TTS_PROVIDER;
+  return QWEN_TTS_PROVIDER;
 }
 
 function responseVoiceProfile(response: Record<string, any> | null): string {
   const voice = response?.voice?.profile || response?.voice?.voice || response?.voice || response?.metadata?.voice;
   if (voice && typeof voice !== 'object') return String(voice);
-  return `${kaygeeVoice()} + browser preferred female voice fallback`;
+  return qwenVoice();
 }
 
 function contextSourceForRequest(request: NextRequest, body: any): string {
   if (isAdminContext(request, body)) {
     return 'Spruked admin dashboard context + x-cali-context=admin + CALI_API_URL when available';
   }
-  return 'Spruked public website context + Orb_Assistant web runtime + /mnt/r/orb_mesh';
+  return 'Spruked public website context + CALI SKG website runtime + /mnt/r/orb_mesh';
 }
 
 async function reportSprukedOrbState(
@@ -542,45 +973,15 @@ async function reportSprukedOrbState(
     service_health: error ? 'degraded' : 'online',
     orb_health: response?.status === 'error' || error ? 'degraded' : 'ready',
     reasoning_state: error ? 'error' : providerValue,
-    voice_state: ttsReady ? 'server-tts-ready' : 'browser-or-unavailable',
+    voice_state: ttsReady ? 'server-tts-ready' : 'text-only-voice-unavailable',
   });
 }
 
 async function queryByProvider(prompt: string, context: Record<string, unknown>, emotion: string) {
   const provider = cognitionProvider();
   const cognitionMode = classifyCognitionMode(prompt);
-  if (provider === 'native') {
-    if (cognitionMode !== 'deep_reasoning') {
-      const local = localFallbackResponse(prompt, provider, 'native philosopher bridge reserved for deep reasoning');
-      if (local) return local;
-    }
-    const native = await runWebOrbCommand({
-      action: 'query',
-      prompt,
-      context,
-      emotion,
-    });
-    return annotateProviderResponse(native, {
-      provider_selected: provider,
-      provider_used: 'native',
-      fallback_reason: null,
-      bridge_used: 'web_orb_bridge.py',
-      cognition_mode: 'deep_reasoning',
-      primitive_bypassed: false,
-    });
-  }
 
   try {
-    if (provider === 'kaygee') {
-      return annotateProviderResponse(await queryKayGee(prompt, context, emotion), {
-        provider_selected: provider,
-        provider_used: 'kaygee',
-        fallback_reason: null,
-        bridge_used: `${kaygeeBase()}/api/interact`,
-        cognition_mode: 'provider_chat',
-        primitive_bypassed: false,
-      });
-    }
     if (provider === 'calixone') {
       return annotateProviderResponse(await queryCaliXOne(prompt, context, emotion), {
         provider_selected: provider,
@@ -591,66 +992,27 @@ async function queryByProvider(prompt: string, context: Record<string, unknown>,
         primitive_bypassed: false,
       });
     }
-    if (provider === 'kaygee_hybrid') {
-      return annotateProviderResponse(await queryKayGeeHybrid(prompt, context, emotion), {
+    if (provider === 'cali_skg') {
+      const providerResponse = await queryCaliSkg(prompt, context, emotion);
+      return annotateProviderResponse(providerResponse, {
         provider_selected: provider,
-        provider_used: 'kaygee_hybrid',
+        provider_used: 'cali_skg',
         fallback_reason: null,
-        bridge_used: `${caliApiBase()}${kayGeeHybridRespondPath()}`,
+        bridge_used: providerResponse?.metadata?.bridge_used || `${caliApiBase()}${caliSkgRespondPath()}`,
         cognition_mode: 'hybrid_provider',
         primitive_bypassed: false,
       });
     }
   } catch (error: any) {
-    if (!providerFallbackEnabled()) {
-      throw error;
-    }
-    const providerError = String(error?.message || error || 'Unknown provider failure');
-    const local = localFallbackResponse(prompt, provider, providerError);
-    if (local) return local;
-
-    const fallback = await runWebOrbCommand({
-      action: 'query',
-      prompt,
-      context,
-      emotion,
-    });
-    return annotateProviderResponse(fallback, {
-      provider_selected: provider,
-      provider_used: 'native',
-      fallback_reason: providerError,
-      bridge_used: 'web_orb_bridge.py',
-      cognition_mode: 'deep_reasoning',
-      primitive_bypassed: false,
-      provider: `${provider}:fallback-native`,
-      provider_error: providerError,
-    });
+    throw error;
   }
 
-  const local = localFallbackResponse(prompt, provider, 'unknown provider selection');
-  if (local) return local;
-  const native = await runWebOrbCommand({
-    action: 'query',
-    prompt,
-    context,
-    emotion,
-  });
-  return annotateProviderResponse(native, {
-    provider_selected: provider,
-    provider_used: 'native',
-    fallback_reason: 'unknown provider selection',
-    bridge_used: 'web_orb_bridge.py',
-    cognition_mode: 'deep_reasoning',
-    primitive_bypassed: false,
-  });
+  throw new Error('CALI SKG provider unavailable');
 }
 
 export async function GET() {
   try {
-    const [orb, mesh] = await Promise.all([
-      runWebOrbCommand({ action: 'status' }),
-      getWebMeshStatus(),
-    ]);
+    const mesh = await getWebMeshStatus();
 
     await updateOrbState({
       site_id: 'spruked.com',
@@ -660,11 +1022,11 @@ export async function GET() {
       endpoint: '/api/orb',
       handler: '/home/bryan/spruked.com/app/api/orb/route.ts:GET',
       reasoning_profile: providerReasoningProfile(cognitionProvider(), null),
-      context_source: 'Spruked public website context + Orb_Assistant web runtime + /mnt/r/orb_mesh',
+      context_source: 'Spruked public website context + CALI SKG website runtime + /mnt/r/orb_mesh',
       reasoning_mode: providerReasoningMode(cognitionProvider()),
       fallback_state: 'none',
-      voice_engine: kaygeeVoiceEnabled() ? 'server audio when provider returns audio_url; browser SpeechSynthesis fallback' : 'browser SpeechSynthesis fallback',
-      voice_profile: `${kaygeeVoice()} + browser preferred female voice fallback`,
+      voice_engine: QWEN_TTS_PROVIDER,
+      voice_profile: qwenVoice(),
       tts_ready: false,
       service_health: 'online',
       orb_health: 'ready',
@@ -676,14 +1038,20 @@ export async function GET() {
     return NextResponse.json({
       status: 'success',
       response: 'Website ORB ready.',
-      metadata: { instance_id: 'web' },
+      metadata: { instance_id: 'web', cognition: 'cali_skg' },
       provider: cognitionProvider(),
-      orb_status: orb.orb_status,
+      orb_status: {
+        source: 'cali_skg_website_runtime',
+        electron_adapter: 'Orb_Assistant/electron_dock_adapter',
+        electron_cognition: 'adapter_only',
+        voice_engine: QWEN_TTS_PROVIDER,
+        llm_core: `ollama:${caliOllamaModel()}`,
+      },
       mesh,
     });
   } catch (error: any) {
     return NextResponse.json(
-      { status: 'error', message: error?.message || 'Failed to load website ORB status' },
+      { status: 'error', message: 'Failed to load website ORB status' },
       { status: 500 }
     );
   }
@@ -700,7 +1068,53 @@ export async function POST(request: NextRequest) {
         return badRequest('Missing prompt');
       }
 
-      const localPrimitive = routeLocalPrimitive(prompt);
+      const currentPath = String(body?.context?.currentPath || body?.context?.current_path || '/');
+      const pointerTarget = await findPointerTarget(prompt, currentPath);
+      const targetPath = pointerTarget ? new URL(pointerTarget.page_route).pathname || '/' : '';
+      const toolRequest = pointerTarget
+        ? {
+            id: `orb-tool-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: targetPath === currentPath ? 'point_to' as const : 'navigate' as const,
+            arguments: {
+              route: targetPath,
+              anchor_id: pointerTarget.target_id,
+              label: pointerTarget.meaning.replace(/^[^:]+:\s*/, ''),
+            },
+            pointer_target: pointerTarget,
+            requires_confirmation: true as const,
+          }
+        : selectWebsiteTool(prompt, currentPath);
+      if (toolRequest) {
+        const destination = toolRequest.arguments.label || toolRequest.arguments.route || 'that location';
+        const pendingText = toolRequest.name === 'navigate'
+          ? `I can take you to ${destination}. I’ll confirm it after the page opens.`
+          : `I found the matching Site World record. I’ll confirm it after the live page locates and highlights it.`;
+        const response = await withServerVoice({
+          status: 'success',
+          response: pendingText,
+          text: pendingText,
+          tool_request: toolRequest,
+          tool_execution: { status: 'pending', confirmed: false },
+          metadata: {
+            provider: 'local_tool_router',
+            leading_mind: 'tool_router',
+            confidence: 1,
+            capability_registry: ORB_CAPABILITIES,
+            site_world_version: publicSiteWorld().schema_version,
+          },
+        });
+        await reportSprukedOrbState(request, body, action, response);
+        return NextResponse.json(visitorSafeResponse(response));
+      }
+
+      const identityResponse = deterministicIdentityResponse(prompt);
+      if (identityResponse) {
+        const response = await withServerVoice(identityResponse);
+        await reportSprukedOrbState(request, body, action, response);
+        return NextResponse.json(visitorSafeResponse(response));
+      }
+
+      const localPrimitive = primitiveCacheEnabled() ? routeLocalPrimitive(prompt) : null;
       if (localPrimitive) {
         const response = {
           status: 'success',
@@ -750,8 +1164,9 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        await reportSprukedOrbState(request, body, action, response);
-        return NextResponse.json(response);
+        const voicedResponse = await withServerVoice(response);
+        await reportSprukedOrbState(request, body, action, voicedResponse);
+        return NextResponse.json(visitorSafeResponse(voicedResponse));
       }
 
       const provider = cognitionProvider();
@@ -781,17 +1196,12 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        await reportSprukedOrbState(request, body, action, caliPersonal);
-        return NextResponse.json(caliPersonal);
+        const voicedResponse = await withServerVoice(caliPersonal);
+        await reportSprukedOrbState(request, body, action, voicedResponse);
+        return NextResponse.json(visitorSafeResponse(voicedResponse));
       }
 
-      if (classifyCognitionMode(prompt) === 'tool_required') {
-        const response = localToolRequiredResponse(prompt, provider);
-        await reportSprukedOrbState(request, body, action, response);
-        return NextResponse.json(response);
-      }
-
-      const response =
+      let response =
         await queryByProvider(prompt, body?.context || {}, body?.emotion || 'thoughtful_warm');
       if (response?.metadata?.cognition_mode !== 'deep_reasoning') {
         const normalizedResponseText = normalizeCompanionText(String(response?.response || ''), prompt);
@@ -802,6 +1212,7 @@ export async function POST(request: NextRequest) {
           }
         }
       }
+      response = await withServerVoice(response);
 
       await publishWebArtifact(
         'insight',
@@ -820,7 +1231,7 @@ export async function POST(request: NextRequest) {
       );
 
       await reportSprukedOrbState(request, body, action, response);
-      return NextResponse.json(response);
+      return NextResponse.json(visitorSafeResponse(response));
     }
 
     if (action === 'research') {
@@ -830,12 +1241,20 @@ export async function POST(request: NextRequest) {
       }
 
       const domains = Array.isArray(body?.domains) ? body.domains.filter(Boolean) : [];
-      const response = await runWebOrbCommand({
-        action: 'research',
-        query,
-        domains,
-        emotion: body?.emotion || 'analytical',
-      });
+      const response = {
+        status: 'success',
+        response: 'Research is routed through CALI SKG website tools. The old Electron research bridge is archived.',
+        text: 'Research is routed through CALI SKG website tools. The old Electron research bridge is archived.',
+        metadata: {
+          provider: 'cali_skg',
+          leading_mind: 'cali',
+          confidence: 0.5,
+          confidence_aggregate: 0.5,
+          truth_likelihood: 0.5,
+          domains,
+          successful_returns: 0,
+        },
+      };
 
       await publishWebArtifact(
         'insight',
@@ -854,7 +1273,27 @@ export async function POST(request: NextRequest) {
       );
 
       await reportSprukedOrbState(request, body, action, response);
-      return NextResponse.json(response);
+      return NextResponse.json(visitorSafeResponse(response));
+    }
+
+    if (action === 'tool_result') {
+      const result = body?.result && typeof body.result === 'object' ? body.result : null;
+      if (!result?.request_id || typeof result?.ok !== 'boolean') {
+        return badRequest('Missing valid tool result');
+      }
+      const confirmed = Boolean(result.ok && result.status === 'confirmed');
+      const text = confirmed
+        ? String(result.message || 'The requested browser action is complete.')
+        : String(result.message || 'I could not complete that browser action.');
+      const response = await withServerVoice({
+        status: confirmed ? 'success' : 'error',
+        response: text,
+        text,
+        tool_result: result,
+        tool_execution: { status: confirmed ? 'confirmed' : 'failed', confirmed },
+        metadata: { provider: 'local_tool_router', leading_mind: 'tool_router', confidence: 1 },
+      });
+      return NextResponse.json(visitorSafeResponse(response), { status: confirmed ? 200 : 422 });
     }
 
     if (action === 'speak') {
@@ -863,27 +1302,36 @@ export async function POST(request: NextRequest) {
         return badRequest('Missing speech text');
       }
 
-      const response = await runWebOrbCommand({
-        action: 'speak',
+      const response = await withServerVoice({
+        status: 'success',
+        response: text,
         text,
-        emotion: body?.emotion || 'thoughtful_warm',
-      });
+        metadata: {
+          provider: 'local_speak',
+          leading_mind: 'cali',
+          confidence: 1,
+          truth_likelihood: 1,
+        },
+      }, text);
       await reportSprukedOrbState(request, body, action, response);
-      return NextResponse.json(response);
+      return NextResponse.json(visitorSafeResponse(response));
     }
 
     if (action === 'status') {
-      const [orb, mesh] = await Promise.all([
-        runWebOrbCommand({ action: 'status' }),
-        getWebMeshStatus(),
-      ]);
+      const mesh = await getWebMeshStatus();
       await reportSprukedOrbState(request, body, action, { status: 'success', metadata: { provider: cognitionProvider() } });
       return NextResponse.json({
         status: 'success',
         response: 'Website ORB status available.',
-        metadata: { instance_id: 'web' },
-        orb_status: orb.orb_status,
-        mesh,
+        metadata: { instance_id: 'web', cognition: 'cali_skg' },
+        orb_status: {
+        source: 'cali_skg_website_runtime',
+          electron_adapter: 'Orb_Assistant/electron_dock_adapter',
+          electron_cognition: 'adapter_only',
+          voice_engine: QWEN_TTS_PROVIDER,
+          llm_core: `ollama:${caliOllamaModel()}`,
+      },
+      mesh,
       });
     }
 
@@ -932,7 +1380,7 @@ export async function POST(request: NextRequest) {
 
     return badRequest(`Unsupported action: ${action}`);
   } catch (error: any) {
-    const message = error?.message || 'Website ORB request failed';
+    const message = 'Website ORB request failed';
     try {
       await updateOrbState({
         site_id: 'spruked.com',
