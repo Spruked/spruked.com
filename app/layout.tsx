@@ -5,6 +5,7 @@ import '@/styles/globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import GlobalOrb from '@/components/ui/GlobalOrb';
+import AdminLoginBridge from '@/components/admin/AdminLoginBridge';
 import { brand } from '@/lib/constants';
 
 export const revalidate = 0;
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main className="flex-1">{children}</main>
           <Footer />
           <GlobalOrb />
+          <AdminLoginBridge />
         </div>
       </body>
     </html>
