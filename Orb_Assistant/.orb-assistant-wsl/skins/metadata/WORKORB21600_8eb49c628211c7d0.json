@@ -1,0 +1,25 @@
+{
+  "filename": "WORKORB21600_8eb49c628211c7d0.png",
+  "source_path": "/home/bryan/projects/spruked.com/Orb_Assistant/.orb-assistant-wsl/skins/metadata/WORKORB21600.png",
+  "stored_path": "/home/bryan/projects/spruked.com/Orb_Assistant/.orb-assistant-wsl/skins/WORKORB21600_8eb49c628211c7d0.png",
+  "imported_at": "2026-07-18T17:46:59.954071+00:00",
+  "average_rgb": [
+    102,
+    102,
+    106
+  ],
+  "logic_tint": {
+    "deductive": {
+      "hue_rotate_deg": 0,
+      "brightness": 1.0
+    },
+    "inductive": {
+      "hue_rotate_deg": 48,
+      "brightness": 1.04
+    },
+    "intuitive": {
+      "hue_rotate_deg": -26,
+      "brightness": 1.08
+    }
+  }
+}

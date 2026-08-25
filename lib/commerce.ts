@@ -1,4 +1,11 @@
-export type ProductSku = 'alpha-certsig-license' | 'truemark-mint-object' | 'goat-legacy-session';
+export type ProductSku =
+  | 'alpha-certsig-license'
+  | 'truemark-mint-object'
+  | 'goat-legacy-session'
+  | 'prompt-like-a-pro-pdf'
+  | 'orb-skin-nature-source'
+  | 'orb-skin-blue-sample'
+  | 'orb-skin-example-two';
 
 export interface CatalogItem {
   sku: ProductSku;
@@ -32,6 +39,30 @@ export const PRODUCT_CATALOG: Record<ProductSku, CatalogItem> = {
     name: 'GOAT Legacy Session',
     description: 'Intake and strategy session for a legacy preservation project.',
     unitPrice: 99000,
+  },
+  'prompt-like-a-pro-pdf': {
+    sku: 'prompt-like-a-pro-pdf',
+    name: 'Prompt Like a Pro PDF',
+    description: 'A practical downloadable guide to clearer prompts and better AI results.',
+    unitPrice: 688,
+  },
+  'orb-skin-nature-source': {
+    sku: 'orb-skin-nature-source',
+    name: 'Nature Skin Source',
+    description: 'PNG source asset from the ORB Marketplace Library.',
+    unitPrice: 188,
+  },
+  'orb-skin-blue-sample': {
+    sku: 'orb-skin-blue-sample',
+    name: 'Blue Skin Sample Source',
+    description: 'Blue PNG source asset from the ORB Marketplace Library.',
+    unitPrice: 188,
+  },
+  'orb-skin-example-two': {
+    sku: 'orb-skin-example-two',
+    name: 'Skin Example 2 Source',
+    description: 'Example PNG source asset from the ORB Marketplace Library.',
+    unitPrice: 188,
   },
 };
 

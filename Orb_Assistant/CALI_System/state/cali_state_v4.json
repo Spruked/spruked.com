@@ -1,0 +1,149 @@
+{
+  "skin": {
+    "value": "WORKORB21600",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507539",
+    "source": "cali",
+    "locked": false
+  },
+  "swarm_visible": {
+    "value": false,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507582",
+    "source": "cali",
+    "locked": false
+  },
+  "desktop_access": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507488",
+    "source": "cali",
+    "locked": false
+  },
+  "browser_access": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507531",
+    "source": "cali",
+    "locked": false
+  },
+  "voice_active": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507594",
+    "source": "cali",
+    "locked": false
+  },
+  "llm_route": {
+    "value": "local",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507525",
+    "source": "cali",
+    "locked": false
+  },
+  "llm_local_endpoint": {
+    "value": "http://127.0.0.1:11455",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507553",
+    "source": "cali",
+    "locked": false
+  },
+  "llm_local_model": {
+    "value": "qwen2.5:3b",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507568",
+    "source": "cali",
+    "locked": false
+  },
+  "llm_governance_wrapper": {
+    "value": false,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507438",
+    "source": "cali",
+    "locked": false
+  },
+  "llm_retain_voice": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507503",
+    "source": "cali",
+    "locked": false
+  },
+  "morb_deployment_enabled": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507511",
+    "source": "cali",
+    "locked": false
+  },
+  "mesh_traversal_enabled": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507470",
+    "source": "cali",
+    "locked": false
+  },
+  "aggressive_learning_enabled": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507575",
+    "source": "cali",
+    "locked": false
+  },
+  "auto_diagnostics_enabled": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507517",
+    "source": "cali",
+    "locked": false
+  },
+  "diagnostic_interval_minutes": {
+    "value": 30,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507546",
+    "source": "cali",
+    "locked": false
+  },
+  "diagnostic_tier": {
+    "value": "standard",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507495",
+    "source": "cali",
+    "locked": false
+  },
+  "movement_enabled": {
+    "value": true,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507600",
+    "source": "cali",
+    "locked": false
+  },
+  "render_quality": {
+    "value": "high",
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507561",
+    "source": "cali",
+    "locked": false
+  },
+  "frame_target": {
+    "value": 60,
+    "layer": "effective",
+    "timestamp": "2026-08-24T14:06:37.507588",
+    "source": "cali",
+    "locked": false
+  },
+  "current_path": {
+    "value": "/products/truemark-mint",
+    "layer": "runtime",
+    "timestamp": "2026-08-24T19:17:50.254891",
+    "source": "website_orb",
+    "locked": false
+  },
+  "last_reasoning_timestamp": {
+    "value": "2026-08-24T19:17:50.839599",
+    "layer": "runtime",
+    "timestamp": "2026-08-24T19:17:50.839645",
+    "source": "cali",
+    "locked": false
+  }
+}

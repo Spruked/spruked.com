@@ -1,0 +1,262 @@
+{
+  "url_discovery": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 15,
+    "output_count": 30,
+    "artifact": "crawl.config.stats.crawl_provenance",
+    "error": null,
+    "version": "1"
+  },
+  "crawl_control": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 1,
+    "output_count": 0,
+    "artifact": "crawl.config.stats.robots_blocked_urls",
+    "error": null,
+    "version": "1"
+  },
+  "page_fetch": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 30,
+    "output_count": 27,
+    "artifact": "db:crawled_pages",
+    "error": null,
+    "version": "1"
+  },
+  "javascript_rendering": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 0,
+    "output_count": 0,
+    "artifact": "crawl.config.stats.javascript_render_successes",
+    "error": null,
+    "version": "1"
+  },
+  "admin_route_scanning": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 1,
+    "output_count": 1,
+    "artifact": "crawl.config.stats.admin_section_urls_found",
+    "error": null,
+    "version": "1"
+  },
+  "page_content_scan": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "db:crawled_pages",
+    "error": null,
+    "version": "1"
+  },
+  "content_structure_extraction": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 25,
+    "artifact": "db:crawled_pages.title,h1,h2_tags",
+    "error": null,
+    "version": "1"
+  },
+  "schema_extraction": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 0,
+    "artifact": "db:crawled_pages.schema_markup",
+    "error": null,
+    "version": "1"
+  },
+  "commercial_catalog_extraction": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 14,
+    "artifact": "crawl.config.commercial_catalog",
+    "error": null,
+    "version": "1"
+  },
+  "commercial_catalog_index_build": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 14,
+    "output_count": 14,
+    "artifact": "crawl.config.commercial_catalog.indexes",
+    "error": null,
+    "version": "1"
+  },
+  "mobile_ux_analysis": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "db:crawled_pages.mobile_ux_analysis",
+    "error": null,
+    "version": "1"
+  },
+  "semantic_indexing": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "db:crawled_pages.semantic_analysis",
+    "error": null,
+    "version": "1"
+  },
+  "lexical_indexing": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 101,
+    "artifact": "crawl.config.lexical_index",
+    "error": null,
+    "version": "1"
+  },
+  "entity_extraction": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 447,
+    "artifact": "db:crawled_pages.entity_analysis",
+    "error": null,
+    "version": "1"
+  },
+  "relationship_mapping": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 1252,
+    "artifact": "crawl.config.knowledge_graph",
+    "error": null,
+    "version": "1"
+  },
+  "internal_link_graph": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 772,
+    "artifact": "crawl.config.internal_link_graph",
+    "error": null,
+    "version": "1"
+  },
+  "authority_analysis": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "crawl.config.authority_flow",
+    "error": null,
+    "version": "1"
+  },
+  "route_classification": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "crawl.config.route_classification",
+    "error": null,
+    "version": "1"
+  },
+  "template_detection": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 1,
+    "artifact": "crawl.config.template_detection",
+    "error": null,
+    "version": "1"
+  },
+  "pointer_mapping": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 1393,
+    "artifact": "website_orb_context/pointer_plot_map.json",
+    "error": null,
+    "version": "1"
+  },
+  "knowledge_chunking": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "crawl.config.knowledge_chunks",
+    "error": null,
+    "version": "1"
+  },
+  "retrieval_index_build": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 1446,
+    "artifact": "crawl.config.retrieval_index",
+    "error": null,
+    "version": "1"
+  },
+  "source_validation": {
+    "status": "COMPLETE",
+    "started_at": "2026-08-24T13:58:35.323228",
+    "completed_at": "2026-08-24T14:02:31.410422",
+    "input_count": 27,
+    "output_count": 27,
+    "artifact": "crawl.config.source_validation",
+    "error": null,
+    "version": "1"
+  },
+  "pointer_verification": {
+    "status": "NOT_STARTED",
+    "started_at": null,
+    "completed_at": null,
+    "input_count": 1393,
+    "output_count": 0,
+    "artifact": null,
+    "error": null,
+    "version": "1"
+  },
+  "pointer_recovery": {
+    "status": "BLOCKED",
+    "started_at": null,
+    "completed_at": null,
+    "input_count": 1393,
+    "output_count": 0,
+    "artifact": null,
+    "error": null,
+    "version": "1"
+  },
+  "runtime_guidance": {
+    "status": "BLOCKED",
+    "started_at": null,
+    "completed_at": null,
+    "input_count": 1393,
+    "output_count": 29,
+    "artifact": null,
+    "error": "Independent pointer verification has not run.",
+    "version": "1"
+  }
+}

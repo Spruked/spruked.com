@@ -1,4 +1,5 @@
 import { Section } from '@/components/ui/Section';
+import Image from 'next/image';
 
 export default function ArtifactsPage() {
   return (
@@ -27,10 +28,12 @@ export default function ArtifactsPage() {
               </div>
             </div>
             <div className="order-1 lg:order-2 bg-black/40 border border-gray-800 p-4 rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-              <img 
-                src="/assets/CertificateKNFTsample.png" 
-                alt="Alpha CertSig Output Certificate" 
-                className="w-full h-auto rounded-lg shadow-xl" 
+              <Image
+                src="/assets/CertificateKNFTsample.png"
+                alt="Alpha CertSig Output Certificate"
+                width={1400}
+                height={1000}
+                className="w-full h-auto rounded-lg shadow-xl"
               />
             </div>
           </div>

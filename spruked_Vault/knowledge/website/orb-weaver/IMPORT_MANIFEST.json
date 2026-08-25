@@ -1,0 +1,27 @@
+{
+  "schema": "spruked_vault.orb_weaver_import.v1",
+  "source_client": "/home/bryan/projects/Orb_Weaver/vault_system/clients/spruked.com",
+  "crawl_id": 64,
+  "domain": "spruked.com",
+  "source_saved_at": "2026-08-24T14:02:35.543461",
+  "imported_artifacts": [
+    "commercial_catalog.json",
+    "knowledge_chunks.json",
+    "latest_context.json",
+    "latest_crawl.json",
+    "lexical_index.json",
+    "pointer_plot_map.json",
+    "retrieval_index.json",
+    "route_classification.json",
+    "scan_stage_execution.json",
+    "source_validation.json"
+  ],
+  "excluded_context": [
+    "mail_context",
+    "crm_context",
+    "dandy_sponsor_pack",
+    "local_index",
+    "website_orb_learning"
+  ],
+  "runtime_pointer_status": "crawl-derived; pointer verification was not complete in source crawl"
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "path": "/",
+    "title": "Spruked Home",
+    "aliases": ["home", "homepage", "spruked home", "main page"],
+    "summary": "Spruked product and company home."
+  },
+  {
+    "path": "/about",
+    "title": "About Spruked",
+    "aliases": ["about", "about spruked", "founder", "company", "company page"],
+    "summary": "Company and founder information."
+  },
+  {
+    "path": "/artifacts",
+    "title": "Artifacts",
+    "aliases": ["artifacts", "artifact archive", "evidence archive"],
+    "summary": "Published Spruked artifacts and evidence."
+  },
+  {
+    "path": "/brand",
+    "title": "Brand",
+    "aliases": ["brand", "brand guide", "brand assets", "branding"],
+    "summary": "Spruked brand system and assets."
+  },
+  {
+    "path": "/cart",
+    "title": "Cart",
+    "aliases": ["cart", "shopping cart", "basket", "bag"],
+    "summary": "Current shopping cart."
+  },
+  {
+    "path": "/checkout",
+    "title": "Checkout",
+    "aliases": ["checkout", "checkout page", "purchase", "payment page", "pay"],
+    "summary": "Checkout flow."
+  },
+  {
+    "path": "/goat",
+    "title": "GOAT",
+    "aliases": ["goat", "goat project", "goat story", "living archive"],
+    "summary": "GOAT story and living archive experience."
+  },
+  {
+    "path": "/orb",
+    "title": "CALI ORB",
+    "aliases": ["cali orb", "orb assistant", "orb page", "cali page"],
+    "summary": "CALI website ORB information and interface."
+  },
+  {
+    "path": "/orb-marketplace",
+    "title": "ORB Marketplace Library",
+    "aliases": ["orb marketplace", "marketplace", "orb library", "orb skins"],
+    "summary": "Browse ORBs, skins, docks, diagnostics, scan bundles, and collector assets."
+  },
+  {
+    "path": "/products",
+    "title": "Products",
+    "aliases": ["products", "products page", "product catalog", "catalog", "shop"],
+    "summary": "Spruked product catalog."
+  },
+  {
+    "path": "/products/alpha-certsig",
+    "title": "Alpha CertSig",
+    "aliases": ["alpha certsig", "alpha cert sig", "certsig", "certificate signature"],
+    "summary": "Certificate and signature product."
+  },
+  {
+    "path": "/products/orb-weaver",
+    "title": "ORB Weaver",
+    "aliases": ["orb weaver", "website orb intelligence", "website crawler"],
+    "summary": "ORB Weaver website intelligence product."
+  },
+  {
+    "path": "/products/prompt-like-a-pro",
+    "title": "Prompt Like a Pro",
+    "aliases": ["prompt like a pro", "prompt pro", "prompt pro page", "prompt book", "prompting book"],
+    "summary": "Prompting guide and product page."
+  },
+  {
+    "path": "/products/truemark-mint",
+    "title": "TrueMark Mint",
+    "aliases": ["truemark mint", "true mark mint", "truemark", "true mark", "object provenance"],
+    "summary": "Verified object records and provenance."
+  },
+  {
+    "path": "/products/truemark-mint/object-types",
+    "title": "TrueMark Object Types",
+    "aliases": ["truemark object types", "true mark object types", "object types"],
+    "summary": "Object types supported by TrueMark Mint."
+  },
+  {
+    "path": "/products/truemark-mint/objects",
+    "title": "TrueMark Objects",
+    "aliases": ["truemark objects", "true mark objects", "object records"],
+    "summary": "TrueMark object records."
+  },
+  {
+    "path": "/sitemap",
+    "title": "Site Map",
+    "aliases": ["site map", "sitemap", "all pages", "page list"],
+    "summary": "Human-readable map of Spruked pages."
+  },
+  {
+    "path": "/truemark/example-object",
+    "title": "TrueMark Example Object",
+    "aliases": ["truemark example object", "true mark example object", "example object", "object example"],
+    "summary": "Example TrueMark object record."
+  }
+]

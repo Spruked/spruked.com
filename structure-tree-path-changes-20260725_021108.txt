@@ -1,0 +1,686 @@
++├── -H
++├── -d
++├── .env.example
++├── .env.local
++├── .eslintrc.json
++├── .gitignore
++│       ├── cali_state_v4.json
++│       │   ├── a_posteriori
++│       │   │   └── vault.jsonl
+-│       │   └── patterns
++│       │   │   └── vault.jsonl
++│       │   ├── patterns
++│       │   └── patterns.db
+-│       │       │   ├── a_priori
+-│       │       │   └── patterns
+-│       │       └── swarm_results
+-│       └── cali_state_v4.json
++│       │       ├── swarm_results
++│       │       └── voice_cache
++│       └── voice_cache
++│           ├── 20260322_003646.json
++│           ├── 20260323_050233.json
++│           ├── 20260327_172302.json
++│           ├── 20260327_172337.json
++│           ├── 20260327_172405.json
++│           ├── 20260327_172424.json
++│           ├── 20260327_173539.json
++│           ├── 20260327_174308.json
++│           ├── 20260327_185308.json
++│           ├── 20260327_185708.json
++│           ├── 20260327_191858.json
++│           ├── 20260327_191909.json
++│           ├── 20260327_195634.json
++│           ├── 20260329_171136.json
++│           ├── 20260329_180136.json
++│           ├── 20260329_180519.json
++│           ├── 20260405_100557.json
++│           ├── 20260405_100647.json
++│           ├── 20260405_100710.json
++│           ├── 20260405_103422.json
++│           ├── 20260407_142655.json
++│           ├── 20260415_183535.json
++│           ├── 20260415_205240.json
++│           ├── 20260415_211855.json
++│           ├── 20260415_233506.json
++│           ├── 20260415_233527.json
++│           ├── 20260415_233550.json
++│           ├── 20260415_233836.json
++│           ├── 20260418_072642.json
++│           ├── 20260424_215228.json
++│           ├── 20260424_215652.json
++│           ├── 20260424_215750.json
++│           ├── 20260424_220056.json
++│           ├── 20260424_220332.json
++│           ├── 20260424_220355.json
++│           ├── 20260424_220435.json
++│           ├── 20260424_221944.json
++│           ├── 20260424_222434.json
++│           ├── 20260612_203028.json
++│           ├── 20260612_203543.json
++│           ├── 20260624_181536.json
++│           ├── 20260702_062556.json
++│           ├── 20260702_062628.json
++│           ├── 20260702_065631.json
++│           ├── kokoro-1782991520511-fd93197859e5616ec2a9.wav
++│           ├── kokoro-1782991559586-33136572ccb1c1f7bc27.wav
++│           ├── kokoro-1782991591452-d1d8bcc511404a93e2b4.wav
++│           ├── kokoro-1782991657214-cbcb38d1cbb74c1d640e.wav
++│           ├── kokoro-1782991959045-1d134a738a8beee81e59.wav
++│           ├── kokoro-1782992009946-bef4a2318bdc0f0a97b5.wav
++│           ├── kokoro-1782993138747-30207c1e5bc54aa55939.wav
++│           ├── kokoro-1782994739037-12d007bf818de2d789f2.wav
++│           ├── kokoro-1782994794238-dc0e9229d0ce819c9c30.wav
++│           ├── kokoro-1782996045805-cd6623cad94725a647cb.wav
++│           ├── kokoro-1782996122852-8d685b32f578eaebc207.wav
++│           ├── kokoro-1782996149586-c74f208906f40b400b21.wav
++│           ├── kokoro-1782998866984-d54aaf7753a9ad9871b1.wav
++│           ├── kokoro-1782998922489-31755e13925679deb7f2.wav
++│           ├── kokoro-1782998946822-cddeef558a5ca817ef6e.wav
++│           ├── kokoro-1782998965338-ac75c95cda2e2f3b9491.wav
++│           ├── kokoro-1782999037625-c41aa14611d62bb2130c.wav
++│           ├── kokoro-1782999242167-2ac46fdd1f34517170b6.wav
++│           ├── kokoro-1783122091170-0ed1aaafcd2c96a49284.wav
++│           ├── kokoro-1783122143520-078e95c837bd19cc7e17.wav
++│           ├── kokoro-1783122507229-c09edbe6eb7595dcb389.wav
++│           ├── kokoro-1783348390284-00d67e83d8d6db7e126d.wav
++│           ├── kokoro-1783348479752-5a71a66de9577690c043.wav
++│           ├── kokoro-1783454359221-e175d715b2d2572b5883.wav
++│           ├── kokoro-1783454379724-974236c3cafc22c3c1c7.wav
++│           ├── kokoro-1783454609085-e175d715b2d2572b5883.wav
++│           ├── kokoro-1783454612750-bf9ec91d037a831423f6.wav
++│           ├── kokoro-1783454837804-e175d715b2d2572b5883.wav
++│           ├── kokoro-1783454840917-bf9ec91d037a831423f6.wav
++│           ├── kokoro-1783460203514-edee1474d0aa2a7d6e19.wav
++│           ├── kokoro-1783460508621-bf9ec91d037a831423f6.wav
++│           ├── kokoro-1783837627671-e2f7df7aa46058e525f9.wav
++│           ├── kokoro-1783837732909-e2f7df7aa46058e525f9.wav
++│           ├── kokoro-1783838183988-e2f7df7aa46058e525f9.wav
++│           ├── kokoro-1783838390067-fb23c5c4da93601841a5.wav
++│           ├── kokoro-1783838554618-edc4c063da9cebb1403b.wav
++│           ├── kokoro-1783839007046-edc4c063da9cebb1403b.wav
++│           ├── kokoro-1783839015668-8f170df3c5d29bf170b4.wav
++│           ├── kokoro-1783839182480-d052f1890783cd2daae7.wav
++│           ├── kokoro-1783839944352-fe12c4f9c3dee22321ee.wav
++│           ├── kokoro-1783840187525-cb9c530c89c39bdba290.wav
++│           ├── kokoro-1783840667064-b380551831991a129e0d.wav
++│           ├── kokoro-1783842136390-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1783842147858-96ede1bc4a1065552b6b.wav
++│           ├── kokoro-1783842175655-561ce8df6a9b97f26d73.wav
++│           ├── kokoro-1783842204131-4381a8a49a00e328ed66.wav
++│           ├── kokoro-1783842218602-7ef110008f326ca077bf.wav
++│           ├── kokoro-1783842229996-1578e82b0af23651f31c.wav
++│           ├── kokoro-1783842247046-ce987e52716ac3ab2df0.wav
++│           ├── kokoro-1783842271880-72d7d914b3b55a9e34f5.wav
++│           ├── kokoro-1783842377045-6bfde66f237671c2ebfa.wav
++│           ├── kokoro-1783848340415-eab0de36452f6bb582b7.wav
++│           ├── kokoro-1783858929596-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1783858965232-aba9165c08a579939063.wav
++│           ├── kokoro-1783858999511-96ede1bc4a1065552b6b.wav
++│           ├── kokoro-1783859021748-96ede1bc4a1065552b6b.wav
++│           ├── kokoro-1783859098861-e2f7df7aa46058e525f9.wav
++│           ├── kokoro-1783859140581-96ede1bc4a1065552b6b.wav
++│           ├── kokoro-1783859285867-e2f7df7aa46058e525f9.wav
++│           ├── kokoro-1783860214476-72cadccfc6e4eb1129c8.wav
++│           ├── kokoro-1783860240058-d6be044cc66daf35dcd0.wav
++│           ├── kokoro-1783861139563-4bafef2d9030f34441ee.wav
++│           ├── kokoro-1783861159017-47cbae0fb5b8e7f6ee26.wav
++│           ├── kokoro-1783861189023-17db6f764bc5bf09aa39.wav
++│           ├── kokoro-1783861217909-879ad8cde7ace8804e5c.wav
++│           ├── kokoro-1783861326044-0916a51b2f9e6fc2dc2c.wav
++│           ├── kokoro-1783863458446-f9166b247e358b7a8c15.wav
++│           ├── kokoro-1783863483699-5afa0232ff145a9abe17.wav
++│           ├── kokoro-1783863512160-5afa0232ff145a9abe17.wav
++│           ├── kokoro-1783909778168-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1783975266463-9bd42c6501fd549bf499.wav
++│           ├── kokoro-1783989133292-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1784073401131-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1784149346215-728f48e286f8fde8a7be.wav
++│           ├── kokoro-1784243689488-caf2868672601c766189.wav
++│           ├── kokoro-1784397540478-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1784475821338-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1784475830569-053d213e41fad74af1a0.wav
++│           ├── kokoro-1784475832639-d03d88b7b3a4d5deafa2.wav
++│           ├── kokoro-1784475854282-1b5b5767dbb4be69e015.wav
++│           ├── kokoro-1784475856198-b65d931912f40aa9fa5d.wav
++│           ├── kokoro-1784572785307-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-1784621343865-f21a1a518880dcdb5a61.wav
++│           ├── kokoro-1784621346508-93c33155c486698947f4.wav
++│           ├── kokoro-1784752282907-3a2c26c6d86a64e8e6ea.wav
++│           ├── kokoro-4c31cbd6a21f55cd277795f2.wav
++│           └── qwen-c61fddd8013d2f5b67b8b02b.wav
++│   ├── README.md
++│   │   │   └── orb-wsl.log
+-│   │       └── nohup.out
+-│   ├── README.md
++│   │       ├── cali-api.log
++│   │       ├── nohup.out
++│   │       ├── nohup_cali.log
++│   │       ├── nohup_spruked.log
++│   │       ├── spruked-dev.log
++│   │       ├── spruked-start-3001.log
++│   │       ├── spruked-start-3101.log
++│   │       └── spruked-start.log
++│   ├── cali-api-8002.log
++│   ├── cali-api-8022.log
++│   ├── cali-skg-21000.log
++│   ├── cp3-8022.log
++│   ├── next-3001.log
++│   ├── spruked-cloudflared.log
++│   ├── spruked-dev-3001.log
++│   ├── spruked-dev-3002.log
++│   ├── spruked-start-3001.log
++├── ENDPOINTS_FULL_MAP.txt
++├── LICENSE
+-│   │   ├── vaults
+-│   │   │   └── behavior_patterns.yaml
+-│   │   └── index.ts
++│   │   ├── index.ts
++│   │   └── vaults
++│   │       ├── behavior_patterns.yaml
++│   │       └── motion_memory.jsonl
++│   │   │   ├── cali_personal_skg.py
++│   │   │   ├── cali_routes.py
+-│   │   │   │   │   └── spinoza_monism_skg.json
+-│   │   │   │   │   └── hume_skepticism_skg.json
+-│   │   │   │   │   └── locke_empiricism_skg.json
+-│   │   │   │       └── kant_critical_skg.json
+-│   │   │   ├── orb_runtime
+-│   │   │   │   ├── __init__.py
+-│   │   │   │   ├── bayesian_engine.py
+-│   │   │   │   ├── floating_assistant_orb.py
+-│   │   │   │   ├── orb_controller.py
+-│   │   │   │   └── orb_skg_manager.py
+-│   │   │   ├── cali_personal_skg.py
+-│   │   │   ├── cali_routes.py
+-│   │   │   └── orb_cognition_skg.py
++│   │   │   ├── orb_cognition_skg.py
++│   │   │   └── orb_runtime
++│   │   │       ├── __init__.py
++│   │   │       ├── bayesian_engine.py
++│   │   │       ├── floating_assistant_orb.py
++│   │   │       ├── orb_controller.py
++│   │   │       └── orb_skg_manager.py
++│   ├── .gitignore
++│   ├── .orb-assistant-wsl
++│   │   ├── Code Cache
++│   │   │   ├── js
++│   │   │   │   └── index-dir
++│   │   │   └── wasm
++│   │   │       └── index-dir
++│   │   ├── Crashpad
++│   │   │   └── client_id
++│   │   ├── DawnCache
++│   │   │   ├── data_0
++│   │   │   ├── data_1
++│   │   │   ├── data_2
++│   │   │   ├── data_3
++│   │   │   └── index
++│   │   ├── Dictionaries
++│   │   │   └── en-US-10-1.bdic
++│   │   ├── GPUCache
++│   │   │   ├── data_0
++│   │   │   ├── data_1
++│   │   │   ├── data_2
++│   │   │   ├── data_3
++│   │   │   └── index
++│   │   ├── Local Storage
++│   │   │   └── leveldb
++│   │   ├── Network Persistent State
++│   │   ├── Preferences
++│   │   ├── Session Storage
++│   │   │   ├── CURRENT
++│   │   │   ├── LOCK
++│   │   │   ├── LOG
++│   │   │   ├── LOG.old
++│   │   │   └── MANIFEST-000001
++│   │   ├── Trust Tokens
++│   │   ├── Trust Tokens-journal
++│   │   ├── blob_storage
++│   │   │   └── b2d47982-b85d-4c6a-8e0c-9f42398efbed
++│   │   └── skins
++│   │       ├── WORKORB21600_8eb49c628211c7d0.png
++│   │       └── metadata
++│   │           ├── WORKORB21600.png
++│   │           └── WORKORB21600_8eb49c628211c7d0.json
++│   ├── .orb-instance.env
++│   ├── .orb-instance.env.example
++│   ├── =5.0.0
++│   │   │   ├── a_posteriori
++│   │   │   │   └── vault.jsonl
+-│   │   │   └── patterns
++│   │   │   │   └── vault.jsonl
++│   │   │   ├── cali_personal.db
++│   │   │   ├── memory_2026-03-28.jsonl
++│   │   │   ├── memory_2026-05-05.jsonl
++│   │   │   ├── memory_2026-07-03.jsonl
++│   │   │   ├── memory_2026-07-06.jsonl
++│   │   │   ├── memory_2026-07-07.jsonl
++│   │   │   ├── memory_2026-07-12.jsonl
++│   │   │   ├── orb_memory_2026-07-03.jsonl
++│   │   │   ├── orb_memory_2026-07-06.jsonl
++│   │   │   ├── orb_memory_2026-07-07.jsonl
++│   │   │   ├── orb_memory_2026-07-12.jsonl
++│   │   │   ├── orb_memory_2026-07-13.jsonl
++│   │   │   ├── orb_memory_2026-07-14.jsonl
++│   │   │   ├── orb_memory_2026-07-15.jsonl
++│   │   │   ├── orb_memory_2026-07-16.jsonl
++│   │   │   ├── orb_memory_2026-07-18.jsonl
++│   │   │   ├── orb_memory_2026-07-19.jsonl
++│   │   │   ├── orb_memory_2026-07-20.jsonl
++│   │   │   ├── orb_memory_2026-07-21.jsonl
++│   │   │   ├── orb_memory_2026-07-22.jsonl
++│   │   │   ├── patterns
++│   │   │   └── patterns.db
+-│   │   └── vault
+-│   │       └── cali_identity.json
++│   │   ├── vault
++│   │   │   └── cali_identity.json
++│   │   └── voice_cache
++│   ├── README.md
+-│   │   ├── main.py
+-│   │   └── cognition_legacy
+-│   │       ├── CALI_System_cognition_shim
+-│   │       │   └── __init__.py
+-│   │       ├── duplicate_data_stores
+-│   │       │   └── recreated_identity_2026-07-12.json
+-│   │       ├── duplicate_v4_package
+-│   │       │   ├── CHANGELOG_v3_5_to_v4_0.md
+-│   │       │   ├── MISSING_INPUTS_NOTICE.md
+-│   │       │   └── cali_skg_v4_0.py
+-│   │       ├── CALI_System_init.py
+-│   │       ├── README.md
+-│   │       ├── reconstructed_README_v4.md
+-│   │       ├── reconstructed_cali_skg_v4.py
+-│   │       └── reconstructed_requirements.txt
++│   │   ├── cognition_legacy
++│   │   │   ├── CALI_System_cognition_shim
++│   │   │   │   └── __init__.py
++│   │   │   ├── CALI_System_init.py
++│   │   │   ├── README.md
++│   │   │   ├── duplicate_data_stores
++│   │   │   │   ├── empty_cali_personal.db
++│   │   │   │   ├── late_package_memory_2026-07-12.jsonl
++│   │   │   │   └── recreated_identity_2026-07-12.json
++│   │   │   ├── duplicate_v4_package
++│   │   │   │   ├── CHANGELOG_v3_5_to_v4_0.md
++│   │   │   │   ├── MISSING_INPUTS_NOTICE.md
++│   │   │   │   └── cali_skg_v4_0.py
++│   │   │   ├── reconstructed_README_v4.md
++│   │   │   ├── reconstructed_cali_skg_v4.py
++│   │   │   └── reconstructed_requirements.txt
++│   │   ├── electron_dock_adapter_spruked_before_orb_weaver_sync_20260719T113420
++│   │   │   └── electron_dock_adapter
++│   │   │       └── main
++│   │   ├── electron_legacy_20260719T113237
++│   │   │   └── cali-launcher.js
++│   │   ├── electron_legacy_20260719T113311
++│   │   │   ├── api
++│   │   │   │   └── main.py
++│   │   │   └── scripts
++│   │   │       └── launch_orb_instance.sh
++│   │   ├── orb-assistant-profile-legacy-20260719T1116
++│   │   │   ├── Code Cache
++│   │   │   │   ├── js
++│   │   │   │   └── wasm
++│   │   │   ├── Crashpad
++│   │   │   ├── DawnCache
++│   │   │   ├── Dictionaries
++│   │   │   ├── GPUCache
++│   │   │   ├── Local State
++│   │   │   ├── Local Storage
++│   │   │   │   └── leveldb
++│   │   │   ├── Network
++│   │   │   ├── Preferences
++│   │   │   ├── Session Storage
++│   │   │   ├── blob_storage
++│   │   │   │   └── 55a97864-a4fa-4261-a2e4-5d5e9be0a583
++│   │   │   └── skins
++│   │   │       └── metadata
++│   │   └── root_home_spruked_com_legacy_20260719T115451
++│   │       ├── archive
++│   │       │   ├── CALI_SKG_DB_legacy_20260719T111341
++│   │       │   └── CALI_SKG_DB_root_moved_20260719T112905
++│   │       └── cali_skg
++│   │           ├── memory
++│   │           ├── temp
++│   │           └── vault
++│   │   ├── __init__.py
++│   │   │   ├── __init__.py
++│   │   │   ├── cali_personal_skg.py
++│   │   │   ├── cali_state_v4.py
++│   │   │   ├── core -> ../Orb_Assistant/CALI_System/core
+-│   │   │   │   │   └── spinoza_monism_skg.json
+-│   │   │   │   │   └── hume_skepticism_skg.json
+-│   │   │   │   │   └── locke_empiricism_skg.json
+-│   │   │   │       └── kant_critical_skg.json
++│   │   │   ├── core_mind_reasoner.py
++│   │   │   ├── core_vaults.py
++│   │   │   ├── doctrine_governance.py
++│   │   │   │   ├── __init__.py
+-│   │   │   │   │   ├── job
+-│   │   │   │   │   │   └── execute.py
+-│   │   │   │   │   ├── jobs
+-│   │   │   │   │   │   └── execute.py
+-│   │   │   │   │   └── logic
+-│   │   │   │   │       ├── cognitive_state.py
+-│   │   │   │   │       └── deductive_logic.py
+-│   │   │   │   │   ├── job
+-│   │   │   │   │   │   └── validate.py
+-│   │   │   │   │   ├── logic
+-│   │   │   │   │   │   ├── deductive_validation.py
+-│   │   │   │   │   │   └── validation_state.py
+-│   │   │   │   │   └── vault
+-│   │   │   │   │   └── logic
+-│   │   │   │   │       ├── cognitive_stat.py
+-│   │   │   │   │       ├── cognitive_state.py
+-│   │   │   │   │       └── inductive_logic.py
+-│   │   │   │   │   └── logic
+-│   │   │   │   │       ├── inductive_validation.py
+-│   │   │   │   │       └── validation_state.py
+-│   │   │   │   │   └── logic
+-│   │   │   │   │       ├── cognitive_state.py
+-│   │   │   │   │       └── intuitive_logic.py
+-│   │   │   │   ├── intuitive_validator
+-│   │   │   │   │   └── logic
+-│   │   │   │   │       ├── intuitive_validation.py
+-│   │   │   │   │       └── validation_state.py
+-│   │   │   │   └── __init__.py
++│   │   │   │   └── intuitive_validator
++│   │   │   ├── orb_cognition_skg.py
+-│   │   │   ├── orb_runtime_tests
+-│   │   │   │   ├── __init__.py
+-│   │   │   │   ├── test_bridge.py
+-│   │   │   │   ├── test_full_pipeline.py
+-│   │   │   │   └── test_pipeline.py
+-│   │   │   ├── __init__.py
+-│   │   │   ├── cali_personal_skg.py
+-│   │   │   ├── cali_state_v4.py
+-│   │   │   ├── core -> ../Orb_Assistant/CALI_System/core
+-│   │   │   ├── core_mind_reasoner.py
+-│   │   │   ├── core_vaults.py
+-│   │   │   ├── doctrine_governance.py
+-│   │   │   └── orb_cognition_skg.py
+-│   │   ├── __init__.py
++│   │   │   └── orb_runtime_tests
++│   │   │       ├── __init__.py
++│   │   │       ├── test_bridge.py
++│   │   │       ├── test_full_pipeline.py
++│   │   │       └── test_pipeline.py
++│   │   ├── ORB_ASSISTANT_RUNTIME_WIRING.md
+-│   │   └── main
+-│   │       ├── README.md
+-│   │       ├── main.js
+-│   │       ├── orb-bridge.js
+-│   │       └── preload_adapter.js
++│   │   ├── README.md
++│   │   ├── main.js
++│   │   ├── orb-bridge.js
++│   │   └── preload_adapter.js
++│   ├── generate_tree.ps1
++│   ├── launch-orb-wsl.sh
++│   ├── package-lock.json
++│   ├── package.json
++│   ├── pointer_escalation
++│   │   ├── README.md
++│   │   ├── __init__.py
++│   │   ├── orbEscalation.ts
++│   │   ├── orbState.ts
++│   │   ├── pointerPlotTypes.ts
++│   │   ├── pointerResolution.ts
++│   │   ├── pointerRuntime.ts
++│   │   ├── pointer_plot_schema.py
++│   │   ├── promotion.py
++│   │   └── scan_extraction.py
++│   ├── reference_audio.wav
+-│   │   ├── launch_orb_instance.sh
+-│   │   │       └── memory
+-│   │   │           └── hearing_skg_v3.json
++│   │   │       ├── memory
++│   │   │       └── voice_cache
+-│   │   ├── hlsf_geometry
+-│   │   ├── interface
+-│   │   ├── ui
+-│   │   ├── vault_system
+-│   │   │   └── apriori
+-│   │   ├── cali-launcher.js
++│   │   ├── hlsf_geometry
++│   │   ├── interface
+-│   │   └── settings.html
+-│   ├── vault_system
+-│   ├── .gitignore
+-│   ├── .orb-instance.env
+-│   ├── .orb-instance.env.example
+-│   ├── =5.0.0
+-│   ├── README.md
+-│   ├── generate_tree.ps1
+-│   ├── launch-orb-wsl.sh
+-│   ├── package-lock.json
+-│   ├── package.json
++│   │   ├── settings.html
++│   │   ├── ui
++│   │   └── vault_system
++│   │       ├── apriori
++│   │       └── posteriori
+-│   └── tree.txt
++│   ├── tools -> /home/bryan/projects/Orb_Weaver/tools
++│   ├── tree.txt
++│   └── vault_system
++│       └── posteriori
++│           ├── 036e9168597cd8795dbf145190de93180396e5a16b59edfe0ffa412b689402da.json
++│           ├── 0724c20a9ea87fa8ae775d5206169b6d19130c0780d7fc1877e1cc43a817e820.json
++│           ├── 0d9c021692c7c06ec426eaf2035079536c63752bb052184391305fbc6f7187cc.json
++│           ├── 0f4a807fb870e70ca35856595137a37de059356c2ab51f8db9f565c911a95d8c.json
++│           ├── 100061f4253a50008acdb4f388516b151910ae1459275923b359111a93f4cbe6.json
++│           ├── 15dfd4326d77fa4b36334f20b9c53d6b1adddb59aa5a2c6b8e6ff6143257e4bb.json
++│           ├── 176421fd4433cc7aa848e9b8691b2d37fdb321388ad14615c81131bb9a7f27f0.json
++│           ├── 274eb4a2fff124260d6706c28f9f6e253138388949815c6a891760847845abd8.json
++│           ├── 2c9b7f6f6239dbd55e9d2081803497afd719c0daf6b14631eaad22f6af50f9c2.json
++│           ├── 3b2219dc612a1e0baa539d79ca38e9f8b59f94ef23c63f7832f9d0bfdcfc8114.json
++│           ├── 3b818909cc59d68b87643e1b8a32daaca75b360b9831116a255f7e8fe1357205.json
++│           ├── 406b06b7e5a3f7b7fb7dcae0767aaf87d8b4c7cc82bcfe8f71c9de257867b869.json
++│           ├── 40d910e91b1a893da6b3391eb99e5a99554cc7f830087968d547a65abec6b0d9.json
++│           ├── 427c1596e3fcb28a1f43f99a392e817028c6659c0e2a28b60423124146641721.json
++│           ├── 428aab472a6bac060bed202bf4fcd2776443895c9e8666c86ff514efe576b243.json
++│           ├── 4a6ec9a20321bab71ddd90649afb47bec0de401517c94ab7957fcf579fa569a4.json
++│           ├── 4e7f9bf0f8ccd87dbe8d9198c445854defd0bc8d01c4487d23bfe0a38f4a26f1.json
++│           ├── 5026091626deb4e410788b8b0e8f68a8eb1c1bd0051248f92b19b78b96f83d5c.json
++│           ├── 5715e1501a0d8e9652d9352cc411bbde06ec09fd9d7bfb4494050c2a376d387c.json
++│           ├── 57c65c29d960265bdd2ede37aed4617d8cbe99018c5d88817b6bc5cc0a29d6d1.json
++│           ├── 6167efe9bb7d319e483700696a576c80a09cc81d313ce0d62d72d5b024a8fa9e.json
++│           ├── 6314c5305485d7e9c291b02d876eb172588f6f92e7c5f5ccbf4cfcf41ad2291a.json
++│           ├── 6beeb6616e799919ef1a976dc79ff5ab7e00cfadb64f29d807907f3b78e01fdc.json
++│           ├── 6d71e558faebdb1b68b9a5435533736a65211c27e01c29ac6829304208e0e279.json
++│           ├── 6f1488295794a99b1416bcbae2c1a5d1787d2eb132c1d076483d08c7dc09fbbc.json
++│           ├── 6fefe2ba4cc425f2cbc851b57cf651368436fd2d68812857ed8b1933eb04717e.json
++│           ├── 73210c1c550ca77005e862220404de43ebe42c142c0bc85c006fe8322cbfdc8c.json
++│           ├── 7993ecdcd4c9aa868aab065b4e7ab7b0d159bec8985668da11d7998edda59e6e.json
++│           ├── 7b995e784f720e5f6ffbdb3bd079a70b1376ec50359b8ccb9a0afd4411e05575.json
++│           ├── 801f6f9b316f84a6156da55c46b30352300c820ef39b3dac07acc621c7ed6444.json
++│           ├── 8043c4fc1ad96e45ba93b3a58eec03bc741246a6fb1cd8736fa06c5a9b49b62e.json
++│           ├── 811cc9fafd80c25f4862396ef1282e3c8ea1ffc232f22f7e6d9cbffe697627b3.json
++│           ├── 8efda0dd746dbaa4c6c55d86c75237bd017b7d6f12c06779c9d98c5637562766.json
++│           ├── 910feaabe14c6b693c0669527ba2760c39cb6cb9d97252d8cfcdbb9a0ebaacd6.json
++│           ├── 92c5309816ef2f4cba165e670a5e3f74ac2d67b16201e448a8fb1bf4c2316ab8.json
++│           ├── 950c06663d00959dc0d593672281ad80e524c2c461c7292306f9d744c0242fc9.json
++│           ├── 96b762614df40115856fcae11359f8719c61e5e5dbdc2461975bb3e0f86eefa1.json
++│           ├── 98152415ec7c65482cfb162e5d101dab741774f62ee8cd97467dbd2a58b5b967.json
++│           ├── 9b99c07ea6b74d7436ce879d896683bbfbababddfb02053edabb8c23e8369d28.json
++│           ├── 9bfb17a7b6a747b0325565becca46a359315bb4dbb92ffd3a3781b6dad7e23f9.json
++│           ├── 9c181cdd399f3524d09b661cc5fc180f0718e1034fb7ed1a399613302c5fbb2d.json
++│           ├── 9c82dc21d4b0aa272e24e82dc1d0def42b1afcb9dfbfe1123a6a431d987ef937.json
++│           ├── a5e188c5fab8e0cda018aee1d329485f56b5b4cd459ecc19dc61fbf61c721e5f.json
++│           ├── a9bae43218ce8a4ce001c052b14fc33c658c7cb20fcd43a7515748fdf4eb305d.json
++│           ├── b5b5971e299b584ccc0a0f135e85fa7da7dfceffc5f5915cc8fa929e4b2bad01.json
++│           ├── b6ee2beef5219ef6cf29e96b006fb0ef83304b4ac763e9ca66062becf279250a.json
++│           ├── b7dad47b33ac1919bd7e56a17c6202e92b7467ac7904b54ab1c09352071d2fb7.json
++│           ├── bc50ac00eeef1ae1ccac404d2f6ed0cce6c171309f086badf075112d6f2e9007.json
++│           ├── c6a95e9a6cdb4dc5b1f2455a984d4054a28f649f276d42d097b3d782e036d2da.json
++│           ├── c742108bbd0cc363283b21daae044214d4a32dfe1dec8985a16f8fd866bf11c1.json
++│           ├── d1c2a73edbe96193cfc130b51f5f9eb2795af2fc28084c545c91b98f257cdd46.json
++│           ├── d4b84b224afde735ea6d43a8fae02eb215e7b3d04637e639804d7837b7003897.json
++│           ├── d914b8d2f49e9c5045a391eb590722fb290fad39b67e4c5589cc128b295ebb29.json
++│           ├── dd34edaff544093a899720701fb98496dd271c2b9467ad98f22e0d758eaa7f9a.json
++│           ├── dd4ef92724420612ff915a980586e0cad8b6ef051af8e1bb228f007152c450ee.json
++│           ├── ddb12451e873f0eef7c99e964df70c4490d7c21056e83020c62293ff5dbe3e28.json
++│           ├── df3c1648433f49ba38bf34ee0924c0ca89e98ca698c2260bc85765b91f7113d8.json
++│           ├── e1f5cdd16270521ff8298737f2560fb97d3478bb06ec816967e53a4b7386597c.json
++│           ├── e40724bcaa947665e44c229eb8aa13281521b3556836be6fadde270e617d1f6a.json
++│           ├── e46b541ed8b8ac34c9b4e3351cd41e37e3682d348380387a77332af18e0f9e29.json
++│           ├── e5d3e21cedad7a2a5df7053177416160980d024e128c6bd915b1f35878278a9c.json
++│           ├── e999379aa57ff712631beb390e9ca45d60ea60cea74d8451f0905d388283e803.json
++│           ├── ea60c81da5cb1d2c795731b03162ce7275cf31847e19df6e9e3a14e3a3ef6e76.json
++│           ├── eb0a5e11a80647aff0cf84470865a41ee968f36ae27ee8ec2f26d768bc71b4b4.json
++│           ├── f41b56c9617267d084e1caf7dddc29792a111d3efb55309b953eb636c4bfeb69.json
++│           ├── f63c0827744accadb01e1b60f444964cd315d10e59ea1d187d94814f356e0185.json
++│           ├── f7ae5e8152817444c5d76a3fe79ce3354443e6bc9deac05218b4ad8c182a2d8d.json
++│           └── ff4478fba46a372905287f77716203673ed84485baab4df2a2db4d6118eef315.json
++├── README.md
++│   │   │   ├── route.ts
+-│   │   │   │   │   └── route.ts
+-│   │   │   ├── website-voice
+-│   │   │   │   └── route.ts
+-│   │   │   └── route.ts
++│   │   │   └── website-voice
++│   │   │       └── route.ts
++│   ├── favicon.svg
++│   ├── globals.css
++│   ├── layout.tsx
++│   ├── page.tsx
++│   │   ├── page.tsx
+-│   │   ├── truemark-mint
+-│   │   │   ├── object-types
+-│   │   │   │   └── page.tsx
+-│   │   │   ├── objects
+-│   │   │   │   └── page.tsx
+-│   │   │   └── page.tsx
+-│   │   └── page.tsx
++│   │   └── truemark-mint
++│   │       ├── object-types
++│   │       │   └── page.tsx
++│   │       ├── objects
++│   │       │   └── page.tsx
++│   │       └── page.tsx
+-│   ├── truemark
+-│   │   └── example-object
+-│   │       └── page.tsx
+-│   ├── favicon.svg
+-│   ├── globals.css
+-│   ├── layout.tsx
+-│   ├── page.tsx
+-│   └── sitemap.ts
++│   ├── sitemap.ts
++│   └── truemark
++│       └── example-object
++│           └── page.tsx
++│   ├── CALI_SKG_v4_0_Current_Runtime_Package.zip
+-│   │   ├── source
+-│   │   │   ├── app
+-│   │   │   │   ├── api
+-│   │   │   │   │   ├── orb
+-│   │   │   │   │   └── waitlist
+-│   │   │   │   └── page.tsx
+-│   │   │   ├── cali_skg
+-│   │   │   │   ├── api
+-│   │   │   │   └── core
+-│   │   │   └── components
+-│   │   │       └── admin
+-│   │   │           └── CaliOperationsHub.tsx
+-│   │   └── manifest.env
++│   │   ├── manifest.env
++│   │   └── source
++│   │       ├── app
++│   │       │   ├── api
++│   │       │   └── page.tsx
++│   │       ├── cali_skg
++│   │       │   ├── api
++│   │       │   └── core
++│   │       └── components
++│   │           └── admin
++│   ├── SPRUKED_CRM_MASTER_2026-05-05.tar.gz
+-│   ├── CALI_SKG_v4_0_Current_Runtime_Package.zip
+-│   ├── SPRUKED_CRM_MASTER_2026-05-05.tar.gz
++│   ├── admin-crm.md
++│   ├── cms.md
+-│   ├── session-notes
+-│   │   └── website-dev-log-2026-06-12.md
+-│   ├── admin-crm.md
+-│   ├── cms.md
+-│   └── orb-motion-snapshot-2026-03-27.md
++│   ├── orb-motion-snapshot-2026-03-27.md
++│   └── session-notes
++│       └── website-dev-log-2026-06-12.md
++│   ├── admin-vault.ts
++│   ├── commerce.ts
++│   ├── constants.ts
++│   ├── orb-browser-tools.ts
++│   ├── orb-capability-registry.ts
++│   ├── orb-internal-url.ts
++│   ├── orb-introspection.ts
++│   ├── orb-pointer-map-server.ts
++│   ├── orb-server.ts
++│   ├── orb-service.ts
++│   ├── orb-site-world.ts
+-│   │   ├── vaults
+-│   │   │   └── behavior_patterns.yaml
+-│   │   └── index.ts
+-│   ├── supabase
+-│   │   └── server.ts
+-│   ├── admin-vault.ts
+-│   ├── commerce.ts
+-│   ├── constants.ts
+-│   ├── orb-browser-tools.ts
+-│   ├── orb-capability-registry.ts
+-│   ├── orb-internal-url.ts
+-│   ├── orb-introspection.ts
+-│   ├── orb-pointer-map-server.ts
+-│   ├── orb-server.ts
+-│   ├── orb-service.ts
+-│   ├── orb-site-world.ts
+-│   └── page-content.ts
++│   │   ├── index.ts
++│   │   └── vaults
++│   │       ├── behavior_patterns.yaml
++│   │       └── motion_memory.jsonl
++│   ├── page-content.ts
++│   └── supabase
++│       └── server.ts
++├── middleware.ts
++├── next
++├── next-env.d.ts
++├── next.config.js
++├── package-lock.json
++├── package.json
++├── postcss.config.mjs
+-│   ├── logos
+-│   │   ├── spruked-stamp-white.svg
+-│   │   ├── spruked-symbol-black.svg
+-│   │   ├── spruked-symbol-white.svg
+-│   │   └── spruked-wordmark-white.svg
+-│   └── favicon.ico
++│   ├── favicon.ico
++│   └── logos
++│       ├── spruked-stamp-white.svg
++│       ├── spruked-symbol-black.svg
++│       ├── spruked-symbol-white.svg
++│       └── spruked-wordmark-white.svg
+-├── styles
+-│   └── globals.css
+-├── .env.example
+-├── .env.local
+-├── .eslintrc.json
+-├── .gitignore
+-├── ENDPOINTS_FULL_MAP.txt
+-├── LICENSE
+-├── README.md
+-├── next
+-├── next-env.d.ts
+-├── next.config.js
+-├── package-lock.json
+-├── package.json
+-├── postcss.config.mjs
++├── styles
++│   └── globals.css
+-└── tsconfig.json
++├── tsconfig.json
++└── tsconfig.tsbuildinfo

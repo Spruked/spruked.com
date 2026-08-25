@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { sprukedVaultPaths } from '@/lib/spruked-vault';
 
 export const ORB_STATE_SCHEMA_VERSION = 'orb-state.v1';
 
@@ -34,10 +35,8 @@ export type OrbState = {
 
 export type OrbStateUpdate = Partial<OrbState> & Pick<OrbState, 'site_id' | 'orb_id'>;
 
-const DEFAULT_STATE_DIR = '/mnt/r/substrate/orb_state';
-
 function stateDir(): string {
-  return process.env.SUBSTRATE_ORB_STATE_DIR || DEFAULT_STATE_DIR;
+  return process.env.SUBSTRATE_ORB_STATE_DIR || sprukedVaultPaths().orbState;
 }
 
 function statePath(siteId: string, orbId: string): string {

@@ -1,0 +1,148 @@
+{
+  "schema": "orb_weaver.route_classification.v1",
+  "route_count": 27,
+  "category_counts": {
+    "public_content": 14,
+    "admin": 1,
+    "transactional": 9,
+    "utility": 1,
+    "system": 2
+  },
+  "routes": [
+    {
+      "url": "https://spruked.com",
+      "route": "/",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/prompt-like-a-pro",
+      "route": "/products/prompt-like-a-pro",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/orb-marketplace",
+      "route": "/orb-marketplace",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/about",
+      "route": "/about",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/admin",
+      "route": "/admin",
+      "category": "admin"
+    },
+    {
+      "url": "https://spruked.com/goat",
+      "route": "/goat",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/checkout",
+      "route": "/checkout",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/products",
+      "route": "/products",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/artifacts",
+      "route": "/artifacts",
+      "category": "utility"
+    },
+    {
+      "url": "https://spruked.com/cart?add=goat-legacy-session",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart?add=prompt-like-a-pro-pdf",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/products/orb-weaver",
+      "route": "/products/orb-weaver",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/alpha-certsig",
+      "route": "/products/alpha-certsig",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/cart",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart?add=alpha-certsig-license",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart?add=truemark-mint-object",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint",
+      "route": "/products/truemark-mint",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/cart?add=orb-skin-nature-source",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart?add=orb-skin-example-two",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart?add=orb-skin-blue-sample",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint/objects",
+      "route": "/products/truemark-mint/objects",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/truemark/example-object",
+      "route": "/truemark/example-object",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint/object-types",
+      "route": "/products/truemark-mint/object-types",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/sitemap.xml",
+      "route": "/sitemap.xml",
+      "category": "system"
+    },
+    {
+      "url": "https://spruked.com/robots.txt",
+      "route": "/robots.txt",
+      "category": "system"
+    },
+    {
+      "url": "https://spruked.com/brand",
+      "route": "/brand",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/orb",
+      "route": "/orb",
+      "category": "public_content"
+    }
+  ]
+}

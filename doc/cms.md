@@ -55,8 +55,7 @@ Server components call `getPageContent(slug)` to pull data. If Supabase credenti
 
 ## 6. Admin coexistence
 
-- The `/admin` route now includes both CMS editing and operational CRM controls.
-- CMS write calls (`PUT /api/page-content`) remain separately token-protected via `ADMIN_ACCESS_TOKEN`.
-- CRM calls are routed through `/api/cali/*` and use the same bearer-token model.
 
 Happy editing.
+[Footer Navigation]
+See the site footer (components/layout/Footer.tsx) for canonical navigation links and the current site map.

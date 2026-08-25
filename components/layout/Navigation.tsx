@@ -15,10 +15,12 @@ const groupedItems = [
     label: 'Products',
     links: [
       { href: '/products', label: 'All Products' },
+      { href: '/products/orb-weaver', label: 'Orb Weaver' },
       { href: '/products/alpha-certsig', label: 'Alpha CertSig' },
       { href: '/products/truemark-mint', label: 'TrueMark Mint' },
+      { href: '/products/prompt-like-a-pro', label: 'Prompt Like a Pro' },
       { href: '/goat', label: 'The GOAT' },
-      { href: '/orb-skin-studio', label: 'Orb Skin Studio' },
+      { href: '/orb-marketplace', label: 'ORB Marketplace' },
     ],
   },
   {
@@ -26,11 +28,21 @@ const groupedItems = [
     links: [
       { href: '/artifacts', label: 'Evidence' },
       { href: '/admin', label: 'Admin' },
+      { href: 'http://localhost:21010/', label: 'Local CALI CRM' },
+      { href: 'http://localhost:19000', label: 'Prime Mail' },
     ],
   },
 ];
 
+function isExternalHref(href: string) {
+  return /^https?:\/\//.test(href);
+}
+
 function isActivePath(pathname: string, href: string) {
+  if (isExternalHref(href)) {
+    return false;
+  }
+
   if (href === '/') {
     return pathname === '/';
   }
@@ -51,22 +63,29 @@ export function Navigation() {
         {[
           { href: '/', label: 'Home' },
           { href: '/about', label: 'About' },
+          { href: '/products/prompt-like-a-pro', label: 'Prompt Pro' },
           { href: '/products', label: 'Products' },
           { href: '/cart', label: 'Cart' },
           { href: '/checkout', label: 'Checkout' },
           { href: '/artifacts', label: 'Evidence' },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={clsx(
-              'whitespace-nowrap rounded-md px-2.5 py-1.5 transition-colors duration-200',
-              isActivePath(pathname, item.href) ? 'text-light' : 'text-gray-500 hover:text-light',
-            )}
-          >
-            {item.label}
-          </Link>
-        ))}
+          { href: 'http://localhost:21010/', label: 'CRM' },
+          { href: 'http://localhost:19000', label: 'Mail' },
+        ].map((item) => {
+          const className = clsx(
+            'whitespace-nowrap rounded-md px-2.5 py-1.5 transition-colors duration-200',
+            isActivePath(pathname, item.href) ? 'text-light' : 'text-gray-500 hover:text-light',
+          );
+
+          return isExternalHref(item.href) ? (
+            <a key={item.href} href={item.href} target="_blank" rel="noreferrer" className={className}>
+              {item.label}
+            </a>
+          ) : (
+            <Link key={item.href} href={item.href} className={className}>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
 
       <nav className="hidden w-full max-w-5xl items-center text-sm uppercase tracking-[0.14em] lg:flex">
@@ -79,6 +98,18 @@ export function Navigation() {
             )}
           >
             Home
+          </Link>
+
+          <Link
+            href="/products/prompt-like-a-pro"
+            className={clsx(
+              'rounded-md px-3 py-2 transition-colors duration-200 whitespace-nowrap',
+              isActivePath(pathname, '/products/prompt-like-a-pro')
+                ? 'text-light'
+                : 'text-gray-500 hover:text-light',
+            )}
+          >
+            Prompt Pro
           </Link>
 
           {groupedItems.map((group) => {
@@ -108,20 +139,24 @@ export function Navigation() {
               </button>
 
               <div className="invisible absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-gray-800 bg-black/95 p-2 opacity-0 shadow-[0_16px_36px_rgba(0,0,0,0.45)] backdrop-blur-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                {group.links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={clsx(
-                      'block rounded-lg px-3 py-2 text-xs tracking-[0.12em] transition-colors duration-200',
-                      isActivePath(pathname, link.href)
-                        ? 'bg-white/5 text-light'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-light',
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {group.links.map((link) => {
+                  const className = clsx(
+                    'block rounded-lg px-3 py-2 text-xs tracking-[0.12em] transition-colors duration-200',
+                    isActivePath(pathname, link.href)
+                      ? 'bg-white/5 text-light'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-light',
+                  );
+
+                  return isExternalHref(link.href) ? (
+                    <a key={link.href} href={link.href} target="_blank" rel="noreferrer" className={className}>
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link key={link.href} href={link.href} className={className}>
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           );

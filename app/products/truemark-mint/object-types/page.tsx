@@ -1,5 +1,6 @@
 import { Section } from '@/components/ui/Section';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'TrueMark Digital Object Types — Spruked',
@@ -110,10 +111,12 @@ export default function ObjectTypesPage() {
 
           <div className="mt-8 bg-[#0a0a0a] border border-gray-800 p-8 rounded-xl">
             <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Certificate Representation</h3>
-            <img 
-              src="/assets/CertificateKNFTsample.png" 
-              alt="K-NFT Spruked Certificate Sample" 
-              className="w-full max-w-2xl mx-auto h-auto rounded-lg shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-gray-800" 
+            <Image
+              src="/assets/CertificateKNFTsample.png"
+              alt="K-NFT Spruked Certificate Sample"
+              width={1400}
+              height={1000}
+              className="w-full max-w-2xl mx-auto h-auto rounded-lg shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-gray-800"
             />
           </div>
         </div>

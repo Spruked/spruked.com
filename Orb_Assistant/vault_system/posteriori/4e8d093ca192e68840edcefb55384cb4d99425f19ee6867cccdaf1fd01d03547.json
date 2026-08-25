@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-08-24T18:26:29.554937",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Hello Cali.",
+    "response": "Hey. I'm here.",
+    "context": {
+      "source": "diagnostic",
+      "currentPath": "/"
+    },
+    "intent": {
+      "type": "fast_path"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "orb-canonical-cognition-state-v4",
+      "llm_core": "fast-path",
+      "leading_mind": "Immanuel Kant",
+      "confidence": 0.96,
+      "truth_likelihood": 0.96,
+      "core_reasoner": "Orb_Assistant.CALI_System.cali_skg.core.orb_cognition_skg",
+      "state_engine": "cali_skg.core.cali_state_v4"
+    }
+  },
+  "hash_id": "4e8d093ca192e688",
+  "confidence": 0.96,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

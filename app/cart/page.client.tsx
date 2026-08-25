@@ -35,7 +35,7 @@ export default function CartPageClient() {
       </p>
 
       <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr]">
-        <div className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8">
+        <div data-orb-transient="cart-state" className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8">
           {!hydrated ? (
             <p className="text-gray-400">Loading cart...</p>
           ) : items.length === 0 ? (

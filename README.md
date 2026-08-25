@@ -2,7 +2,20 @@
 
 Truth with teeth.
 
-A modern web application built with Next.js, featuring brand identity, ORB cognition routing, content management, and an integrated admin CRM and operations hub.
+A modern web application built with Next.js, featuring brand identity, ORB cognition routing, content management, and an explicit write integration with the separate CALI CRM.
+
+## Current Local Runtime
+
+- Main website repo: `/home/bryan/projects/spruked.com`
+- Existing local site: `http://localhost:3001/`
+- Standalone Windows CALI CRM frontend: `http://localhost:21010/`
+- Standalone Windows CALI API backend: `http://192.168.12.155:21000`
+- Authoritative CALI CRM substrate: `R:/R_Drive_Substrate/crm`
+- Orb Assistant runtime/docs: `Orb_Assistant/`
+
+The website and CRM are separate applications. Their shared surface is limited to explicit navigation links and authenticated writes for customer-account data, user data, waitlist leads, and contact inquiries. Spruked does not proxy or host the CRM frontend.
+
+The old WSL-home `/home/bryan/spruked.com` runtime clutter has been archived under `Orb_Assistant/archive/`. The active website remains this repo.
 
 ## Production Readiness Status
 
@@ -12,6 +25,8 @@ A modern web application built with Next.js, featuring brand identity, ORB cogni
 - Orb API routing active: `/api/orb` with admin-context routing support
 - Founder and About content published under `/about`
 - Admin CRM pipeline, appointment scheduling, and inbound mailbox poll integrated
+- Orb Assistant has access to shared tools via `Orb_Assistant/tools -> /home/bryan/projects/Orb_Weaver/tools`
+- Orb Assistant has local pointer escalation contracts in `Orb_Assistant/pointer_escalation/`
 
 ## Features
 
@@ -66,6 +81,7 @@ A modern web application built with Next.js, featuring brand identity, ORB cogni
 ├── lib/                 # Utility functions and configurations
 ├── data/                # Static data and types
 ├── public/              # Static assets
+├── Orb_Assistant/       # CALI SKG, CRM API, dock adapter, pointer escalation, tools link
 └── styles/              # Global styles
 ```
 
@@ -93,9 +109,9 @@ A modern web application built with Next.js, featuring brand identity, ORB cogni
 - `/checkout`
 - `/admin`
 
-## Admin System (Integrated)
+## Website Admin And CRM Integration
 
-The `/admin` route includes a full operations console with a token-protected backend.
+The Spruked `/admin` route is the website administration surface. The standalone CALI CRM owns its UI and R-drive records; approved Spruked actions write to it through the token-protected Windows API.
 
 ### Tabs
 
@@ -134,6 +150,18 @@ In admin context (`x-cali-context=admin`), ORB can actively query and operate CR
 - Email connector status
 - Mailbox poll intent path
 
+### Orb Assistant support folders
+
+Spruked's `Orb_Assistant/` includes:
+
+- `cali_skg/` — active CALI CRM/cognition API implementation
+- `electron_dock_adapter/` — byte-for-byte synced from Orb Weaver's canonical dock adapter
+- `pointer_escalation/` — shared pointer resolution, recovery, and human-escalation contracts
+- `tools` — symlink to Orb Weaver's canonical runtime/operator tools
+- verified admin navigation awareness for Spruked `/admin`, CALI CRM `/admin`, and authenticated Orb Weaver admin-section scans
+
+Electron is an optional Dock Station adapter only. It must not own cognition, memory, voice, route authority, or pointer authority.
+
 ## Production Checklist
 
 Run this before each release:
@@ -155,25 +183,64 @@ Run this before each release:
    - `GET /api/cali/crm/email/status` (admin token)
    - `POST /api/cali/crm/email/poll` (admin token + mailbox password env)
    - `/cart` and `/checkout` render
+   - `GET http://127.0.0.1:21010/`
+   - `GET http://127.0.0.1:21000/health`
 6. Start production server:
    - `npm run start`
 
 ## Orb Provider Routing
 
-The site orb UI/behavior can stay unchanged while cognition/voice is routed by API config.
+The website ORB routes one-click microphone turns through faster-whisper STT,
+CALI SKG cognition, Qwen TTS with Cali's voice profile, and Kokoro only when
+Qwen is unavailable. The browser records and plays audio; it never synthesizes speech.
 
-- `SPRUKED_ORB_COGNITION_PROVIDER=native|kaygee|calixone|kaygee_hybrid`
-- `KAYGEE_API_BASE` (default `http://127.0.0.1:8011`)
-- `KAYGEE_VOICE_ENABLED` (`1` or `0`)
-- `KAYGEE_VOICE` (default `af_bella`)
+- `SPRUKED_ORB_COGNITION_PROVIDER=cali_skg|calixone` (default `cali_skg`)
+- `SPRUKED_ORB_PROVIDER_TIMEOUT_MS` (default `120000`) for CALI SKG cognition
+- `SPRUKED_ORB_VOICE_PROVIDER_TIMEOUT_MS` (default `30000`) for public website voice turns; the voice route uses the larger cognition timeout when needed
+- `SPRUKED_ORB_PROVIDER_FALLBACK=0` keeps fabricated local provider fallback disabled for live ORB speech
+- `FAST_WHISPER_URL` or `FASTER_WHISPER_STT_URL` (default `http://127.0.0.1:9000/stt`)
+- `CALI_OLLAMA_MODEL_NAME` (default `llama3.2:1b`)
+- `OLLAMA_BASE_URL` (default `http://127.0.0.1:11434`)
+- `CALI_HYBRID_USE_LOCAL_LLM` (default `1`)
+- `ORB_TTS_KOKORO_URL` (default `http://127.0.0.1:8880/speak`)
+- `ORB_TTS_KOKORO_HEALTH_URL` (default `http://127.0.0.1:8880/health`)
+- `ORB_TTS_KOKORO_MODEL` (default `kokoro`)
+- `ORB_TTS_KOKORO_VOICE` (default `af_heart`)
+- `ORB_TTS_KOKORO_FORMAT` (default `wav`)
+- `ORB_TTS_KOKORO_SPEED` (default `1.05`)
+
+## Pointer and Tool Policy
+
+The website ORB may use approved site intelligence, verified pointer maps, and the local `Orb_Assistant/pointer_escalation/` contracts for guidance. If a route or target is uncertain, missing, stale, invalid, hidden, conflicting, or unverified, CALI must refuse movement instead of navigating.
+
+Runtime/operator tools are available through `Orb_Assistant/tools`, which points to Orb Weaver's canonical tools folder. These tools are adapters and diagnostics; persistent state belongs in the configured vault/substrate, not in tool folders.
+
+See:
+
+- `Orb_Assistant/README.md`
+- `Orb_Assistant/docs/ORB_ASSISTANT_RUNTIME_WIRING.md`
+- `doc/admin-crm.md`
+- `ORB_TTS_KOKORO_TIMEOUT_MS` (default `45000`)
+- `QWEN_TTS_ENGINE` (default `qwen3-tts-06b-base`)
+- `QWEN_TTS_BASE_URL` (default `http://127.0.0.1:9880/speak`)
+- `QWEN_TTS_HEALTH_URL` (default `http://127.0.0.1:9880/health`)
+- `QWEN_TTS_VOICE` (default `cali_voice_profile`)
+- `QWEN_TTS_TIMEOUT_MS` (default `220000`)
 - `CALIXONE_API_BASE` (default `http://127.0.0.1:8021`)
 - `CALIXONE_INTERACT_PATH` (default `/api/interact`)
-- `CALI_API_URL` (default `http://127.0.0.1:8002`)
-- `KAYGEE_HYBRID_RESPOND_PATH` (default `/cali/orb/respond`)
+- `CALI_API_URL` (Windows CRM API, currently `http://192.168.12.155:21000`)
+- `CALI_SKG_RESPOND_PATH` (default `/cali/orb/respond`)
 - `ADMIN_ACCESS_TOKEN` or `CALI_ADMIN_TOKEN` for admin/CALI protected operations
 - `BUSINESS_EMAIL_APP_PASSWORD` (or `EMAIL_APP_PASSWORD`) for IMAP mailbox polling
 
 The provider switch is handled under `app/api/orb/route.ts`; orb visuals are not required to change.
+
+### Live ORB Voice
+
+Live ORB speech uses server-generated Qwen WAV output with Cali's saved voice profile. Kokoro is the server-side fallback. Browser speech synthesis is prohibited.
+
+The public floating ORB response bubble auto-closes after audio playback unless
+the visitor clicks the bubble to pin it.
 
 ## Core Admin/CRM Endpoints
 

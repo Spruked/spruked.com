@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-07-12T07:00:05.491139",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Test, test, testing, test or test?",
+    "response": "I hear you clearly. The voice test is working.",
+    "context": {
+      "source": "website_voice"
+    },
+    "intent": {
+      "type": "fast_path"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "cali-skg-v4-state-v4",
+      "llm_core": "fast-path",
+      "leading_mind": "Immanuel Kant",
+      "confidence": 0.96,
+      "truth_likelihood": 0.96,
+      "core_reasoner": "Orb_Assistant.CALI_System.cognition.cali_skg_v4",
+      "state_engine": "Orb_Assistant.CALI_System.cognition.cali_state_v4"
+    },
+    "llm_core": "fast-path",
+    "cognition_provider": "cali_skg"
+  },
+  "hash_id": "d914b8d2f49e9c50",
+  "confidence": 0.96,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { PrimaryLogo } from '@/components/brand/PrimaryLogo';
 import {Button}  from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import LandingSplash from '@/components/ui/LandingSplash';
 import { Section } from '@/components/ui/Section';
 
 export default function Home() {
   return (
     <>
+      <LandingSplash />
       <Section bleed className="relative flex min-h-[90vh] flex-col items-center justify-center text-center">
         <div className="absolute inset-0 opacity-5">
           <PrimaryLogo size={800} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -18,7 +21,7 @@ export default function Home() {
           <span className="text-truth">Spruked</span>
         </h1>
         <p className="mb-6 max-w-2xl text-2xl font-bold text-white uppercase tracking-widest sm:text-3xl">
-          "If better is possible, good is simply not enough."
+          "If better is possible, Good is not enough."
         </p>
         <p className="mb-6 max-w-2xl text-xl text-gray-400 sm:text-2xl">
           Truth with teeth. Precision correction. No fluff. No mercy.
@@ -37,22 +40,131 @@ export default function Home() {
             <a href="mailto:bryan@spruked.com">Contact</a>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <Link href="/orb-skin-studio">Orb Skin Studio Demo</Link>
+            <Link href="/orb-marketplace">ORB Marketplace</Link>
           </Button>
         </div>
       </Section>
 
-      <Section className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-5xl font-black leading-tight sm:text-7xl">
-          What does it mean to be <span className="text-truth">Spruked</span>?
-        </h2>
-        <div className="space-y-8 text-2xl text-gray-300">
-          <p>Spruking is the act of delivering correction with precision and authority.</p>
-          <p>It&rsquo;s not vague feedback. It&rsquo;s not polite criticism.</p>
-          <p className="text-3xl font-semibold text-light">
-            It&rsquo;s the moment someone who knows better steps in and says:
-            <br />
-            <span className="text-truth">“Here&rsquo;s what you missed. Here&rsquo;s what&rsquo;s actually true. Here&rsquo;s how to fix it.”</span>
+      <Section className="mx-auto max-w-6xl text-center">
+        <div className="mx-auto mb-12 max-w-5xl">
+          <h2 className="mb-8 text-5xl font-black leading-tight sm:text-7xl">
+            What it means to be <span className="text-truth">Spruked</span>
+          </h2>
+          <div className="space-y-6 text-xl leading-relaxed text-gray-300 sm:text-2xl">
+            <p>
+              To be Spruked is to be confronted by reality with surgical clarity.
+            </p>
+            <p>
+              It&rsquo;s the experience of someone stepping into your blind spot and removing the fog &mdash; not gently, not vaguely, but with precision, authority, and zero euphemism.
+            </p>
+            <p>
+              Spruking is truth delivered in its useful form &mdash; the kind that corrects trajectory, not feelings.
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-16 grid gap-4 sm:grid-cols-3">
+          {['vague feedback', 'polite criticism', 'softened truth'].map((item) => (
+            <div key={item} className="border border-gray-800 bg-[#050505] p-6 text-center">
+              <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Not</p>
+              <p className="mt-3 text-2xl font-semibold text-light">{item}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mb-16">
+          <h3 className="mb-8 text-3xl font-black text-light sm:text-4xl">
+            The Anatomy of a Spruking
+          </h3>
+          <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-300">
+            Each Spruking has three components:
+          </p>
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="border border-gray-800 bg-[#050505] p-7 text-center">
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-truth">The Miss</p>
+              <h4 className="mb-4 text-2xl font-bold text-white">Identify the exact wrong turn.</h4>
+              <p className="mb-5 text-gray-400">
+                Identifying exactly where someone&rsquo;s understanding, execution, or assumption went wrong. No generalities. No &ldquo;you could improve.&rdquo;
+              </p>
+              <p className="border-t-2 border-truth pt-4 text-lg font-semibold text-light">
+                &ldquo;Here&rsquo;s the precise thing you didn&rsquo;t see.&rdquo;
+              </p>
+            </div>
+            <div className="border border-gray-800 bg-[#050505] p-7 text-center">
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-truth">The Truth</p>
+              <h4 className="mb-4 text-2xl font-bold text-white">Replace the flawed assumption.</h4>
+              <p className="mb-5 text-gray-400">
+                Replacing the flawed assumption with the correct one. Not an opinion. Not a suggestion. A factual, grounded, authoritative correction.
+              </p>
+              <p className="border-t-2 border-truth pt-4 text-lg font-semibold text-light">
+                &ldquo;Here&rsquo;s what&rsquo;s actually true.&rdquo;
+              </p>
+            </div>
+            <div className="border border-gray-800 bg-[#050505] p-7 text-center">
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-truth">The Fix</p>
+              <h4 className="mb-4 text-2xl font-bold text-white">Give the actionable path forward.</h4>
+              <p className="mb-5 text-gray-400">
+                A Spruking never ends with critique; it ends with a blueprint. Criticism points out flaws. Spruking removes them.
+              </p>
+              <p className="border-t-2 border-truth pt-4 text-lg font-semibold text-light">
+                &ldquo;Here&rsquo;s how to fix it.&rdquo;
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="text-center">
+            <h3 className="mb-6 text-3xl font-black text-light sm:text-4xl">
+              The Spirit Behind Spruking
+            </h3>
+            <div className="space-y-5 text-xl leading-relaxed text-gray-300">
+              <p>Spruking is not cruelty. It&rsquo;s not dominance. It&rsquo;s not ego.</p>
+              <p className="text-3xl font-black text-truth">It&rsquo;s responsibility.</p>
+              <p>
+                It&rsquo;s what happens when someone who knows better refuses to let someone they care about stay misaligned with reality. It&rsquo;s a form of respect &mdash; the belief that the person can handle the truth and deserves it.
+              </p>
+              <p>
+                It&rsquo;s the family tradition: truth with teeth &mdash; not to wound, but to sharpen.
+              </p>
+            </div>
+          </div>
+          <div className="border border-truth/40 bg-truth/5 p-8 text-center">
+            <h4 className="mb-6 text-2xl font-black text-white">Spruking is</h4>
+            <div className="space-y-4 text-xl font-semibold text-gray-200">
+              <p>Correction with care</p>
+              <p>Authority without arrogance</p>
+              <p>Precision without condescension</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-16">
+          <h3 className="mb-8 text-3xl font-black text-light sm:text-4xl">
+            What Being Spruked Produces
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['Clarity', 'The fog is gone.'],
+              ['Alignment', 'Understanding now matches reality.'],
+              ['Trajectory', 'The next move is clear.'],
+              ['Strength', 'Truth builds competence.'],
+            ].map(([title, copy]) => (
+              <div key={title} className="border border-gray-800 bg-[#050505] p-6 text-center">
+                <h4 className="mb-3 text-2xl font-bold text-white">{title}</h4>
+                <p className="text-gray-400">{copy}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 text-2xl font-semibold text-light">
+            Spruking is a catalyst. It&rsquo;s the moment someone levels up.
+          </p>
+        </div>
+
+        <div className="border-t-4 border-truth bg-[#050505] p-8 text-center">
+          <p className="mb-3 text-sm font-bold uppercase tracking-widest text-truth">A More Formal Definition</p>
+          <p className="text-2xl font-semibold leading-relaxed text-light">
+            <span className="text-white">Spruking:</span> The disciplined act of delivering corrective truth with precision, authority, and actionable direction, for the purpose of sharpening another person&rsquo;s understanding, performance, or judgment.
           </p>
         </div>
       </Section>
@@ -148,10 +260,12 @@ export default function Home() {
         {/* Example TrueMark Object */}
         <div className="mt-20 border border-gray-800 bg-[#050505] p-8 rounded-xl max-w-5xl mx-auto flex flex-col md:flex-row gap-10 items-start">
           <div className="flex-1 w-full">
-            <img 
-              src="/assets/CertificateKNFTsample.png" 
-              alt="K-NFT Spruked Certificate Sample" 
-              className="w-full h-auto rounded-lg border border-gray-800 shadow-[0_0_30px_rgba(255,255,255,0.05)]" 
+            <Image
+              src="/assets/CertificateKNFTsample.png"
+              alt="K-NFT Spruked Certificate Sample"
+              width={1400}
+              height={1000}
+              className="w-full h-auto rounded-lg border border-gray-800 shadow-[0_0_30px_rgba(255,255,255,0.05)]"
             />
             <div className="mt-4 text-sm text-gray-400 bg-black/40 border border-gray-900 p-4 rounded-lg">
               <strong className="text-white block mb-1">Example K-NFT Certificate</strong>
@@ -319,7 +433,7 @@ export default function Home() {
               required
               className="py-5 text-lg"
             />
-            <input id="waitlist-source" name="source" type="hidden" value="homepage_waitlist" />
+            <input id="waitlist-source" name="source" type="hidden" value="homepage_waitlist" suppressHydrationWarning />
             <Button size="lg" className="w-full justify-center py-5 text-lg text-center">
               Secure My Spot
             </Button>

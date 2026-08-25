@@ -1,0 +1,15 @@
+{
+  "schema_version": "orb.primitive_normalization_aliases.v1",
+  "aliases": {
+    "areyou": "are you",
+    "canyou": "can you",
+    "youlistening": "you listening",
+    "areyoulistening": "are you listening",
+    "areyouthere": "are you there",
+    "thankyou": "thank you",
+    "areyoulisteningnow": "are you listening now",
+    "canyouhearme": "can you hear me",
+    "areyouonline": "are you online",
+    "areyouawake": "are you awake"
+  }
+}

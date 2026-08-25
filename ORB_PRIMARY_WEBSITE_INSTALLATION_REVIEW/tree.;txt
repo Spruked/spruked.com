@@ -1,0 +1,105 @@
+bryan@ProPrimeSeries:~/projects/spruked.com/ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW$ tree
+'.
+├── 00_manifest
+├── 01_frontend
+│   └── components
+│       ├── Button.tsx
+│       ├── GlobalOrb.tsx
+│       ├── GlobalOrbMount.tsx
+│       ├── Input.tsx
+│       └── Section.tsx
+├── 02_api
+│   └── orb
+│       ├── audio
+│       │   └── route.ts
+│       ├── capabilities
+│       │   └── route.ts
+│       ├── core
+│       │   └── route.ts
+│       ├── stt
+│       │   └── route.ts
+│       ├── tts
+│       │   └── route.ts
+│       ├── tts_audio
+│       │   └── route.ts
+│       ├── website_text
+│       │   └── route.ts
+│       └── website_voice
+│           └── route.ts
+├── 03_orb_runtime
+│   ├── introspection
+│   │   └── orb-introspection.ts
+│   ├── pointer_mapping
+│   ├── server
+│   │   └── orb-server.ts
+│   └── service
+│       └── orb-service.ts
+├── 04_behavior_skg
+│   ├── bridges
+│   │   ├── BrowserContext.ts
+│   │   ├── KayGeeHybridAdapter.ts
+│   │   └── QwenIntentPlugin.ts
+│   ├── core
+│   │   ├── DesireEngine.ts
+│   │   ├── IntentPredictor.ts
+│   │   ├── MotionGovernor.ts
+│   │   ├── OrbitalDynamics.ts
+│   │   ├── PresenceVisuals.ts
+│   │   ├── SelfPruner.ts
+│   │   └── types.ts
+│   ├── deployments
+│   │   ├── spruked
+│   │   │   └── SprukedOrb.ts
+│   │   └── truemark
+│   │       └── TrueMarkOrb.ts
+│   ├── index.ts
+│   └── vaults
+│       ├── behavior_patterns.yaml
+│       └── motion_memory.jsonl
+├── 05_cognition
+│   ├── cali_skg
+│   │   ├── cali_personal_skg.py
+│   │   ├── cali_routes.py
+│   │   ├── core_4_minds
+│   │   │   ├── bspinoza
+│   │   │   │   └── spinoza_monism_skg.json
+│   │   │   ├── hhume
+│   │   │   │   └── hume_skepticism_skg.json
+│   │   │   ├── hlocke
+│   │   │   │   └── locke_empiricism_skg.json
+│   │   │   └── ikant
+│   │   │       └── kant_critical_skg.json
+│   │   ├── core_mind_reasoner.py
+│   │   ├── core_vaults.py
+│   │   ├── doctrine_governance.py
+│   │   ├── main.py
+│   │   ├── orb_cognition_skg.py
+│   │   └── orb_runtime
+│   │       ├── __init__.py
+│   │       ├── bayesian_engine.py
+│   │       ├── floating_assistant_orb.py
+│   │       ├── orb_controller.py
+│   │       └── orb_skg_manager.py
+│   └── primitive_cache
+│       ├── primitive_normalization_aliases.json
+│       └── primitive_response_cache.json
+├── 06_voice
+│   ├── stt_interfaces
+│   └── tts_interfaces
+├── 07_memory
+│   ├── schemas
+│   └── vaults
+├── 08_tools
+│   ├── admin
+│   │   ├── CaliOperationsHub.tsx
+│   │   └── admin-vault.ts
+│   ├── commerce
+│   │   └── commerce.ts
+│   └── page_content
+│       ├── page-content.data.ts
+│       ├── page-content.runtime.ts
+│       └── page-content.ts
+├── 09_docs
+└── 10_tests
+
+47 directories, 55 files

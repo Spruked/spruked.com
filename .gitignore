@@ -8,6 +8,9 @@ node_modules/
 
 # Next.js
 /.next/
+/.next-dev/
+/.next-release*/
+/.next-pointer-release/
 /out/
 
 # Production
@@ -49,9 +52,21 @@ logs
 
 # Runtime data
 pids
+.runlogs/
 *.pid
 *.seed
 *.pid.lock
+
+# Website-owned private vault/runtime data
+spruked_Vault/state/runtime/
+spruked_Vault/state/admin-vault.json
+spruked_Vault/state/orb/
+spruked_Vault/telemetry/orb-mesh/
+spruked_Vault/telemetry/audit/*.jsonl
+spruked_Vault/telemetry/traces/glyphs/*.jsonl
+spruked_Vault/voice/reference*
+spruked_Vault/voice/*.wav
+spruked_Vault/voice/*.pt
 
 # Coverage directory used by tools like istanbul
 coverage/
@@ -86,7 +101,6 @@ temp/
 
 # Local runtime/tooling artifacts
 .orb-web-runtime/
-Orb_Assistant/
 venv/
 spruked.com@1.0.0
 nohup.out
@@ -94,6 +108,8 @@ nohup_*.log
 cali-api.log
 spruked-*.log
 test-*.log
+folder_structure.txt
+structure.txt
 
 # Python artifacts
 __pycache__/

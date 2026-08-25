@@ -22,7 +22,7 @@ export default function CheckoutPageClient() {
       </p>
 
       <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-        <div className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8">
+        <div data-orb-transient="checkout-state" className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8">
           {!hydrated ? (
             <p className="text-gray-400">Loading checkout...</p>
           ) : items.length === 0 ? (

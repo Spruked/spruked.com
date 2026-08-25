@@ -1,0 +1,77 @@
+{
+  "schema_version": "orb.primitive_response_cache.v1",
+  "entries": [
+    {
+      "intent": "greeting",
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "hello cali",
+        "hey cali",
+        "hello josephine",
+        "hey josephine"
+      ],
+      "response_template": "Hello, I'm here.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    },
+    {
+      "intent": "presence_check",
+      "patterns": [
+        "are you there",
+        "you there",
+        "are you online",
+        "are you awake"
+      ],
+      "response_template": "Yes, I'm here.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    },
+    {
+      "intent": "listening_check",
+      "patterns": [
+        "are you listening",
+        "are you listening now",
+        "you listening",
+        "can you hear me"
+      ],
+      "response_template": "Yes, I'm listening.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    },
+    {
+      "intent": "thanks",
+      "patterns": [
+        "thanks",
+        "thank you",
+        "thank you cali",
+        "thank you josephine"
+      ],
+      "response_template": "You're welcome.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    },
+    {
+      "intent": "acknowledgement",
+      "patterns": [
+        "ok",
+        "okay"
+      ],
+      "response_template": "Okay.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    },
+    {
+      "intent": "identity_check",
+      "patterns": [
+        "who are you",
+        "who are you josephine",
+        "who are you cali"
+      ],
+      "response_template": "I'm Cali, your floating Orb assistant.",
+      "bypass_provider": true,
+      "bypass_governance": true
+    }
+  ]
+}

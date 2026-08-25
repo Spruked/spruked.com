@@ -10,7 +10,6 @@ interface LogEntry {
 }
 
 export default function OrbDemoPage() {
-  const [prompt, setPrompt] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orbColorClass, setOrbColorClass] = useState('bg-white');
   const [orbShadowClass, setOrbShadowClass] = useState('shadow-[0_0_80px_rgba(255,255,255,0.8)]');
@@ -24,9 +23,8 @@ export default function OrbDemoPage() {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!prompt.trim() || isProcessing) return;
+  const handleVoiceDemo = async () => {
+    if (isProcessing) return;
 
     setIsProcessing(true);
     setFinalResponse('');
@@ -80,7 +78,7 @@ export default function OrbDemoPage() {
           <span className="text-truth">ORB</span> Live Interface
         </h1>
         <p className="text-2xl font-bold text-white mb-6 uppercase tracking-widest">
-          "If better is possible, good is simply not enough."
+          "If better is possible, Good is not enough."
         </p>
         <p className="text-xl text-gray-400 mb-12">
           Interactive companion interface for the Spruked System.
@@ -120,30 +118,14 @@ export default function OrbDemoPage() {
             <div ref={logsEndRef} />
           </div>
 
-          <form onSubmit={handleSubmit} className="w-full max-w-2xl relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke={isProcessing ? "#333" : "#fff"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <input 
-              id="orb-query-input"
-              name="orbQuery"
-              type="text" 
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Ask the Tribunal a question..." 
-              disabled={isProcessing}
-              className={`w-full bg-[#0a0a0a] border border-gray-700 rounded-full py-4 pl-12 pr-24 text-white focus:outline-none focus:border-truth transition-colors ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}
-            />
-            <button 
-              type="submit" 
-              disabled={isProcessing || !prompt.trim()}
-              className="absolute right-2 top-2 bottom-2 bg-white text-black px-6 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-gray-200 transition-colors disabled:opacity-50"
-            >
-              {isProcessing ? 'Thinking' : 'Submit'}
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={handleVoiceDemo}
+            disabled={isProcessing}
+            className="rounded-full border border-white/20 bg-white px-8 py-4 text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isProcessing ? 'Listening' : 'Click Orb To Speak'}
+          </button>
         </div>
       </Section>
 

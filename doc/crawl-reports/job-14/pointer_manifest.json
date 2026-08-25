@@ -1,0 +1,13 @@
+{
+  "project_id": 4,
+  "crawl_job_id": 14,
+  "domain": "spruked.com",
+  "generated_at": "2026-07-12 13:12:16.485452",
+  "route_count": 25,
+  "pointer_anchor_count": 1061,
+  "duplicate_id_count": 0,
+  "unresolved_anchor_count": 0,
+  "source_database_table_or_artifact_path": "/home/bryan/projects/Orb_Weaver/backend/data/orb_weaver.db :: crawled_pages.semantic_analysis.pointer_plot_records (crawl_job_id=14)",
+  "corroborating_audit_source": "/home/bryan/projects/Orb_Weaver/backend/data/orb_weaver.db :: audit_reports.report_data.pointer_summary (audit_id=12)",
+  "pointer_plot_map_sha256": "098c9477b765324e7628a3ca54846228cd942333d06a1d4e9d536f1f0b79888c"
+}

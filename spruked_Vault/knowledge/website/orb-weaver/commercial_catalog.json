@@ -1,0 +1,392 @@
+{
+  "schema": "orb_weaver.commercial_catalog.v1",
+  "entry_count": 14,
+  "product_count": 14,
+  "service_count": 0,
+  "priced_entry_count": 0,
+  "sku_model_count": 0,
+  "availability_count": 0,
+  "variant_count": 0,
+  "specification_count": 0,
+  "source_page_count": 7,
+  "entries": [
+    {
+      "catalog_id": "catalog_1f283480c8650ac6",
+      "kind": "Product",
+      "name": "Browsing System Navigations Your",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/artifacts",
+      "source_page": "https://spruked.com/artifacts",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_d697caf1298bd957",
+      "kind": "Product",
+      "name": "Cart View Product Page",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/orb-marketplace",
+      "source_page": "https://spruked.com/orb-marketplace",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_511fba8ceb4789ed",
+      "kind": "Product",
+      "name": "Explore ORB System Knowledge",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/products",
+      "source_page": "https://spruked.com/products",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_e49bde4d3064753f",
+      "kind": "Product",
+      "name": "Home About Prompt Pro",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com",
+      "source_page": "https://spruked.com",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_5d1a7f5cbfcc48a5",
+      "kind": "Product",
+      "name": "Pro Company About Products",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com",
+      "source_page": "https://spruked.com",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_c85511eedcde1c2d",
+      "kind": "Product",
+      "name": "Pro PDF",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/products/prompt-like-a-pro",
+      "source_page": "https://spruked.com/products/prompt-like-a-pro",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_2def9f6a6617a85a",
+      "kind": "Product",
+      "name": "Pro Prime",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/products",
+      "source_page": "https://spruked.com/products",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_f0a02a4c77229f7c",
+      "kind": "Product",
+      "name": "Pro Prime Series",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/about",
+      "source_page": "https://spruked.com/about",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_8c95de1fc661ef37",
+      "kind": "Product",
+      "name": "Pro Reliable",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/products/prompt-like-a-pro",
+      "source_page": "https://spruked.com/products/prompt-like-a-pro",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_fc5e3ddae08976ab",
+      "kind": "Product",
+      "name": "Pro The GOAT ORB",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com",
+      "source_page": "https://spruked.com",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_d90db1b7890f73b2",
+      "kind": "Product",
+      "name": "Spruked System",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/artifacts",
+      "source_page": "https://spruked.com/artifacts",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_56bd3f1539f17fdf",
+      "kind": "Product",
+      "name": "System",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/brand",
+      "source_page": "https://spruked.com/brand",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_7ba70191302e1906",
+      "kind": "Product",
+      "name": "View Product Page Index",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/orb-marketplace",
+      "source_page": "https://spruked.com/orb-marketplace",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_3ce61ceac43f5f9e",
+      "kind": "Product",
+      "name": "View Product Page Open",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/products",
+      "source_page": "https://spruked.com/products",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    }
+  ],
+  "indexes": {
+    "by_name": {
+      "browsing system navigations your": [
+        "catalog_1f283480c8650ac6"
+      ],
+      "cart view product page": [
+        "catalog_d697caf1298bd957"
+      ],
+      "explore orb system knowledge": [
+        "catalog_511fba8ceb4789ed"
+      ],
+      "home about prompt pro": [
+        "catalog_e49bde4d3064753f"
+      ],
+      "pro company about products": [
+        "catalog_5d1a7f5cbfcc48a5"
+      ],
+      "pro pdf": [
+        "catalog_c85511eedcde1c2d"
+      ],
+      "pro prime": [
+        "catalog_2def9f6a6617a85a"
+      ],
+      "pro prime series": [
+        "catalog_f0a02a4c77229f7c"
+      ],
+      "pro reliable": [
+        "catalog_8c95de1fc661ef37"
+      ],
+      "pro the goat orb": [
+        "catalog_fc5e3ddae08976ab"
+      ],
+      "spruked system": [
+        "catalog_d90db1b7890f73b2"
+      ],
+      "system": [
+        "catalog_56bd3f1539f17fdf"
+      ],
+      "view product page index": [
+        "catalog_7ba70191302e1906"
+      ],
+      "view product page open": [
+        "catalog_3ce61ceac43f5f9e"
+      ]
+    },
+    "by_sku_model": {},
+    "by_category": {},
+    "by_url": {
+      "https://spruked.com/artifacts": [
+        "catalog_1f283480c8650ac6",
+        "catalog_d90db1b7890f73b2"
+      ],
+      "https://spruked.com/orb-marketplace": [
+        "catalog_d697caf1298bd957",
+        "catalog_7ba70191302e1906"
+      ],
+      "https://spruked.com/products": [
+        "catalog_511fba8ceb4789ed",
+        "catalog_2def9f6a6617a85a",
+        "catalog_3ce61ceac43f5f9e"
+      ],
+      "https://spruked.com": [
+        "catalog_e49bde4d3064753f",
+        "catalog_5d1a7f5cbfcc48a5",
+        "catalog_fc5e3ddae08976ab"
+      ],
+      "https://spruked.com/products/prompt-like-a-pro": [
+        "catalog_c85511eedcde1c2d",
+        "catalog_8c95de1fc661ef37"
+      ],
+      "https://spruked.com/about": [
+        "catalog_f0a02a4c77229f7c"
+      ],
+      "https://spruked.com/brand": [
+        "catalog_56bd3f1539f17fdf"
+      ]
+    },
+    "prices": []
+  },
+  "runtime_policy": {
+    "deterministic_lookup_first": true,
+    "llm_required_for_exact_catalog_facts": false,
+    "source_evidence_required": true
+  }
+}

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "lib": [
       "dom",
       "dom.iterable",
@@ -31,13 +31,29 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "data/**/*.ts",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "styles/**/*.ts",
+    "tailwind.config.ts",
+    "postcss.config.mjs",
+    "next.config.js",
+    ".next/types/**/*.ts",
+    ".next-dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next/cache",
+    "artifacts",
+    "Orb_Assistant",
+    "cali_skg",
+    "cali_skg_v4",
+    "**/*.snapshot.*",
+    "public",
+    "spruked"
   ]
 }

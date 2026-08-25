@@ -1,0 +1,25 @@
+{
+  "schema_version": "spruked-vault.v1",
+  "vault_id": "spruked_Vault",
+  "role": "website_owned_single_source_of_truth",
+  "protected_boundary": {
+    "path": "../Orb_Assistant/CALI_System",
+    "policy": "read_only_boundary",
+    "move_or_modify": false
+  },
+  "website_owned_domains": [
+    "identity",
+    "preferences",
+    "knowledge",
+    "frameworks",
+    "memory",
+    "telemetry",
+    "state",
+    "voice_metadata"
+  ],
+  "auditing": {
+    "glyph_traces": "telemetry/traces/glyphs",
+    "audit_records": "telemetry/audit",
+    "append_only": true
+  }
+}

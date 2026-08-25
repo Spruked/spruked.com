@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { existsSync } from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { sprukedVaultPaths } from '@/lib/spruked-vault';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
@@ -19,18 +20,36 @@ function utcNow(): string {
   return new Date().toISOString();
 }
 
+function resolveOrbPythonPath(): string {
+  const configured = process.env.ORB_PYTHON_PATH?.trim();
+  if (configured) {
+    return configured;
+  }
+
+  const candidates = [
+    '/home/bryan/venv312/bin/python',
+    '/home/bryan/py312/bin/python',
+    '/usr/bin/python3',
+    'python3',
+  ];
+
+  return candidates.find((candidate) => candidate === 'python3' || existsSync(candidate)) || 'python3';
+}
+
 export function getOrbPaths() {
   const siteRoot = process.cwd();
   const orbRoot = path.join(siteRoot, 'Orb_Assistant');
-  const meshRoot = process.env.ORB_SHARED_MESH_ROOT || '/mnt/r/orb_mesh';
-  const webSystemRoot = process.env.ORB_WEB_SYSTEM_ROOT || path.join(siteRoot, '.orb-web-runtime');
+  const vaultPaths = sprukedVaultPaths();
+  const meshRoot = process.env.ORB_SHARED_MESH_ROOT || vaultPaths.mesh;
+  const webSystemRoot = process.env.ORB_WEB_SYSTEM_ROOT || vaultPaths.runtime;
   const cp3Root = process.env.CP3_ROOT || process.env.ACP3_ROOT || '/mnt/r/cochlear_processor_3.0';
-  const pythonPath = process.env.ORB_PYTHON_PATH || '/home/bryan/pro_prime_env/bin/python';
+  const pythonPath = resolveOrbPythonPath();
   const bridgeScript = path.join(orbRoot, 'api', 'web_orb_bridge.py');
 
   return {
     siteRoot,
     orbRoot,
+    vaultRoot: vaultPaths.root,
     meshRoot,
     webSystemRoot,
     cp3Root,
@@ -130,6 +149,29 @@ async function appendAudit(action: string, payload: Record<string, unknown>): Pr
   );
 }
 
+async function appendGlyphTrace(
+  type: MeshArtifactType,
+  payload: JsonValue | Record<string, unknown>,
+  metadata: Record<string, unknown>,
+): Promise<void> {
+  if (!['insight', 'result', 'task'].includes(type)) return;
+  const { glyphTraces } = sprukedVaultPaths();
+  await fs.mkdir(glyphTraces, { recursive: true });
+  await fs.appendFile(
+    path.join(glyphTraces, 'website-orb.jsonl'),
+    `${JSON.stringify({
+      schema_version: 'spruked-glyph-trace.v1',
+      timestamp: utcNow(),
+      source: 'website_orb',
+      artifact_type: type,
+      glyph: type === 'insight' ? '🧠' : type === 'task' ? '⚙️' : '↗️',
+      payload,
+      metadata,
+    })}\n`,
+    'utf8',
+  );
+}
+
 export async function ensureWebMeshScaffold(): Promise<void> {
   const { meshRoot, siteRoot, webSystemRoot } = getOrbPaths();
 
@@ -215,9 +257,20 @@ export async function ensureWebMeshScaffold(): Promise<void> {
     capabilities: [
       'website_chat_interface',
       'server_side_r_drive_access',
-      'browser_speech_fallback',
+      'server_qwen_tts',
+      'server_kokoro_tts_fallback',
+      'electron_dock_adapter',
       'mesh_publish_and_import',
     ],
+    adapters: {
+      electron: {
+        id: 'electron_dock_adapter',
+        root: path.join(siteRoot, 'Orb_Assistant', 'electron_dock_adapter'),
+        role: 'dock_adapter',
+        cognition_owner: 'cali_skg',
+        voice_owner: 'qwen_primary_kokoro_fallback',
+      },
+    },
     system_partition: 'WSL_SITE',
   });
 }
@@ -303,6 +356,7 @@ export async function publishWebArtifact(
   const artifactPath = path.join(baseDir, `${artifact.artifact_id}.json`);
 
   await writeJson(artifactPath, artifact);
+  await appendGlyphTrace(type, payload, metadata);
   await appendAudit('publish', {
     artifact_id: artifact.artifact_id,
     artifact_type: artifact.artifact_type,

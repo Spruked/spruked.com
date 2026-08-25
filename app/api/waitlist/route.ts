@@ -8,7 +8,7 @@ function trimTrailingSlash(value: string): string {
 }
 
 function caliBase(): string {
-  return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8022');
+  return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:21000');
 }
 
 function adminToken(): string {

@@ -1,0 +1,348 @@
+{
+  "timestamp": "2026-08-24T19:15:41.937732",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "I need you to say I am Kali. I am the website assistant",
+    "response": "I am Cali, a female executive assistant for Bryan on Spruked.com.",
+    "context": {
+      "current_path": "/",
+      "source": "website_voice",
+      "currentPath": "/",
+      "browserContext": {
+        "path": "/",
+        "title": "spruked \u2014 Truth with teeth.",
+        "viewport": {
+          "width": 1536,
+          "height": 703,
+          "scroll_x": 0,
+          "scroll_y": 0
+        },
+        "controls": [
+          {
+            "tag": "a",
+            "label": "Spruked home",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Home",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Prompt Pro",
+            "anchor_id": null
+          },
+          {
+            "tag": "button",
+            "label": "Company",
+            "anchor_id": null
+          },
+          {
+            "tag": "button",
+            "label": "Products",
+            "anchor_id": null
+          },
+          {
+            "tag": "button",
+            "label": "Platform",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Cart",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Checkout",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Get Spruked",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Contact",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "ORB Marketplace",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Understand the Object Model",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "K-NFTKnowledge",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "KL-NFTLicensed Knowledge",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "H-NFTHeirloom",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "L-NFTLegacy",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "E-NFTEnterprise",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Read Full Founder Background",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "View Full Object Page \u2192",
+            "anchor_id": null
+          },
+          {
+            "tag": "form",
+            "label": "PromoterInvestorMarketing ContactBusiness ContactSecure My Spot",
+            "anchor_id": null
+          },
+          {
+            "tag": "select",
+            "label": "PromoterInvestorMarketing ContactBusiness Contact",
+            "anchor_id": null
+          },
+          {
+            "tag": "input",
+            "label": "you@truth.com",
+            "anchor_id": null
+          },
+          {
+            "tag": "button",
+            "label": "Secure My Spot",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "About",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Products",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Alpha CertSig",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "TrueMark",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Evidence",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Contact",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Follow us on Twitter",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "Connect with us on LinkedIn",
+            "anchor_id": null
+          },
+          {
+            "tag": "a",
+            "label": "View our GitHub",
+            "anchor_id": null
+          },
+          {
+            "tag": "button",
+            "label": "Cancel or interrupt ORB voice turn",
+            "anchor_id": null
+          }
+        ]
+      },
+      "providerTimeoutMs": 120000,
+      "core_reasoning": {
+        "leading_mind": "Immanuel Kant",
+        "philosophical_reasoning": [
+          {
+            "philosopher": "John Locke",
+            "logic_type": "LOCKE_EMPIRICAL",
+            "raw_confidence": 0.7,
+            "truth_estimate": 0.63,
+            "accuracy": 0.7,
+            "reasoning_trace": "John Locke reasoning applied with sensory_evidence * reliability",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "browserContext",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "David Hume",
+            "logic_type": "HUME_SKEPTICAL",
+            "raw_confidence": 0.38,
+            "truth_estimate": 0.342,
+            "accuracy": 0.38,
+            "reasoning_trace": "David Hume reasoning applied with impression_strength * constant_conjunction",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "browserContext",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "Immanuel Kant",
+            "logic_type": "KANT_SYNTHETIC",
+            "raw_confidence": 0.8,
+            "truth_estimate": 0.7200000000000001,
+            "accuracy": 0.8,
+            "reasoning_trace": "Immanuel Kant reasoning applied with a_priori_categories * empirical_intuitions",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "browserContext",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "Baruch Spinoza",
+            "logic_type": "SPINOZA_MONISTIC",
+            "raw_confidence": 0.54,
+            "truth_estimate": 0.48600000000000004,
+            "accuracy": 0.54,
+            "reasoning_trace": "Baruch Spinoza reasoning applied with geometric_necessity * adequate_ideas",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "browserContext",
+              "providerTimeoutMs"
+            ]
+          }
+        ],
+        "advisory_verdict": {
+          "verdict": "consensus",
+          "confidence": 0.6299046614766122,
+          "truth_likelihood": 0.5669141953289509,
+          "weights": [
+            0.2714836001396179,
+            0.19713754951953888,
+            0.3000357747077942,
+            0.23134306073188782
+          ],
+          "outlier_count": 0,
+          "tension_detected": false,
+          "recommendation": "proceed",
+          "timestamp": "2026-08-24T14:15:38.803312",
+          "system_logic_guidance": [
+            {
+              "system_logic": "inductive",
+              "logic_type": "INDUCTIVE_STATISTICAL",
+              "raw_confidence": 0.5,
+              "truth_estimate": 0.5,
+              "accuracy": 0.5,
+              "pattern_count": 0,
+              "evaluated_core_minds": [
+                "John Locke",
+                "David Hume",
+                "Immanuel Kant",
+                "Baruch Spinoza"
+              ]
+            },
+            {
+              "system_logic": "deductive",
+              "logic_type": "DEDUCTIVE_LOGICAL",
+              "raw_confidence": 0.4,
+              "truth_estimate": 0.4,
+              "accuracy": 0.4,
+              "premise_count": 0,
+              "evaluated_core_minds": [
+                "John Locke",
+                "David Hume",
+                "Immanuel Kant",
+                "Baruch Spinoza"
+              ]
+            },
+            {
+              "system_logic": "intuitive",
+              "logic_type": "INTUITIVE_HOLISTIC",
+              "raw_confidence": 0.7075,
+              "truth_estimate": 0.672125,
+              "accuracy": 0.7075,
+              "gestalt_match": "holistic_similarity_detected",
+              "similarity": 0.45,
+              "evaluated_core_minds": [
+                "John Locke",
+                "David Hume",
+                "Immanuel Kant",
+                "Baruch Spinoza"
+              ]
+            }
+          ]
+        },
+        "core_four_decision": {
+          "leading_mind": "Immanuel Kant",
+          "leading_mind_index": 2,
+          "synthesis": "I believe that Immanuel Kant offers the strongest frame for 'I need you to say I am Kali. I am the website assistant'.",
+          "final_response": "I believe that Immanuel Kant offers the strongest frame for 'I need you to say I am Kali. I am the website assistant'.",
+          "authority": "core_four",
+          "softmax_role": "advisory_only"
+        },
+        "reasoning_mode": "",
+        "engine": "Orb_Assistant.CALI_System.cali_skg.core.orb_cognition_skg"
+      }
+    },
+    "intent": {
+      "type": "cali_v4_reasoning"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "orb-canonical-cognition-state-v4",
+      "llm_core": "ollama:orb-local + orb-core-four-advisory",
+      "leading_mind": "Immanuel Kant",
+      "confidence": 0.86,
+      "truth_likelihood": 0.86,
+      "core_reasoner": "Orb_Assistant.CALI_System.cali_skg.core.orb_cognition_skg",
+      "state_engine": "cali_skg.core.cali_state_v4"
+    }
+  },
+  "hash_id": "a7ff8a58ec2800ec",
+  "confidence": 0.86,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

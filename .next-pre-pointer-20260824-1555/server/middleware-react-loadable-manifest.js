@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST='{"components/ui/GlobalOrbMount.tsx -> @/components/ui/GlobalOrb":{"id":157,"files":["static/chunks/157.d5e1668b4500eacf.js"]}}';

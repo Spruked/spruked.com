@@ -1,0 +1,22 @@
+{
+  "schema_version": "orb-cognition-runtime.v1",
+  "owner": "Orb_Assistant",
+  "runtime_package": "Orb_Assistant/cali_skg",
+  "cognition_engine": "Orb_Assistant/cali_skg/core/orb_cognition_skg.py",
+  "state_engine": "Orb_Assistant/cali_skg/core/cali_state_v4.py",
+  "core_four_source": "Orb_Assistant/cali_skg/core/core_4_minds",
+  "vault_adapter": "Orb_Assistant/cali_skg/core/core_vaults.py",
+  "a_priori_vault": "Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl",
+  "a_posteriori_vault": "Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl",
+  "sovereign_vault": "Orb_Assistant/vault_system/posteriori",
+  "patterns_database": "Orb_Assistant/CALI_System/memory/patterns.db",
+  "authority": {
+    "decision_maker": "core_four",
+    "system_logics": ["inductive", "deductive", "intuitive"],
+    "softmax_role": "advisory_only"
+  },
+  "compatibility_links": {
+    "cali_skg": "Orb_Assistant/cali_skg"
+  },
+  "archive": "Orb_Assistant/archive/cognition_legacy_2026-07-12"
+}

@@ -1,0 +1,140 @@
+{
+  "timestamp": "2026-07-12T06:55:22.242380",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Test, test, testing, test or test?",
+    "response": "\"Hi Bryan, I understand you're asking about the status of our project. Can we discuss further over the phone? I'd like to clarify what's on your mind before we proceed.\".",
+    "context": {
+      "current_path": "/",
+      "source": "website_voice",
+      "core_reasoning": {
+        "leading_mind": "Inductive_Statistical",
+        "philosophical_reasoning": [
+          {
+            "philosopher": "John Locke",
+            "logic_type": "LOCKE_EMPIRICAL",
+            "raw_confidence": 0.7,
+            "truth_estimate": 0.63,
+            "accuracy": 0.7,
+            "reasoning_trace": "John Locke reasoning applied with sensory_evidence * reliability",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source"
+            ]
+          },
+          {
+            "philosopher": "David Hume",
+            "logic_type": "HUME_SKEPTICAL",
+            "raw_confidence": 0.38,
+            "truth_estimate": 0.342,
+            "accuracy": 0.38,
+            "reasoning_trace": "David Hume reasoning applied with impression_strength * constant_conjunction",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source"
+            ]
+          },
+          {
+            "philosopher": "Immanuel Kant",
+            "logic_type": "KANT_SYNTHETIC",
+            "raw_confidence": 0.8,
+            "truth_estimate": 0.72,
+            "accuracy": 0.8,
+            "reasoning_trace": "Immanuel Kant reasoning applied with a_priori_categories * empirical_intuitions",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source"
+            ]
+          },
+          {
+            "philosopher": "Baruch Spinoza",
+            "logic_type": "SPINOZA_MONISTIC",
+            "raw_confidence": 0.54,
+            "truth_estimate": 0.486,
+            "accuracy": 0.54,
+            "reasoning_trace": "Baruch Spinoza reasoning applied with geometric_necessity * adequate_ideas",
+            "evidence_count": 5,
+            "context_keys": [
+              "current_path",
+              "source"
+            ]
+          },
+          {
+            "philosopher": "Inductive_Statistical",
+            "logic_type": "INDUCTIVE_STATISTICAL",
+            "raw_confidence": 0.76,
+            "truth_estimate": 0.76,
+            "accuracy": 0.76,
+            "pattern_count": 2
+          },
+          {
+            "philosopher": "Deductive_Logical",
+            "logic_type": "DEDUCTIVE_LOGICAL",
+            "raw_confidence": 0.4,
+            "truth_estimate": 0.4,
+            "accuracy": 0.4,
+            "premise_count": 0
+          },
+          {
+            "philosopher": "Intuitive_Holistic",
+            "logic_type": "INTUITIVE_HOLISTIC",
+            "raw_confidence": 0.3198,
+            "truth_estimate": 0.3038,
+            "accuracy": 0.3198,
+            "gestalt_match": "holistic_similarity_detected",
+            "similarity": -0.6577
+          }
+        ],
+        "advisory_verdict": {
+          "confidence": 0.4491,
+          "truth_likelihood": 0.4042,
+          "weights": [
+            0.1377,
+            0.131,
+            0.1447,
+            0.1246,
+            0.1973,
+            0.1377,
+            0.1271
+          ],
+          "tension_detected": false,
+          "variance": 0.0209,
+          "outliers": [
+            {
+              "index": 4,
+              "philosopher": "Inductive_Statistical",
+              "confidence": 0.76,
+              "z_score": 2.31
+            }
+          ],
+          "advisory": "SoftMax consensus computed from Core 4 siblings."
+        },
+        "reasoning_mode": "",
+        "engine": "Orb_Assistant.CALI_System.cognition.cali_skg_v4"
+      }
+    },
+    "intent": {
+      "type": "cali_v4_reasoning"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "cali-skg-v4-state-v4",
+      "llm_core": "ollama:llama3.2:1b + cali-skg-v4-advisory",
+      "leading_mind": "Inductive_Statistical",
+      "confidence": 0.86,
+      "truth_likelihood": 0.86,
+      "core_reasoner": "Orb_Assistant.CALI_System.cognition.cali_skg_v4",
+      "state_engine": "Orb_Assistant.CALI_System.cognition.cali_state_v4"
+    },
+    "llm_core": "ollama:llama3.2:1b + cali-skg-v4-advisory",
+    "cognition_provider": "cali_skg"
+  },
+  "hash_id": "427c1596e3fcb28a",
+  "confidence": 0.86,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

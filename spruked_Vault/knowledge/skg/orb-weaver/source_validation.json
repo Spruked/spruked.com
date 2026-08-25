@@ -1,0 +1,171 @@
+{
+  "schema": "orb_weaver.source_validation.v1",
+  "status": "COMPLETE",
+  "input_count": 27,
+  "validated_count": 27,
+  "invalid_count": 0,
+  "checks": [
+    {
+      "chunk_id": "95cdca3d81a3ce95795f",
+      "source_url": "https://spruked.com",
+      "status": "VALID",
+      "content_hash": "03c154307ac65e60d499a3c5dbb131fe"
+    },
+    {
+      "chunk_id": "99e85dc607d8b6fa68e1",
+      "source_url": "https://spruked.com/products/prompt-like-a-pro",
+      "status": "VALID",
+      "content_hash": "7e0365d5c6e2050691d46b1b53bba5fe"
+    },
+    {
+      "chunk_id": "7f382bda2ebc47698f6b",
+      "source_url": "https://spruked.com/orb-marketplace",
+      "status": "VALID",
+      "content_hash": "58d73385783221bf0961e7c0f4d20a69"
+    },
+    {
+      "chunk_id": "f041f9804cb836e0572d",
+      "source_url": "https://spruked.com/about",
+      "status": "VALID",
+      "content_hash": "77e0cf8c27e67aa72ef8c812b8148cf3"
+    },
+    {
+      "chunk_id": "1d10fe0b02944d4a48f0",
+      "source_url": "https://spruked.com/admin",
+      "status": "VALID",
+      "content_hash": "7bfc56a51a1073d3f1bcef67ff40a6a8"
+    },
+    {
+      "chunk_id": "eff2910660482e4caea5",
+      "source_url": "https://spruked.com/goat",
+      "status": "VALID",
+      "content_hash": "9dce5ff0e5b085e272a10ab1abc9bcc6"
+    },
+    {
+      "chunk_id": "ac106088ae0b1d4c0d04",
+      "source_url": "https://spruked.com/checkout",
+      "status": "VALID",
+      "content_hash": "b8799d8bd5e81e094cd2b77397919842"
+    },
+    {
+      "chunk_id": "9c7e3a0419da46f48207",
+      "source_url": "https://spruked.com/products",
+      "status": "VALID",
+      "content_hash": "2a68d094190f83752074afe87c03ef81"
+    },
+    {
+      "chunk_id": "e1500720f8e6cfe9f93d",
+      "source_url": "https://spruked.com/artifacts",
+      "status": "VALID",
+      "content_hash": "9283417e7b386473575a6c5eb0a3ac72"
+    },
+    {
+      "chunk_id": "c1b8dbbbd613ad068d1b",
+      "source_url": "https://spruked.com/cart?add=goat-legacy-session",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "9659542a3fcaf685d521",
+      "source_url": "https://spruked.com/cart?add=prompt-like-a-pro-pdf",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "7d057d703eeb9200ccc2",
+      "source_url": "https://spruked.com/products/orb-weaver",
+      "status": "VALID",
+      "content_hash": "7d4912ae3ae9ae2c44de26e1e2842881"
+    },
+    {
+      "chunk_id": "71813c9ccabe8550b937",
+      "source_url": "https://spruked.com/products/alpha-certsig",
+      "status": "VALID",
+      "content_hash": "6df6183387ad003f7f5557535a6a4619"
+    },
+    {
+      "chunk_id": "c4c08153ce24e9785525",
+      "source_url": "https://spruked.com/cart",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "48d12491ab427b4d8279",
+      "source_url": "https://spruked.com/cart?add=alpha-certsig-license",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "602c8c3707fbb7785241",
+      "source_url": "https://spruked.com/cart?add=truemark-mint-object",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "bc39303908d9db50f47e",
+      "source_url": "https://spruked.com/products/truemark-mint",
+      "status": "VALID",
+      "content_hash": "559706c1c2e18b2ae5517c4834dcaf7c"
+    },
+    {
+      "chunk_id": "3aa6224b54aafc044665",
+      "source_url": "https://spruked.com/cart?add=orb-skin-nature-source",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "a5f9be337cba70e149e0",
+      "source_url": "https://spruked.com/cart?add=orb-skin-example-two",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "bac1fc39bb8ff0abf7d0",
+      "source_url": "https://spruked.com/cart?add=orb-skin-blue-sample",
+      "status": "VALID",
+      "content_hash": "326dcbb7386c6b126b415bfb9bd38965"
+    },
+    {
+      "chunk_id": "d63a60726d7cea941642",
+      "source_url": "https://spruked.com/products/truemark-mint/objects",
+      "status": "VALID",
+      "content_hash": "5ac1083347eb7d52182ba509f13e610e"
+    },
+    {
+      "chunk_id": "38a9ebb7aff836262669",
+      "source_url": "https://spruked.com/truemark/example-object",
+      "status": "VALID",
+      "content_hash": "2a32dcde0e5c2f6a5344fe3f49c8a463"
+    },
+    {
+      "chunk_id": "4bda11ef7ac41221f8c0",
+      "source_url": "https://spruked.com/products/truemark-mint/object-types",
+      "status": "VALID",
+      "content_hash": "850f47893b4e66914cb93103848f23dc"
+    },
+    {
+      "chunk_id": "d2a989a40788289264a8",
+      "source_url": "https://spruked.com/sitemap.xml",
+      "status": "VALID",
+      "content_hash": "79887d51716523e34f42fa45d8c08d4a"
+    },
+    {
+      "chunk_id": "e974823d2caef74c941a",
+      "source_url": "https://spruked.com/robots.txt",
+      "status": "VALID",
+      "content_hash": "8bf000daa60b2a71e4a0410a729627e0"
+    },
+    {
+      "chunk_id": "663b549006942ec6b986",
+      "source_url": "https://spruked.com/brand",
+      "status": "VALID",
+      "content_hash": "7401959b86c002247bf6e70cc882192e"
+    },
+    {
+      "chunk_id": "0ec235e3ce907e53b3bf",
+      "source_url": "https://spruked.com/orb",
+      "status": "VALID",
+      "content_hash": "7838c1dbe9aeb442dba92078bfa988c7"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+severity,category,title,impact_score,description,recommendation
+critical,on-page,Missing H1 Tags,80,1 pages are missing H1 headings,Every page should have exactly one H1 tag that describes the main topic
+warnings,on-page,Meta Description Issues,55,16 pages have missing or poorly optimized meta descriptions,Write compelling meta descriptions between 50-160 characters
+warnings,content,Thin Content,65,15 pages have less than 300 words,"Expand thin pages with comprehensive, valuable content"
+warnings,content,Weak Semantic Coverage,62,18 pages have shallow topical depth or low semantic coverage,"Expand pages around the primary topic, related entities, questions, and supporting subtopics"
+warnings,content,Low ORB Semantic Space Score,74,1 pages cover less than 65% of their expected semantic space,"Add missing entities, questions, supporting subtopics, and schema-aligned language"
+warnings,performance,Slow Page Load Times,70,5 pages load slower than 3 seconds. Average: 2274ms,"Optimize images, enable compression, use CDN, minimize JavaScript"
+warnings,technical,Missing Canonical Tags,55,25 pages lack canonical tags,Add canonical tags to prevent duplicate content issues
+warnings,technical,Potential Orphan Pages,66,2 crawled pages have no incoming links from other crawled pages,"Link these pages from navigation, hub pages, or related body content"
+opportunities,schema,Schema Markup Opportunity,50,25 pages lack structured data,Add schema markup (JSON-LD) for rich snippets and ORB-readable business context

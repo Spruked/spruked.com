@@ -1,0 +1,650 @@
+{
+  "timestamp": "2026-07-07T20:03:33.164016",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Say hello in one short sentence.",
+    "response": "Hello.",
+    "context": {
+      "current_path": "/",
+      "source": "website_voice",
+      "currentPath": "/",
+      "providerTimeoutMs": 3000,
+      "core_reasoning": {
+        "source": "cali_skg.core.core_4_minds",
+        "leading_mind": "Baruch Spinoza",
+        "mind_scores": [
+          {
+            "mind": "Baruch Spinoza",
+            "mind_id": "spinoza_monism_skg",
+            "system": "Geometric Rationalism & Substance Monism",
+            "score": 0.2,
+            "overlap": [
+              "one"
+            ],
+            "matched_concepts": [
+              {
+                "label": "Cartesian Dualism",
+                "overlap": [
+                  "one"
+                ]
+              }
+            ]
+          },
+          {
+            "mind": "David Hume",
+            "mind_id": "hume_skepticism_skg",
+            "system": "Empirical Skepticism & Associationism",
+            "score": 0.0,
+            "overlap": [],
+            "matched_concepts": []
+          },
+          {
+            "mind": "John Locke",
+            "mind_id": "locke_empiricism_skg",
+            "system": "Empiricist Logical Reasoning",
+            "score": 0.0,
+            "overlap": [],
+            "matched_concepts": []
+          },
+          {
+            "mind": "Immanuel Kant",
+            "mind_id": "kant_critical_skg",
+            "system": "Transcendental Idealism & Critical Philosophy",
+            "score": 0.0,
+            "overlap": [],
+            "matched_concepts": []
+          }
+        ],
+        "matched_concepts": [
+          {
+            "label": "Cartesian Dualism",
+            "overlap": [
+              "one"
+            ]
+          }
+        ],
+        "vault_context": {
+          "a_priori": [
+            {
+              "hash_id": "4d3a2e29fb1b0c83",
+              "category": "a_priori_core_mind",
+              "source": "core_4_minds",
+              "confidence": 1.0,
+              "overlap": [
+                "one"
+              ],
+              "content": {
+                "kind": "core_mind_axiom",
+                "mind": "Baruch Spinoza",
+                "mind_id": "spinoza_monism_skg",
+                "system": "Geometric Rationalism & Substance Monism",
+                "core_axiom": {
+                  "node_id": "SPINOZA_001",
+                  "label": "Substance Monism",
+                  "type": "FOUNDATIONAL_PRINCIPLE",
+                  "definition": "Only one substance exists (God/Nature); all else is modes of this substance",
+                  "properties": {
+                    "certainty": "DEMONSTRATED_GEOMETRICALLY",
+                    "source_text": "Ethics",
+                    "book": "Part I, Propositions 1-15",
+                    "method": "More geometrico"
+                  }
+                },
+                "source": "/home/bryan/projects/spruked.com/cali_skg/core/core_4_minds/bspinoza/spinoza_monism_skg.json"
+              },
+              "score": 0.2
+            }
+          ],
+          "a_posteriori": [
+            {
+              "hash_id": "3b818909cc59d68b",
+              "category": "orb_exchange",
+              "source": "website_orb",
+              "confidence": 0.86,
+              "overlap": [
+                "hello",
+                "one",
+                "say",
+                "sentence",
+                "short"
+              ],
+              "content": {
+                "kind": "website_orb_exchange",
+                "prompt": "Say hello in one short sentence.",
+                "response": "Hello.",
+                "context": {
+                  "current_path": "/",
+                  "source": "website_voice",
+                  "currentPath": "/",
+                  "providerTimeoutMs": 3000,
+                  "core_reasoning": {
+                    "source": "cali_skg.core.core_4_minds",
+                    "leading_mind": "Baruch Spinoza",
+                    "mind_scores": [
+                      {
+                        "mind": "Baruch Spinoza",
+                        "mind_id": "spinoza_monism_skg",
+                        "system": "Geometric Rationalism & Substance Monism",
+                        "score": 0.2,
+                        "overlap": [
+                          "one"
+                        ],
+                        "matched_concepts": [
+                          {
+                            "label": "Cartesian Dualism",
+                            "overlap": [
+                              "one"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "mind": "David Hume",
+                        "mind_id": "hume_skepticism_skg",
+                        "system": "Empirical Skepticism & Associationism",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      },
+                      {
+                        "mind": "John Locke",
+                        "mind_id": "locke_empiricism_skg",
+                        "system": "Empiricist Logical Reasoning",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      },
+                      {
+                        "mind": "Immanuel Kant",
+                        "mind_id": "kant_critical_skg",
+                        "system": "Transcendental Idealism & Critical Philosophy",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      }
+                    ],
+                    "matched_concepts": [
+                      {
+                        "label": "Cartesian Dualism",
+                        "overlap": [
+                          "one"
+                        ]
+                      }
+                    ],
+                    "vault_context": {
+                      "a_priori": [
+                        {
+                          "hash_id": "4d3a2e29fb1b0c83",
+                          "category": "a_priori_core_mind",
+                          "source": "core_4_minds",
+                          "confidence": 1.0,
+                          "overlap": [
+                            "one"
+                          ],
+                          "content": {
+                            "kind": "core_mind_axiom",
+                            "mind": "Baruch Spinoza",
+                            "mind_id": "spinoza_monism_skg",
+                            "system": "Geometric Rationalism & Substance Monism",
+                            "core_axiom": {
+                              "node_id": "SPINOZA_001",
+                              "label": "Substance Monism",
+                              "type": "FOUNDATIONAL_PRINCIPLE",
+                              "definition": "Only one substance exists (God/Nature); all else is modes of this substance",
+                              "properties": {
+                                "certainty": "DEMONSTRATED_GEOMETRICALLY",
+                                "source_text": "Ethics",
+                                "book": "Part I, Propositions 1-15",
+                                "method": "More geometrico"
+                              }
+                            },
+                            "source": "/home/bryan/projects/spruked.com/cali_skg/core/core_4_minds/bspinoza/spinoza_monism_skg.json"
+                          },
+                          "score": 0.2
+                        }
+                      ],
+                      "a_posteriori": [
+                        {
+                          "hash_id": "0724c20a9ea87fa8",
+                          "category": "orb_exchange",
+                          "source": "website_orb",
+                          "confidence": 0.86,
+                          "overlap": [
+                            "hello",
+                            "one",
+                            "say",
+                            "sentence"
+                          ],
+                          "content": {
+                            "kind": "website_orb_exchange",
+                            "prompt": "Say hello in one sentence.",
+                            "response": "I do not have a dedicated function for that yet. I saved it in the learning queue.",
+                            "context": {
+                              "current_path": "/",
+                              "core_reasoning": {
+                                "source": "cali_skg.core.core_4_minds",
+                                "leading_mind": "Baruch Spinoza",
+                                "mind_scores": [
+                                  {
+                                    "mind": "Baruch Spinoza",
+                                    "mind_id": "spinoza_monism_skg",
+                                    "system": "Geometric Rationalism & Substance Monism",
+                                    "score": 0.25,
+                                    "overlap": [
+                                      "one"
+                                    ],
+                                    "matched_concepts": [
+                                      {
+                                        "label": "Cartesian Dualism",
+                                        "overlap": [
+                                          "one"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "mind": "David Hume",
+                                    "mind_id": "hume_skepticism_skg",
+                                    "system": "Empirical Skepticism & Associationism",
+                                    "score": 0.0,
+                                    "overlap": [],
+                                    "matched_concepts": []
+                                  },
+                                  {
+                                    "mind": "John Locke",
+                                    "mind_id": "locke_empiricism_skg",
+                                    "system": "Empiricist Logical Reasoning",
+                                    "score": 0.0,
+                                    "overlap": [],
+                                    "matched_concepts": []
+                                  },
+                                  {
+                                    "mind": "Immanuel Kant",
+                                    "mind_id": "kant_critical_skg",
+                                    "system": "Transcendental Idealism & Critical Philosophy",
+                                    "score": 0.0,
+                                    "overlap": [],
+                                    "matched_concepts": []
+                                  }
+                                ],
+                                "matched_concepts": [
+                                  {
+                                    "label": "Cartesian Dualism",
+                                    "overlap": [
+                                      "one"
+                                    ]
+                                  }
+                                ],
+                                "vault_context": {
+                                  "a_priori": [
+                                    {
+                                      "hash_id": "4d3a2e29fb1b0c83",
+                                      "category": "a_priori_core_mind",
+                                      "source": "core_4_minds",
+                                      "confidence": 1.0,
+                                      "overlap": [
+                                        "one"
+                                      ],
+                                      "content": {
+                                        "kind": "core_mind_axiom",
+                                        "mind": "Baruch Spinoza",
+                                        "mind_id": "spinoza_monism_skg",
+                                        "system": "Geometric Rationalism & Substance Monism",
+                                        "core_axiom": {
+                                          "node_id": "SPINOZA_001",
+                                          "label": "Substance Monism",
+                                          "type": "FOUNDATIONAL_PRINCIPLE",
+                                          "definition": "Only one substance exists (God/Nature); all else is modes of this substance",
+                                          "properties": {
+                                            "certainty": "DEMONSTRATED_GEOMETRICALLY",
+                                            "source_text": "Ethics",
+                                            "book": "Part I, Propositions 1-15",
+                                            "method": "More geometrico"
+                                          }
+                                        },
+                                        "source": "/home/bryan/projects/spruked.com/cali_skg/core/core_4_minds/bspinoza/spinoza_monism_skg.json"
+                                      },
+                                      "score": 0.25
+                                    }
+                                  ],
+                                  "a_posteriori": [
+                                    {
+                                      "hash_id": "251cc22dbfbfc7b3",
+                                      "category": "orb_exchange",
+                                      "source": "website_orb",
+                                      "confidence": 0.96,
+                                      "overlap": [
+                                        "hello"
+                                      ],
+                                      "content": {
+                                        "kind": "website_orb_exchange",
+                                        "prompt": "hello",
+                                        "response": "Hey. I'm here.",
+                                        "context": {
+                                          "source": "direct-memory-test"
+                                        },
+                                        "intent": {
+                                          "type": "fast_path"
+                                        },
+                                        "metadata": {
+                                          "provider": "cali_skg",
+                                          "cognition": "governed-cali-articulation",
+                                          "llm_core": "fast-path",
+                                          "leading_mind": "cali",
+                                          "confidence": 0.96,
+                                          "truth_likelihood": 0.96
+                                        },
+                                        "llm_core": "fast-path",
+                                        "cognition_provider": "cali_skg"
+                                      },
+                                      "score": 0.25
+                                    }
+                                  ],
+                                  "paths": {
+                                    "a_priori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl",
+                                    "a_posteriori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl",
+                                    "posteriori_objects": "/home/bryan/projects/spruked.com/Orb_Assistant/vault_system/posteriori"
+                                  }
+                                },
+                                "advisory": "Baruch Spinoza is the leading core mind for this prompt."
+                              }
+                            },
+                            "intent": {
+                              "type": "unknown"
+                            },
+                            "metadata": {
+                              "provider": "cali_skg",
+                              "cognition": "governed-cali-articulation",
+                              "llm_core": "cali-local-fallback",
+                              "leading_mind": "Baruch Spinoza",
+                              "confidence": 0.86,
+                              "truth_likelihood": 0.86,
+                              "core_reasoner": "cali_skg.core.core_4_minds"
+                            },
+                            "llm_core": "cali-local-fallback",
+                            "cognition_provider": "cali_skg"
+                          },
+                          "score": 0.8
+                        },
+                        {
+                          "hash_id": "251cc22dbfbfc7b3",
+                          "category": "orb_exchange",
+                          "source": "website_orb",
+                          "confidence": 0.96,
+                          "overlap": [
+                            "hello"
+                          ],
+                          "content": {
+                            "kind": "website_orb_exchange",
+                            "prompt": "hello",
+                            "response": "Hey. I'm here.",
+                            "context": {
+                              "source": "direct-memory-test"
+                            },
+                            "intent": {
+                              "type": "fast_path"
+                            },
+                            "metadata": {
+                              "provider": "cali_skg",
+                              "cognition": "governed-cali-articulation",
+                              "llm_core": "fast-path",
+                              "leading_mind": "cali",
+                              "confidence": 0.96,
+                              "truth_likelihood": 0.96
+                            },
+                            "llm_core": "fast-path",
+                            "cognition_provider": "cali_skg"
+                          },
+                          "score": 0.2
+                        }
+                      ],
+                      "paths": {
+                        "a_priori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl",
+                        "a_posteriori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl",
+                        "posteriori_objects": "/home/bryan/projects/spruked.com/Orb_Assistant/vault_system/posteriori"
+                      }
+                    },
+                    "advisory": "Baruch Spinoza is the leading core mind for this prompt."
+                  }
+                },
+                "intent": {
+                  "type": "unknown"
+                },
+                "metadata": {
+                  "provider": "cali_skg",
+                  "cognition": "governed-cali-articulation",
+                  "llm_core": "ollama:llama3.2:1b",
+                  "leading_mind": "Baruch Spinoza",
+                  "confidence": 0.86,
+                  "truth_likelihood": 0.86,
+                  "core_reasoner": "cali_skg.core.core_4_minds"
+                },
+                "llm_core": "ollama:llama3.2:1b",
+                "cognition_provider": "cali_skg"
+              },
+              "score": 1.0
+            },
+            {
+              "hash_id": "0724c20a9ea87fa8",
+              "category": "orb_exchange",
+              "source": "website_orb",
+              "confidence": 0.86,
+              "overlap": [
+                "hello",
+                "one",
+                "say",
+                "sentence"
+              ],
+              "content": {
+                "kind": "website_orb_exchange",
+                "prompt": "Say hello in one sentence.",
+                "response": "I do not have a dedicated function for that yet. I saved it in the learning queue.",
+                "context": {
+                  "current_path": "/",
+                  "core_reasoning": {
+                    "source": "cali_skg.core.core_4_minds",
+                    "leading_mind": "Baruch Spinoza",
+                    "mind_scores": [
+                      {
+                        "mind": "Baruch Spinoza",
+                        "mind_id": "spinoza_monism_skg",
+                        "system": "Geometric Rationalism & Substance Monism",
+                        "score": 0.25,
+                        "overlap": [
+                          "one"
+                        ],
+                        "matched_concepts": [
+                          {
+                            "label": "Cartesian Dualism",
+                            "overlap": [
+                              "one"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "mind": "David Hume",
+                        "mind_id": "hume_skepticism_skg",
+                        "system": "Empirical Skepticism & Associationism",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      },
+                      {
+                        "mind": "John Locke",
+                        "mind_id": "locke_empiricism_skg",
+                        "system": "Empiricist Logical Reasoning",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      },
+                      {
+                        "mind": "Immanuel Kant",
+                        "mind_id": "kant_critical_skg",
+                        "system": "Transcendental Idealism & Critical Philosophy",
+                        "score": 0.0,
+                        "overlap": [],
+                        "matched_concepts": []
+                      }
+                    ],
+                    "matched_concepts": [
+                      {
+                        "label": "Cartesian Dualism",
+                        "overlap": [
+                          "one"
+                        ]
+                      }
+                    ],
+                    "vault_context": {
+                      "a_priori": [
+                        {
+                          "hash_id": "4d3a2e29fb1b0c83",
+                          "category": "a_priori_core_mind",
+                          "source": "core_4_minds",
+                          "confidence": 1.0,
+                          "overlap": [
+                            "one"
+                          ],
+                          "content": {
+                            "kind": "core_mind_axiom",
+                            "mind": "Baruch Spinoza",
+                            "mind_id": "spinoza_monism_skg",
+                            "system": "Geometric Rationalism & Substance Monism",
+                            "core_axiom": {
+                              "node_id": "SPINOZA_001",
+                              "label": "Substance Monism",
+                              "type": "FOUNDATIONAL_PRINCIPLE",
+                              "definition": "Only one substance exists (God/Nature); all else is modes of this substance",
+                              "properties": {
+                                "certainty": "DEMONSTRATED_GEOMETRICALLY",
+                                "source_text": "Ethics",
+                                "book": "Part I, Propositions 1-15",
+                                "method": "More geometrico"
+                              }
+                            },
+                            "source": "/home/bryan/projects/spruked.com/cali_skg/core/core_4_minds/bspinoza/spinoza_monism_skg.json"
+                          },
+                          "score": 0.25
+                        }
+                      ],
+                      "a_posteriori": [
+                        {
+                          "hash_id": "251cc22dbfbfc7b3",
+                          "category": "orb_exchange",
+                          "source": "website_orb",
+                          "confidence": 0.96,
+                          "overlap": [
+                            "hello"
+                          ],
+                          "content": {
+                            "kind": "website_orb_exchange",
+                            "prompt": "hello",
+                            "response": "Hey. I'm here.",
+                            "context": {
+                              "source": "direct-memory-test"
+                            },
+                            "intent": {
+                              "type": "fast_path"
+                            },
+                            "metadata": {
+                              "provider": "cali_skg",
+                              "cognition": "governed-cali-articulation",
+                              "llm_core": "fast-path",
+                              "leading_mind": "cali",
+                              "confidence": 0.96,
+                              "truth_likelihood": 0.96
+                            },
+                            "llm_core": "fast-path",
+                            "cognition_provider": "cali_skg"
+                          },
+                          "score": 0.25
+                        }
+                      ],
+                      "paths": {
+                        "a_priori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl",
+                        "a_posteriori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl",
+                        "posteriori_objects": "/home/bryan/projects/spruked.com/Orb_Assistant/vault_system/posteriori"
+                      }
+                    },
+                    "advisory": "Baruch Spinoza is the leading core mind for this prompt."
+                  }
+                },
+                "intent": {
+                  "type": "unknown"
+                },
+                "metadata": {
+                  "provider": "cali_skg",
+                  "cognition": "governed-cali-articulation",
+                  "llm_core": "cali-local-fallback",
+                  "leading_mind": "Baruch Spinoza",
+                  "confidence": 0.86,
+                  "truth_likelihood": 0.86,
+                  "core_reasoner": "cali_skg.core.core_4_minds"
+                },
+                "llm_core": "cali-local-fallback",
+                "cognition_provider": "cali_skg"
+              },
+              "score": 0.8
+            },
+            {
+              "hash_id": "251cc22dbfbfc7b3",
+              "category": "orb_exchange",
+              "source": "website_orb",
+              "confidence": 0.96,
+              "overlap": [
+                "hello"
+              ],
+              "content": {
+                "kind": "website_orb_exchange",
+                "prompt": "hello",
+                "response": "Hey. I'm here.",
+                "context": {
+                  "source": "direct-memory-test"
+                },
+                "intent": {
+                  "type": "fast_path"
+                },
+                "metadata": {
+                  "provider": "cali_skg",
+                  "cognition": "governed-cali-articulation",
+                  "llm_core": "fast-path",
+                  "leading_mind": "cali",
+                  "confidence": 0.96,
+                  "truth_likelihood": 0.96
+                },
+                "llm_core": "fast-path",
+                "cognition_provider": "cali_skg"
+              },
+              "score": 0.2
+            }
+          ],
+          "paths": {
+            "a_priori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl",
+            "a_posteriori": "/home/bryan/projects/spruked.com/Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl",
+            "posteriori_objects": "/home/bryan/projects/spruked.com/Orb_Assistant/vault_system/posteriori"
+          }
+        },
+        "advisory": "Baruch Spinoza is the leading core mind for this prompt."
+      }
+    },
+    "intent": {
+      "type": "unknown"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "governed-cali-articulation",
+      "llm_core": "ollama:llama3.2:1b",
+      "leading_mind": "Baruch Spinoza",
+      "confidence": 0.86,
+      "truth_likelihood": 0.86,
+      "core_reasoner": "cali_skg.core.core_4_minds"
+    },
+    "llm_core": "ollama:llama3.2:1b",
+    "cognition_provider": "cali_skg"
+  },
+  "hash_id": "b7dad47b33ac1919",
+  "confidence": 0.86,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

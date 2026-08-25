@@ -1,0 +1,150 @@
+{
+  "timestamp": "2026-07-12T06:53:01.565624",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Kelly",
+    "response": "It seems possible that Intuitive_Holistic offers the strongest frame for 'Kelly'.",
+    "context": {
+      "current_path": "/",
+      "source": "website_voice",
+      "currentPath": "/",
+      "providerTimeoutMs": 5000,
+      "core_reasoning": {
+        "leading_mind": "Intuitive_Holistic",
+        "philosophical_reasoning": [
+          {
+            "philosopher": "John Locke",
+            "logic_type": "LOCKE_EMPIRICAL",
+            "raw_confidence": 0.24499999999999997,
+            "truth_estimate": 0.2205,
+            "accuracy": 0.24499999999999997,
+            "reasoning_trace": "John Locke reasoning applied with sensory_evidence * reliability",
+            "evidence_count": 0,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "David Hume",
+            "logic_type": "HUME_SKEPTICAL",
+            "raw_confidence": 0.38,
+            "truth_estimate": 0.342,
+            "accuracy": 0.38,
+            "reasoning_trace": "David Hume reasoning applied with impression_strength * constant_conjunction",
+            "evidence_count": 0,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "Immanuel Kant",
+            "logic_type": "KANT_SYNTHETIC",
+            "raw_confidence": 0.2,
+            "truth_estimate": 0.18,
+            "accuracy": 0.2,
+            "reasoning_trace": "Immanuel Kant reasoning applied with a_priori_categories * empirical_intuitions",
+            "evidence_count": 0,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "Baruch Spinoza",
+            "logic_type": "SPINOZA_MONISTIC",
+            "raw_confidence": 0.54,
+            "truth_estimate": 0.486,
+            "accuracy": 0.54,
+            "reasoning_trace": "Baruch Spinoza reasoning applied with geometric_necessity * adequate_ideas",
+            "evidence_count": 0,
+            "context_keys": [
+              "current_path",
+              "source",
+              "currentPath",
+              "providerTimeoutMs"
+            ]
+          },
+          {
+            "philosopher": "Inductive_Statistical",
+            "logic_type": "INDUCTIVE_STATISTICAL",
+            "raw_confidence": 0.5,
+            "truth_estimate": 0.5,
+            "accuracy": 0.5,
+            "pattern_count": 0
+          },
+          {
+            "philosopher": "Deductive_Logical",
+            "logic_type": "DEDUCTIVE_LOGICAL",
+            "raw_confidence": 0.4,
+            "truth_estimate": 0.4,
+            "accuracy": 0.4,
+            "premise_count": 0
+          },
+          {
+            "philosopher": "Intuitive_Holistic",
+            "logic_type": "INTUITIVE_HOLISTIC",
+            "raw_confidence": 0.7075,
+            "truth_estimate": 0.6721,
+            "accuracy": 0.7075,
+            "gestalt_match": "holistic_similarity_detected",
+            "similarity": 0.45
+          }
+        ],
+        "advisory_verdict": {
+          "confidence": 0.4135,
+          "truth_likelihood": 0.3721,
+          "weights": [
+            0.1224,
+            0.136,
+            0.117,
+            0.1293,
+            0.158,
+            0.1429,
+            0.1944
+          ],
+          "tension_detected": false,
+          "variance": 0.0257,
+          "outliers": [
+            {
+              "index": 6,
+              "philosopher": "Intuitive_Holistic",
+              "confidence": 0.7075,
+              "z_score": 2.01
+            }
+          ],
+          "advisory": "SoftMax consensus computed from Core 4 siblings."
+        },
+        "reasoning_mode": "",
+        "engine": "Orb_Assistant.CALI_System.cognition.cali_skg_v4"
+      }
+    },
+    "intent": {
+      "type": "cali_v4_reasoning"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "cali-skg-v4-state-v4",
+      "llm_core": "Orb_Assistant/CALI_System/cognition/cali_skg_v4.py + cali_state_v4.py",
+      "leading_mind": "Intuitive_Holistic",
+      "confidence": 0.86,
+      "truth_likelihood": 0.86,
+      "core_reasoner": "Orb_Assistant.CALI_System.cognition.cali_skg_v4",
+      "state_engine": "Orb_Assistant.CALI_System.cognition.cali_state_v4"
+    },
+    "llm_core": "Orb_Assistant/CALI_System/cognition/cali_skg_v4.py + cali_state_v4.py",
+    "cognition_provider": "cali_skg"
+  },
+  "hash_id": "811cc9fafd80c25f",
+  "confidence": 0.86,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

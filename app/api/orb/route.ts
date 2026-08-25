@@ -17,7 +17,7 @@ import primitiveResponseCache from '@/Orb_Assistant/orb_core_standard/primitive_
 import primitiveNormalizationAliases from '@/Orb_Assistant/orb_core_standard/primitive_normalization_aliases.json';
 import { ORB_CAPABILITIES, selectWebsiteTool } from '@/lib/orb-capability-registry';
 import { publicSiteWorld } from '@/lib/orb-site-world';
-import { findPointerTarget } from '@/lib/orb-pointer-map-server';
+import { findLiveBrowserTarget, findPointerTarget } from '@/lib/orb-pointer-map-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -343,26 +343,26 @@ async function synthesizeKokoro(text: string): Promise<Record<string, any>> {
 }
 
 async function synthesizeServerVoice(text: string): Promise<Record<string, any>> {
-  const qwenResult = await synthesizeQwen(text);
-  if (qwenResult.voice_ready) {
+  const kokoroResult = await synthesizeKokoro(text);
+  if (kokoroResult.voice_ready) {
     return {
-      ...qwenResult,
+      ...kokoroResult,
       metadata: {
-        ...(qwenResult.metadata || {}),
-        voice_priority: [QWEN_TTS_PROVIDER, KOKORO_TTS_PROVIDER],
+        ...(kokoroResult.metadata || {}),
+        voice_priority: [KOKORO_TTS_PROVIDER, QWEN_TTS_PROVIDER],
         fallback_used: false,
       },
     };
   }
 
-  const kokoroResult = await synthesizeKokoro(text);
+  const qwenResult = await synthesizeQwen(text);
   return {
-    ...kokoroResult,
+    ...qwenResult,
     metadata: {
-      ...(kokoroResult.metadata || {}),
-      voice_priority: [QWEN_TTS_PROVIDER, KOKORO_TTS_PROVIDER],
-      fallback_used: Boolean(kokoroResult.voice_ready),
-      primary_tts_error: qwenResult.tts_error || 'qwen tts unavailable',
+      ...(qwenResult.metadata || {}),
+      voice_priority: [KOKORO_TTS_PROVIDER, QWEN_TTS_PROVIDER],
+      fallback_used: Boolean(qwenResult.voice_ready),
+      primary_tts_error: kokoroResult.tts_error || 'kokoro tts unavailable',
     },
   };
 }
@@ -556,8 +556,8 @@ function caliOllamaModel(): string {
     process.env.CALI_OLLAMA_MODEL_NAME
     || process.env.LLAMA_SERVER_MODEL
     || process.env.OLLAMA_MODEL
-    || 'ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF'
-  ).trim() || 'ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF';
+    || 'orb-local'
+  ).trim() || 'orb-local';
 }
 
 function ollamaBase(): string {
@@ -566,7 +566,7 @@ function ollamaBase(): string {
     || process.env.LLAMA_SERVER_BASE_URL
     || process.env.LLAMA_CPP_BASE_URL
     || process.env.OLLAMA_BASE_URL
-    || 'http://127.0.0.1:8012'
+    || 'http://127.0.0.1:8081'
   );
 }
 
@@ -805,10 +805,10 @@ async function queryCaliSkg(prompt: string, context: Record<string, unknown>, em
       confidence: Number(data?.metadata?.confidence ?? 0.82),
       truth_likelihood: Number(data?.metadata?.truth_likelihood ?? 0.82),
       provider: String(data?.metadata?.provider || 'cali_skg'),
-      cognition: String(data?.metadata?.cognition || 'llama3.2:1b + cali-skg-articulation'),
-      llm_core: String(data?.metadata?.llm_core || `ollama:${caliOllamaModel()}`),
-      audio_engine: QWEN_TTS_PROVIDER,
-      voice: qwenVoice(),
+      cognition: String(data?.metadata?.cognition || 'cali-skg + llama.cpp qwen2.5-1.5b-instruct articulation'),
+      llm_core: String(data?.metadata?.llm_core || `llama.cpp:${caliOllamaModel()}`),
+      audio_engine: KOKORO_TTS_PROVIDER,
+      voice: kokoroVoice(),
       doctrine_ddr: Number(data?.metadata?.doctrine_ddr ?? 0),
       doctrine_state: String(data?.metadata?.doctrine_state || ''),
       governance_wrapper: data?.metadata?.governance_wrapper || null,
@@ -819,7 +819,7 @@ async function queryCaliSkg(prompt: string, context: Record<string, unknown>, em
     intent: data?.intent || null,
     memory: data?.memory || null,
     audio_url: null,
-    audio_engine: QWEN_TTS_PROVIDER,
+    audio_engine: KOKORO_TTS_PROVIDER,
   };
 }
 
@@ -911,7 +911,7 @@ function providerReasoningProfile(providerValue: string, response: Record<string
   if (providerValue === 'native') return 'CALI SKG website runtime';
   if (providerValue === 'cali-personal') return 'CALI personal query';
   if (providerValue === 'calixone') return 'Cali X One /api/interact';
-  if (providerValue === 'cali_skg') return `ollama:${caliOllamaModel()} + cali-skg-articulation`;
+  if (providerValue === 'cali_skg') return `llama.cpp:${caliOllamaModel()} + cali-skg-articulation`;
   return providerValue || 'unknown';
 }
 
@@ -922,14 +922,14 @@ function responseProvider(provider: CognitionProvider, response: Record<string, 
 function responseVoiceEngine(response: Record<string, any> | null, action: string): string {
   const engine = response?.audio_engine || response?.voice?.engine || response?.metadata?.audio_engine;
   if (engine) return String(engine);
-  if (action === 'query' || action === 'speak') return QWEN_TTS_PROVIDER;
-  return QWEN_TTS_PROVIDER;
+  if (action === 'query' || action === 'speak') return KOKORO_TTS_PROVIDER;
+  return KOKORO_TTS_PROVIDER;
 }
 
 function responseVoiceProfile(response: Record<string, any> | null): string {
   const voice = response?.voice?.profile || response?.voice?.voice || response?.voice || response?.metadata?.voice;
   if (voice && typeof voice !== 'object') return String(voice);
-  return qwenVoice();
+  return kokoroVoice();
 }
 
 function contextSourceForRequest(request: NextRequest, body: any): string {
@@ -1025,8 +1025,8 @@ export async function GET() {
       context_source: 'Spruked public website context + CALI SKG website runtime + /mnt/r/orb_mesh',
       reasoning_mode: providerReasoningMode(cognitionProvider()),
       fallback_state: 'none',
-      voice_engine: QWEN_TTS_PROVIDER,
-      voice_profile: qwenVoice(),
+      voice_engine: KOKORO_TTS_PROVIDER,
+      voice_profile: kokoroVoice(),
       tts_ready: false,
       service_health: 'online',
       orb_health: 'ready',
@@ -1044,8 +1044,8 @@ export async function GET() {
         source: 'cali_skg_website_runtime',
         electron_adapter: 'Orb_Assistant/electron_dock_adapter',
         electron_cognition: 'adapter_only',
-        voice_engine: QWEN_TTS_PROVIDER,
-        llm_core: `ollama:${caliOllamaModel()}`,
+        voice_engine: KOKORO_TTS_PROVIDER,
+        llm_core: `llama.cpp:${caliOllamaModel()}`,
       },
       mesh,
     });
@@ -1069,7 +1069,11 @@ export async function POST(request: NextRequest) {
       }
 
       const currentPath = String(body?.context?.currentPath || body?.context?.current_path || '/');
-      const pointerTarget = await findPointerTarget(prompt, currentPath);
+      // Resolve explicit destinations against canonical Site World first. A route
+      // action must never be downgraded into a current-page pointer lookup.
+      const routeTool = selectWebsiteTool(prompt, currentPath);
+      const livePointerTarget = routeTool ? null : findLiveBrowserTarget(prompt, currentPath, body?.context?.browserContext);
+      const pointerTarget = routeTool ? null : livePointerTarget || await findPointerTarget(prompt, currentPath);
       const targetPath = pointerTarget ? new URL(pointerTarget.page_route).pathname || '/' : '';
       const toolRequest = pointerTarget
         ? {
@@ -1083,7 +1087,7 @@ export async function POST(request: NextRequest) {
             pointer_target: pointerTarget,
             requires_confirmation: true as const,
           }
-        : selectWebsiteTool(prompt, currentPath);
+        : routeTool;
       if (toolRequest) {
         const destination = toolRequest.arguments.label || toolRequest.arguments.route || 'that location';
         const pendingText = toolRequest.name === 'navigate'
@@ -1102,6 +1106,33 @@ export async function POST(request: NextRequest) {
             capability_registry: ORB_CAPABILITIES,
             site_world_version: publicSiteWorld().schema_version,
           },
+        });
+        await reportSprukedOrbState(request, body, action, response);
+        return NextResponse.json(visitorSafeResponse(response));
+      }
+
+      // A generic control request is intentionally not guessed. The live
+      // pointer lane requires a uniquely named target before it can verify a
+      // DOM element, so ask the visitor to identify the button.
+      if (/\b(point|highlight|show me|where is)\b.*\b(?:a|any|the)\s+button\b/.test(prompt.toLowerCase())) {
+        const clarification = 'Which button would you like me to point to?';
+        const response = await withServerVoice({
+          status: 'success',
+          response: clarification,
+          text: clarification,
+          metadata: { provider: 'local_tool_router', guidance: 'ambiguous_live_target' },
+        });
+        await reportSprukedOrbState(request, body, action, response);
+        return NextResponse.json(visitorSafeResponse(response));
+      }
+
+      if (/\b(point|highlight|show me|where is)\b/.test(prompt.toLowerCase())) {
+        const clarification = 'I can identify that area, but its live target has not completed verification yet.';
+        const response = await withServerVoice({
+          status: 'success',
+          response: clarification,
+          text: clarification,
+          metadata: { provider: 'local_tool_router', guidance: 'live_target_verification_pending' },
         });
         await reportSprukedOrbState(request, body, action, response);
         return NextResponse.json(visitorSafeResponse(response));
@@ -1328,8 +1359,8 @@ export async function POST(request: NextRequest) {
         source: 'cali_skg_website_runtime',
           electron_adapter: 'Orb_Assistant/electron_dock_adapter',
           electron_cognition: 'adapter_only',
-          voice_engine: QWEN_TTS_PROVIDER,
-          llm_core: `ollama:${caliOllamaModel()}`,
+          voice_engine: KOKORO_TTS_PROVIDER,
+          llm_core: `llama.cpp:${caliOllamaModel()}`,
       },
       mesh,
       });

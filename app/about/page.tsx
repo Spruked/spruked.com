@@ -38,7 +38,7 @@ export default function AboutPage() {
         <div className="space-y-6 text-xl text-gray-300">
           <p>Spruked is built on a simple belief:</p>
           <blockquote className="border-l-4 border-gray-700 pl-6 py-2 italic text-2xl text-light my-6 bg-gray-900/20 rounded-r-lg">
-            &quot;If better is possible, good is never enough.&quot;
+            &quot;If better is possible, Good is not enough.&quot;
           </blockquote>
           <p>
             Most software is built to solve immediate problems. Spruked focuses on building systems that <strong className="text-light">still make sense decades from now.</strong>

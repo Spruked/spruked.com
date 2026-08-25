@@ -41,6 +41,18 @@ export default function ProductsPage() {
       <Section className="mx-auto max-w-5xl pt-8 pb-24">
         <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6 border-t border-gray-900 pt-8">Knowledge Infrastructure</h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-xl border border-truth/30 bg-truth/5 p-8">
+            <h2 className="mb-4 text-3xl font-bold">Orb Weaver</h2>
+            <p className="mb-6 text-gray-300">Website Truth Scan with prioritized fixes and clear next actions.</p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/products/orb-weaver" className="text-truth hover:underline uppercase tracking-wide text-sm font-semibold">
+                View Product Page
+              </Link>
+              <a href="https://orbweaver.spruked.com/" target="_blank" rel="noreferrer" className="text-gray-300 hover:text-light uppercase tracking-wide text-sm font-semibold">
+                Open Orb Weaver Site
+              </a>
+            </div>
+          </div>
           <div className="rounded-xl border border-gray-800 bg-[#050505] p-8">
             <h2 className="mb-4 text-3xl font-bold">Alpha CertSig</h2>
             <p className="mb-6 text-gray-400">Licensed digital object infrastructure. A self-hosted mint engine for institutions and sovereign creators.</p>
@@ -73,6 +85,18 @@ export default function ProductsPage() {
                 Explore The GOAT
               </Link>
               <Link href="/cart?add=goat-legacy-session" className="text-gray-300 hover:text-light uppercase tracking-wide text-sm font-semibold">
+                Add to Cart
+              </Link>
+            </div>
+          </div>
+          <div className="rounded-xl border border-truth/30 bg-truth/5 p-8">
+            <h2 className="mb-4 text-3xl font-bold">Prompt Like a Pro</h2>
+            <p className="mb-6 text-gray-400">A downloadable PDF guide for writing clearer AI prompts and getting better results.</p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/products/prompt-like-a-pro" className="text-truth hover:underline uppercase tracking-wide text-sm font-semibold">
+                View PDF Guide
+              </Link>
+              <Link href="/cart?add=prompt-like-a-pro-pdf" className="text-gray-300 hover:text-light uppercase tracking-wide text-sm font-semibold">
                 Add to Cart
               </Link>
             </div>

@@ -1,0 +1,88 @@
+Orb_Assistant
+├── .gitignore
+├── .orb-instance.env
+├── .orb-instance.env.example
+├── =5.0.0
+├── CALI_System
+│   ├── cache
+│   ├── config
+│   │   ├── advanced_api_imports.json
+│   │   └── api_registry.json
+│   ├── logs
+│   ├── memory
+│   │   ├── a_posteriori
+│   │   │   └── vault.jsonl
+│   │   ├── a_priori
+│   │   │   └── vault.jsonl
+│   │   ├── orb_memory_2026-07-03.jsonl
+│   │   └── patterns
+│   ├── swarm_results
+│   └── voice_cache
+├── README.md
+├── api
+│   ├── OrbService.d.ts
+│   ├── OrbService.js
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── stream_structure.json
+│   └── web_orb_bridge.py
+├── archive
+├── audio_cache
+├── docs
+│   └── r_drive
+│       ├── R_DRIVE_ORB_CONTINUITY_2026-04-03.md
+│       ├── R_DRIVE_PICKUP_CHECKLIST_NEXT_20_MIN.md
+│       ├── R_DRIVE_SESSION_HANDOFF_2026-04-29.md
+│       └── R_DRIVE_SESSION_HANDOFF_FROM_REGISTRY_2026-04-03.md
+├── electron_dock_adapter
+│   └── main
+│       ├── README.md
+│       ├── main.js
+│       ├── orb-bridge.js
+│       └── preload_adapter.js
+├── generate_tree.ps1
+├── launch-orb-wsl.sh
+├── modules
+│   ├── Epistemic_Gravity_Field
+│   └── Orb
+├── orb_controller
+│   └── mcp_bridge.py
+├── package.json
+├── scripts
+│   ├── launch_orb_instance.sh
+│   └── provision_sovereign_orb.py
+├── src
+│   ├── R_Orb_Assistant_Desktopsystem
+│   │   └── CALI_System
+│   │       ├── memory
+│   │       │   └── hearing_skg_v3.json
+│   │       └── voice_cache
+│   ├── acp
+│   ├── audio_cache
+│   ├── cali-launcher.js
+│   ├── core-bridges
+│   ├── dashboard.html
+│   ├── hlsf_geometry
+│   ├── index.html
+│   ├── ingest_skin.py
+│   ├── interface
+│   ├── kokoro_baseline
+│   ├── main.jsx
+│   ├── orb-renderer.js
+│   ├── orb-shell.html
+│   ├── settings.html
+│   ├── ui
+│   └── vault_system
+│       ├── apriori
+│       └── posteriori
+├── test_cali_skg.py
+├── test_skg_manager.py
+├── tree.txt
+└── vault_system
+    └── posteriori
+        ├── 428aab472a6bac060bed202bf4fcd2776443895c9e8666c86ff514efe576b243.json
+        ├── 9bfb17a7b6a747b0325565becca46a359315bb4dbb92ffd3a3781b6dad7e23f9.json
+        ├── e46b541ed8b8ac34c9b4e3351cd41e37e3682d348380387a77332af18e0f9e29.json
+        └── f63c0827744accadb01e1b60f444964cd315d10e59ea1d187d94814f356e0185.json
+
+38 directories, 48 files

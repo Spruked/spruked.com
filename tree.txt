@@ -1,102 +1,194 @@
-Folder PATH listing for volume SSDDrive Win10 64
-Volume serial number is 2A00-D9FE
-C:.
-�   .env.example
-�   .eslintrc.json
-�   .gitignore
-�   LICENSE
-�   next-env.d.ts
-�   next.config.mjs
-�   package-lock.json
-�   package.json
-�   postcss.config.mjs
-�   README.md
-�   tailwind.config.ts
-�   tree.txt
-�   tsconfig.json
-�   
-����Affiliate_Sites
-�       TrueMarkMint.html
-�       TrueMarkMint.jsx
-�       
-����app
-�   �   favicon.svg
-�   �   globals.css
-�   �   layout.tsx
-�   �   page.tsx
-�   �   
-�   ����admin
-�   �       page.tsx
-�   �       
-�   ����api
-�   �   ����page-content
-�   �           route.ts
-�   �           
-�   ����brand
-�   �       page.tsx
-�   �       
-�   ����goat
-�   �       page.tsx
-�   �       
-�   ����true-mark-mint
-�           page.tsx
-�           
-����assets
-�   ����css
-�   ����fonts
-�   ����img
-�   �       goatlog512.png
-�   �       goatlogo512oval.png
-�   �       Ulogo1024blk.png
-�   �       Ulogo1024wht.png
-�   �       Ulogo1600blk.png
-�   �       Ulogo1600wht.png
-�   �       Ulogo256blk.png
-�   �       Ulogo256wht.png
-�   �       Ulogo512blk.png
-�   �       Ulogo512wht.png
-�   �       Ulogo96blk.ico
-�   �       Ulogo96wht.ico
-�   �       
-�   ����js
-����components
-�   ����brand
-�   �       CircularStamp.tsx
-�   �       ColorSwatch.tsx
-�   �       FaviconGrid.tsx
-�   �       PrimaryLogo.tsx
-�   �       WordmarkLogo.tsx
-�   �       
-�   ����layout
-�   �       Footer.tsx
-�   �       Header.tsx
-�   �       Navigation.tsx
-�   �       
-�   ����ui
-�           Button.tsx
-�           Input.tsx
-�           Section.tsx
-�           
-����data
-�       page-content.ts
-�       
-����doc
-�       cms.md
-�       
-����lib
-�   �   constants.ts
-�   �   page-content.ts
-�   �   
-�   ����supabase
-�           server.ts
-�           
-����public
-�   ����logos
-�           spruked-stamp-white.svg
-�           spruked-symbol-black.svg
-�           spruked-symbol-white.svg
-�           spruked-wordmark-white.svg
-�           
-����styles
-        globals.css
-        
+^C
+bryan@ProPrimeSeries:~/projects/spruked.com$ tree -d -I 'node_modules|.git|dist|build|__pycache__|.next|out|coverage' -L 5 --noreport .
+.
+├── Affiliate_Sites
+├── ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW
+│   ├── 00_manifest
+│   ├── 01_frontend
+│   │   └── components
+│   ├── 02_api
+│   │   └── orb
+│   │       ├── audio
+│   │       ├── capabilities
+│   │       ├── core
+│   │       ├── stt
+│   │       ├── tts
+│   │       ├── tts_audio
+│   │       ├── website_text
+│   │       └── website_voice
+│   ├── 03_orb_runtime
+│   │   ├── introspection
+│   │   ├── pointer_mapping
+│   │   ├── server
+│   │   └── service
+│   ├── 04_behavior_skg
+│   │   ├── bridges
+│   │   ├── core
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   └── truemark
+│   │   └── vaults
+│   ├── 05_cognition
+│   │   ├── cali_skg
+│   │   │   ├── core_4_minds
+│   │   │   │   ├── bspinoza
+│   │   │   │   ├── hhume
+│   │   │   │   ├── hlocke
+│   │   │   │   └── ikant
+│   │   │   └── orb_runtime
+│   │   └── primitive_cache
+│   ├── 06_voice
+│   │   ├── stt_interfaces
+│   │   └── tts_interfaces
+│   ├── 07_memory
+│   │   ├── schemas
+│   │   └── vaults
+│   ├── 08_tools
+│   │   ├── admin
+│   │   ├── commerce
+│   │   └── page_content
+│   ├── 09_docs
+│   └── 10_tests
+├── Orb_Assistant
+│   ├── CALI_System
+│   │   ├── cache
+│   │   ├── config
+│   │   ├── diagnostics
+│   │   ├── logs
+│   │   ├── memory
+│   │   │   ├── a_posteriori
+│   │   │   ├── a_priori
+│   │   │   └── patterns
+│   │   ├── morb_logs
+│   │   ├── state
+│   │   ├── swarm_results
+│   │   ├── temp
+│   │   ├── vault
+│   │   └── voice_cache
+│   ├── api
+│   ├── archive
+│   │   └── cognition_legacy
+│   │       ├── CALI_System_cognition_shim
+│   │       ├── duplicate_data_stores
+│   │       └── duplicate_v4_package
+│   ├── audio_cache
+│   ├── cali_skg
+│   │   ├── api
+│   │   └── core
+│   │       ├── core_4_minds
+│   │       │   ├── bspinoza
+│   │       │   ├── hhume
+│   │       │   ├── hlocke
+│   │       │   └── ikant
+│   │       ├── logic_seeds
+│   │       │   ├── deductive_SKG
+│   │       │   ├── deductive_validator
+│   │       │   ├── inductive
+│   │       │   ├── inductive_skg
+│   │       │   ├── inductive_validator
+│   │       │   ├── intuitive
+│   │       │   ├── intuitive_skg
+│   │       │   └── intuitive_validator
+│   │       ├── orb_runtime
+│   │       └── orb_runtime_tests
+│   ├── docs
+│   │   └── r_drive
+│   ├── electron_dock_adapter
+│   │   └── main
+│   ├── modules
+│   │   ├── Epistemic_Gravity_Field
+│   │   └── Orb
+│   ├── orb_controller
+│   ├── scripts
+│   ├── src
+│   │   ├── R_Orb_Assistant_Desktopsystem
+│   │   │   └── CALI_System
+│   │   │       ├── memory
+│   │   │       └── voice_cache
+│   │   ├── audio_cache
+│   │   ├── core-bridges
+│   │   ├── hlsf_geometry
+│   │   ├── interface
+│   │   ├── ui
+│   │   └── vault_system
+│   │       ├── apriori
+│   │       └── posteriori
+│   └── vault_system
+│       └── posteriori
+├── app
+│   ├── about
+│   ├── admin
+│   ├── api
+│   │   ├── admin
+│   │   │   ├── orb-state
+│   │   │   ├── system-scan
+│   │   │   └── vault
+│   │   ├── cali
+│   │   │   └── [...path]
+│   │   ├── orb
+│   │   │   ├── audio
+│   │   │   ├── capabilities
+│   │   │   ├── stt
+│   │   │   ├── tts
+│   │   │   │   └── [audio_id]
+│   │   │   ├── website-text
+│   │   │   └── website-voice
+│   │   ├── page-content
+│   │   └── waitlist
+│   ├── artifacts
+│   ├── brand
+│   ├── cart
+│   ├── checkout
+│   ├── goat
+│   ├── orb
+│   ├── orb-skin-studio
+│   ├── products
+│   │   ├── alpha-certsig
+│   │   ├── prompt-like-a-pro
+│   │   └── truemark-mint
+│   │       ├── object-types
+│   │       └── objects
+│   ├── sitemap
+│   └── truemark
+│       └── example-object
+├── artifacts
+│   ├── SPRUKED_CRM_MASTER_2026-05-05
+│   │   └── source
+│   │       ├── app
+│   │       │   └── api
+│   │       ├── cali_skg
+│   │       │   ├── api
+│   │       │   └── core
+│   │       └── components
+│   │           └── admin
+│   └── orb-route-backups
+├── components
+│   ├── admin
+│   ├── brand
+│   ├── commerce
+│   ├── layout
+│   └── ui
+├── data
+├── doc
+│   └── session-notes
+├── lib
+│   ├── orbital_behavior_skg
+│   │   ├── bridges
+│   │   ├── core
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   └── truemark
+│   │   └── vaults
+│   └── supabase
+├── orb_core_standard
+├── public
+│   ├── assets
+│   ├── logos
+│   └── orb-skin-studio
+│       ├── Checkout_Module_v1
+│       ├── Vault-Logic-System-Template
+│       └── assets
+├── scripts
+├── spruked
+└── styles
+bryan@ProPrimeSeries:~/projects/spruked.com$

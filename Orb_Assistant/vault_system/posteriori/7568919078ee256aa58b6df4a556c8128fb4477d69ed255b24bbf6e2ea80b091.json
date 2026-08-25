@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-08-24T12:13:23.145889",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "What is your name and who owns this website?",
+    "response": "I'm Cali. I'm here with you.",
+    "context": {
+      "currentPath": "/"
+    },
+    "intent": {
+      "type": "fast_path"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "orb-canonical-cognition-state-v4",
+      "llm_core": "fast-path",
+      "leading_mind": "Baruch Spinoza",
+      "confidence": 0.96,
+      "truth_likelihood": 0.96,
+      "core_reasoner": "Orb_Assistant.CALI_System.cali_skg.core.orb_cognition_skg",
+      "state_engine": "cali_skg.core.cali_state_v4"
+    }
+  },
+  "hash_id": "7568919078ee256a",
+  "confidence": 0.96,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

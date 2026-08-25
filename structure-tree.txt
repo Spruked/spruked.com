@@ -1,0 +1,545 @@
+.
+├── .agents
+├── .orb-web-runtime
+│   └── CALI_System
+│       ├── cache
+│       ├── config
+│       ├── logs
+│       ├── memory
+│       │   ├── a_priori
+│       │   └── patterns
+│       ├── swarm_results
+│       ├── v4
+│       │   └── CALI_System
+│       │       ├── cache
+│       │       ├── config
+│       │       ├── diagnostics
+│       │       ├── logs
+│       │       ├── memory
+│       │       │   ├── a_priori
+│       │       │   └── patterns
+│       │       ├── morb_logs
+│       │       └── swarm_results
+│       └── cali_state_v4.json
+├── .runlogs
+│   ├── archive
+│   │   ├── orb-assistant
+│   │   └── root-legacy
+│   │       └── nohup.out
+│   ├── README.md
+│   ├── cali-skg-21000.pid
+│   ├── next-3001.pid
+│   ├── spruked-dev-3001.pid
+│   └── spruked-start-3001.pid
+├── Affiliate_Sites
+│   ├── TrueMarkMint.html
+│   └── TrueMarkMint.jsx
+├── ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW
+│   ├── 00_manifest
+│   ├── 01_frontend
+│   │   └── components
+│   │       ├── Button.tsx
+│   │       ├── GlobalOrb.tsx
+│   │       ├── GlobalOrbMount.tsx
+│   │       ├── Input.tsx
+│   │       └── Section.tsx
+│   ├── 02_api
+│   │   └── orb
+│   │       ├── audio
+│   │       │   └── route.ts
+│   │       ├── capabilities
+│   │       │   └── route.ts
+│   │       ├── core
+│   │       │   └── route.ts
+│   │       ├── stt
+│   │       │   └── route.ts
+│   │       ├── tts
+│   │       │   └── route.ts
+│   │       ├── tts_audio
+│   │       │   └── route.ts
+│   │       ├── website_text
+│   │       │   └── route.ts
+│   │       └── website_voice
+│   │           └── route.ts
+│   ├── 03_orb_runtime
+│   │   ├── introspection
+│   │   │   └── orb-introspection.ts
+│   │   ├── pointer_mapping
+│   │   ├── server
+│   │   │   └── orb-server.ts
+│   │   └── service
+│   │       └── orb-service.ts
+│   ├── 04_behavior_skg
+│   │   ├── bridges
+│   │   │   ├── BrowserContext.ts
+│   │   │   ├── KayGeeHybridAdapter.ts
+│   │   │   └── QwenIntentPlugin.ts
+│   │   ├── core
+│   │   │   ├── DesireEngine.ts
+│   │   │   ├── IntentPredictor.ts
+│   │   │   ├── MotionGovernor.ts
+│   │   │   ├── OrbitalDynamics.ts
+│   │   │   ├── PresenceVisuals.ts
+│   │   │   ├── SelfPruner.ts
+│   │   │   └── types.ts
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   │   └── SprukedOrb.ts
+│   │   │   └── truemark
+│   │   │       └── TrueMarkOrb.ts
+│   │   ├── vaults
+│   │   │   └── behavior_patterns.yaml
+│   │   └── index.ts
+│   ├── 05_cognition
+│   │   ├── cali_skg
+│   │   │   ├── core_4_minds
+│   │   │   │   ├── bspinoza
+│   │   │   │   │   └── spinoza_monism_skg.json
+│   │   │   │   ├── hhume
+│   │   │   │   │   └── hume_skepticism_skg.json
+│   │   │   │   ├── hlocke
+│   │   │   │   │   └── locke_empiricism_skg.json
+│   │   │   │   └── ikant
+│   │   │   │       └── kant_critical_skg.json
+│   │   │   ├── orb_runtime
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── bayesian_engine.py
+│   │   │   │   ├── floating_assistant_orb.py
+│   │   │   │   ├── orb_controller.py
+│   │   │   │   └── orb_skg_manager.py
+│   │   │   ├── cali_personal_skg.py
+│   │   │   ├── cali_routes.py
+│   │   │   ├── core_mind_reasoner.py
+│   │   │   ├── core_vaults.py
+│   │   │   ├── doctrine_governance.py
+│   │   │   ├── main.py
+│   │   │   └── orb_cognition_skg.py
+│   │   └── primitive_cache
+│   │       ├── primitive_normalization_aliases.json
+│   │       └── primitive_response_cache.json
+│   ├── 06_voice
+│   │   ├── stt_interfaces
+│   │   └── tts_interfaces
+│   ├── 07_memory
+│   │   ├── schemas
+│   │   └── vaults
+│   ├── 08_tools
+│   │   ├── admin
+│   │   │   ├── CaliOperationsHub.tsx
+│   │   │   └── admin-vault.ts
+│   │   ├── commerce
+│   │   │   └── commerce.ts
+│   │   └── page_content
+│   │       ├── page-content.data.ts
+│   │       ├── page-content.runtime.ts
+│   │       └── page-content.ts
+│   ├── 09_docs
+│   └── 10_tests
+├── Orb_Assistant
+│   ├── CALI_System
+│   │   ├── cache
+│   │   ├── cali_skg -> ../cali_skg
+│   │   ├── config
+│   │   │   ├── advanced_api_imports.json
+│   │   │   ├── api_registry.json
+│   │   │   └── orb_state.json
+│   │   ├── diagnostics
+│   │   ├── logs
+│   │   ├── memory
+│   │   │   ├── a_priori
+│   │   │   └── patterns
+│   │   ├── morb_logs
+│   │   ├── state
+│   │   │   └── cali_state_v4.json
+│   │   ├── swarm_results
+│   │   ├── temp
+│   │   └── vault
+│   │       └── cali_identity.json
+│   ├── api
+│   │   ├── OrbService.d.ts
+│   │   ├── OrbService.js
+│   │   ├── main.py
+│   │   ├── requirements.txt
+│   │   ├── stream_structure.json
+│   │   └── web_orb_bridge.py
+│   ├── archive
+│   │   └── cognition_legacy
+│   │       ├── CALI_System_cognition_shim
+│   │       │   └── __init__.py
+│   │       ├── duplicate_data_stores
+│   │       │   └── recreated_identity_2026-07-12.json
+│   │       ├── duplicate_v4_package
+│   │       │   ├── CHANGELOG_v3_5_to_v4_0.md
+│   │       │   ├── MISSING_INPUTS_NOTICE.md
+│   │       │   └── cali_skg_v4_0.py
+│   │       ├── CALI_System_init.py
+│   │       ├── README.md
+│   │       ├── reconstructed_README_v4.md
+│   │       ├── reconstructed_cali_skg_v4.py
+│   │       └── reconstructed_requirements.txt
+│   ├── audio_cache
+│   ├── cali_skg
+│   │   ├── api
+│   │   │   ├── __init__.py
+│   │   │   ├── cali_routes.py
+│   │   │   └── main.py
+│   │   ├── core
+│   │   │   ├── core_4_minds
+│   │   │   │   ├── bspinoza
+│   │   │   │   │   └── spinoza_monism_skg.json
+│   │   │   │   ├── hhume
+│   │   │   │   │   └── hume_skepticism_skg.json
+│   │   │   │   ├── hlocke
+│   │   │   │   │   └── locke_empiricism_skg.json
+│   │   │   │   └── ikant
+│   │   │   │       └── kant_critical_skg.json
+│   │   │   ├── logic_seeds
+│   │   │   │   ├── deductive_SKG
+│   │   │   │   │   ├── job
+│   │   │   │   │   │   └── execute.py
+│   │   │   │   │   ├── jobs
+│   │   │   │   │   │   └── execute.py
+│   │   │   │   │   └── logic
+│   │   │   │   │       ├── cognitive_state.py
+│   │   │   │   │       └── deductive_logic.py
+│   │   │   │   ├── deductive_validator
+│   │   │   │   │   ├── job
+│   │   │   │   │   │   └── validate.py
+│   │   │   │   │   ├── logic
+│   │   │   │   │   │   ├── deductive_validation.py
+│   │   │   │   │   │   └── validation_state.py
+│   │   │   │   │   └── vault
+│   │   │   │   ├── inductive
+│   │   │   │   ├── inductive_skg
+│   │   │   │   │   └── logic
+│   │   │   │   │       ├── cognitive_stat.py
+│   │   │   │   │       ├── cognitive_state.py
+│   │   │   │   │       └── inductive_logic.py
+│   │   │   │   ├── inductive_validator
+│   │   │   │   │   └── logic
+│   │   │   │   │       ├── inductive_validation.py
+│   │   │   │   │       └── validation_state.py
+│   │   │   │   ├── intuitive
+│   │   │   │   ├── intuitive_skg
+│   │   │   │   │   └── logic
+│   │   │   │   │       ├── cognitive_state.py
+│   │   │   │   │       └── intuitive_logic.py
+│   │   │   │   ├── intuitive_validator
+│   │   │   │   │   └── logic
+│   │   │   │   │       ├── intuitive_validation.py
+│   │   │   │   │       └── validation_state.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── orb_runtime
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── bayesian_engine.py
+│   │   │   │   ├── floating_assistant_orb.py
+│   │   │   │   ├── orb_controller.py
+│   │   │   │   └── orb_skg_manager.py
+│   │   │   ├── orb_runtime_tests
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── test_bridge.py
+│   │   │   │   ├── test_full_pipeline.py
+│   │   │   │   └── test_pipeline.py
+│   │   │   ├── __init__.py
+│   │   │   ├── cali_personal_skg.py
+│   │   │   ├── cali_state_v4.py
+│   │   │   ├── core -> ../Orb_Assistant/CALI_System/core
+│   │   │   ├── core_mind_reasoner.py
+│   │   │   ├── core_vaults.py
+│   │   │   ├── doctrine_governance.py
+│   │   │   └── orb_cognition_skg.py
+│   │   ├── __init__.py
+│   │   ├── requirements.txt
+│   │   ├── run.sh
+│   │   └── runtime_manifest.json
+│   ├── docs
+│   │   └── r_drive
+│   │       ├── R_DRIVE_ORB_CONTINUITY_2026-04-03.md
+│   │       ├── R_DRIVE_PICKUP_CHECKLIST_NEXT_20_MIN.md
+│   │       ├── R_DRIVE_SESSION_HANDOFF_2026-04-29.md
+│   │       └── R_DRIVE_SESSION_HANDOFF_FROM_REGISTRY_2026-04-03.md
+│   ├── electron_dock_adapter
+│   │   └── main
+│   │       ├── README.md
+│   │       ├── main.js
+│   │       ├── orb-bridge.js
+│   │       └── preload_adapter.js
+│   ├── modules
+│   │   ├── Epistemic_Gravity_Field
+│   │   │   ├── README.md
+│   │   │   ├── __init__.py
+│   │   │   └── space_field.py
+│   │   └── Orb
+│   ├── orb_controller
+│   │   └── mcp_bridge.py
+│   ├── orb_core_standard
+│   │   ├── primitive_normalization_aliases.json
+│   │   └── primitive_response_cache.json
+│   ├── scripts
+│   │   ├── launch_orb_instance.sh
+│   │   └── provision_sovereign_orb.py
+│   ├── src
+│   │   ├── R_Orb_Assistant_Desktopsystem
+│   │   │   └── CALI_System
+│   │   │       └── memory
+│   │   │           └── hearing_skg_v3.json
+│   │   ├── audio_cache
+│   │   ├── core-bridges
+│   │   ├── hlsf_geometry
+│   │   ├── interface
+│   │   ├── ui
+│   │   ├── vault_system
+│   │   │   └── apriori
+│   │   ├── cali-launcher.js
+│   │   ├── dashboard.html
+│   │   ├── index.html
+│   │   ├── ingest_skin.py
+│   │   ├── kokoro_baseline
+│   │   ├── main.jsx
+│   │   ├── orb-renderer.js
+│   │   ├── orb-shell.html
+│   │   └── settings.html
+│   ├── vault_system
+│   ├── .gitignore
+│   ├── .orb-instance.env
+│   ├── .orb-instance.env.example
+│   ├── =5.0.0
+│   ├── README.md
+│   ├── generate_tree.ps1
+│   ├── launch-orb-wsl.sh
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── test_cali_skg.py
+│   ├── test_skg_manager.py
+│   └── tree.txt
+├── app
+│   ├── about
+│   │   └── page.tsx
+│   ├── admin
+│   │   └── page.tsx
+│   ├── api
+│   │   ├── admin
+│   │   │   ├── orb-state
+│   │   │   │   └── route.ts
+│   │   │   ├── system-scan
+│   │   │   │   └── route.ts
+│   │   │   └── vault
+│   │   │       └── route.ts
+│   │   ├── cali
+│   │   │   └── [...path]
+│   │   │       └── route.ts
+│   │   ├── orb
+│   │   │   ├── audio
+│   │   │   │   └── route.ts
+│   │   │   ├── capabilities
+│   │   │   │   └── route.ts
+│   │   │   ├── pointer-proof
+│   │   │   │   └── route.ts
+│   │   │   ├── skin
+│   │   │   │   └── route.ts
+│   │   │   ├── stt
+│   │   │   │   └── route.ts
+│   │   │   ├── tts
+│   │   │   │   ├── [audio_id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── website-text
+│   │   │   │   └── route.ts
+│   │   │   ├── website-voice
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── page-content
+│   │   │   └── route.ts
+│   │   └── waitlist
+│   │       └── route.ts
+│   ├── artifacts
+│   │   └── page.tsx
+│   ├── brand
+│   │   └── page.tsx
+│   ├── cart
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── checkout
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── goat
+│   │   └── page.tsx
+│   ├── orb
+│   │   └── page.tsx
+│   ├── orb-marketplace
+│   │   └── page.tsx
+│   ├── products
+│   │   ├── alpha-certsig
+│   │   │   └── page.tsx
+│   │   ├── orb-weaver
+│   │   │   └── page.tsx
+│   │   ├── prompt-like-a-pro
+│   │   │   └── page.tsx
+│   │   ├── truemark-mint
+│   │   │   ├── object-types
+│   │   │   │   └── page.tsx
+│   │   │   ├── objects
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── sitemap
+│   │   └── page.tsx
+│   ├── truemark
+│   │   └── example-object
+│   │       └── page.tsx
+│   ├── favicon.svg
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── sitemap.ts
+├── artifacts
+│   ├── SPRUKED_CRM_MASTER_2026-05-05
+│   │   ├── source
+│   │   │   ├── app
+│   │   │   │   ├── api
+│   │   │   │   │   ├── orb
+│   │   │   │   │   └── waitlist
+│   │   │   │   └── page.tsx
+│   │   │   ├── cali_skg
+│   │   │   │   ├── api
+│   │   │   │   └── core
+│   │   │   └── components
+│   │   │       └── admin
+│   │   │           └── CaliOperationsHub.tsx
+│   │   ├── README_MIGRATION.md
+│   │   └── manifest.env
+│   ├── orb-route-backups
+│   │   ├── route.ts.bak.20260624-215516
+│   │   ├── route.ts.bak.20260624-215849
+│   │   ├── route.ts.bak.20260624-215925
+│   │   └── route.ts.bak.20260624-223600
+│   ├── CALI_SKG_v4_0_Current_Runtime_Package.zip
+│   ├── SPRUKED_CRM_MASTER_2026-05-05.tar.gz
+│   ├── render-check-home-final.png
+│   ├── render-check-home-fresh.png
+│   ├── render-check-home-ok.png
+│   └── render-check-home.png
+├── components
+│   ├── admin
+│   │   └── CaliOperationsHub.tsx
+│   ├── brand
+│   │   ├── CircularStamp.tsx
+│   │   ├── ColorSwatch.tsx
+│   │   ├── FaviconGrid.tsx
+│   │   ├── PrimaryLogo.tsx
+│   │   └── WordmarkLogo.tsx
+│   ├── commerce
+│   │   └── useCart.ts
+│   ├── layout
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   └── Navigation.tsx
+│   └── ui
+│       ├── Button.tsx
+│       ├── GlobalOrb.motion.snapshot.2026-03-27.tsx
+│       ├── GlobalOrb.tsx
+│       ├── GlobalOrbMount.tsx
+│       ├── Input.tsx
+│       ├── LandingSplash.tsx
+│       └── Section.tsx
+├── data
+│   └── page-content.ts
+├── doc
+│   ├── architecture
+│   │   └── orb-marketplace.md
+│   ├── crawl-reports
+│   │   ├── job-14
+│   │   │   ├── pointer_manifest.json
+│   │   │   └── pointer_plot_map.json
+│   │   └── spruked-job-14-audit.csv
+│   ├── session-notes
+│   │   └── website-dev-log-2026-06-12.md
+│   ├── admin-crm.md
+│   ├── cms.md
+│   └── orb-motion-snapshot-2026-03-27.md
+├── lib
+│   ├── orbital_behavior_skg
+│   │   ├── bridges
+│   │   │   ├── BrowserContext.ts
+│   │   │   ├── KayGeeHybridAdapter.ts
+│   │   │   └── QwenIntentPlugin.ts
+│   │   ├── core
+│   │   │   ├── DesireEngine.ts
+│   │   │   ├── IntentPredictor.ts
+│   │   │   ├── MotionGovernor.ts
+│   │   │   ├── OrbitalDynamics.ts
+│   │   │   ├── PresenceVisuals.ts
+│   │   │   ├── SelfPruner.ts
+│   │   │   └── types.ts
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   │   └── SprukedOrb.ts
+│   │   │   └── truemark
+│   │   │       └── TrueMarkOrb.ts
+│   │   ├── vaults
+│   │   │   └── behavior_patterns.yaml
+│   │   └── index.ts
+│   ├── supabase
+│   │   └── server.ts
+│   ├── admin-vault.ts
+│   ├── commerce.ts
+│   ├── constants.ts
+│   ├── orb-browser-tools.ts
+│   ├── orb-capability-registry.ts
+│   ├── orb-internal-url.ts
+│   ├── orb-introspection.ts
+│   ├── orb-pointer-map-server.ts
+│   ├── orb-server.ts
+│   ├── orb-service.ts
+│   ├── orb-site-world.ts
+│   └── page-content.ts
+├── public
+│   ├── assets
+│   │   ├── CertificateKNFTsample.png
+│   │   ├── Founder Background, Faith & Professional Statement.pdf
+│   │   ├── Professional Résumé Summary (1).pdf
+│   │   ├── Prompt Like a Procopy.docx
+│   │   ├── Ulogo1024blk.png
+│   │   ├── Ulogo1024wht.png
+│   │   ├── Ulogo1600blk.png
+│   │   ├── Ulogo1600wht.png
+│   │   ├── Ulogo256blk.png
+│   │   ├── Ulogo256wht.png
+│   │   ├── Ulogo512blk.png
+│   │   ├── Ulogo512wht.png
+│   │   ├── Ulogo96blk.ico
+│   │   ├── Ulogo96wht.ico
+│   │   ├── Untitled.mp4
+│   │   ├── goatlog512.png
+│   │   ├── goatlogo512oval.png
+│   │   └── promptlikeapro.png
+│   ├── logos
+│   │   ├── spruked-stamp-white.svg
+│   │   ├── spruked-symbol-black.svg
+│   │   ├── spruked-symbol-white.svg
+│   │   └── spruked-wordmark-white.svg
+│   └── favicon.ico
+├── scripts
+│   └── start-cp3.sh
+├── spruked
+│   └── spruked_now.html
+├── styles
+│   └── globals.css
+├── .env.example
+├── .env.local
+├── .eslintrc.json
+├── .gitignore
+├── ENDPOINTS_FULL_MAP.txt
+├── LICENSE
+├── README.md
+├── next
+├── next-env.d.ts
+├── next.config.js
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── spruked.com@1.0.0
+├── structure-tree.txt
+├── tailwind.config.ts
+├── tree.txt
+└── tsconfig.json

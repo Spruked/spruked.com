@@ -498,6 +498,24 @@ export default function AdminPage() {
         <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Internal</p>
         <h1 className="text-4xl font-black tracking-tight">Spruked Admin</h1>
         <p className="text-gray-400">Content controls + ProPrime session dashboard operations.</p>
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="http://localhost:21010/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex rounded-full border border-gray-700 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-gray-300 hover:border-light hover:text-light"
+          >
+            Open Local CALI CRM
+          </a>
+          <a
+            href="http://localhost:19000"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex rounded-full border border-gray-700 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-gray-300 hover:border-light hover:text-light"
+          >
+            Open Prime Mail
+          </a>
+        </div>
       </header>
 
       <section className="rounded-2xl border border-gray-900 bg-black/70 p-6">

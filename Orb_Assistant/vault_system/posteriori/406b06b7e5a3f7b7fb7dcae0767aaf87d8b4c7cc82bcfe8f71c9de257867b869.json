@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-07-12T07:42:15.995622",
+  "category": "orb_exchange",
+  "content": {
+    "kind": "website_orb_exchange",
+    "prompt": "Hello, Callie",
+    "response": "Hey. I'm here.",
+    "context": {
+      "source": "website_voice",
+      "currentPath": "/",
+      "providerTimeoutMs": 30000
+    },
+    "intent": {
+      "type": "fast_path"
+    },
+    "metadata": {
+      "provider": "cali_skg",
+      "cognition": "orb-canonical-cognition-state-v4",
+      "llm_core": "fast-path",
+      "leading_mind": "Baruch Spinoza",
+      "confidence": 0.96,
+      "truth_likelihood": 0.96,
+      "core_reasoner": "Orb_Assistant.CALI_System.cali_skg.core.orb_cognition_skg",
+      "state_engine": "cali_skg.core.cali_state_v4"
+    }
+  },
+  "hash_id": "406b06b7e5a3f7b7",
+  "confidence": 0.96,
+  "source": "website_orb",
+  "mutability": "append_only"
+}

@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { sprukedVaultPath } from '@/lib/spruked-vault';
 
 export type AdminVaultEntry = {
   id: string;
@@ -25,7 +26,7 @@ export type AdminVaultData = {
   categories: AdminVaultCategory[];
 };
 
-const DEFAULT_FILE = path.join(process.cwd(), '.admin-vault', 'vault.json');
+const DEFAULT_FILE = sprukedVaultPath('state', 'admin-vault.json');
 
 function vaultFilePath(): string {
   return process.env.ADMIN_VAULT_FILE?.trim() || DEFAULT_FILE;

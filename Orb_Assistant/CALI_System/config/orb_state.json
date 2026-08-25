@@ -1,0 +1,21 @@
+{
+  "skin": "WORKORB21600",
+  "swarm_visible": false,
+  "desktop_access": true,
+  "browser_access": true,
+  "voice_active": true,
+  "llm_route": "local",
+  "llm_local_endpoint": "http://127.0.0.1:11455",
+  "llm_local_model": "qwen2.5:3b",
+  "llm_api_base": "",
+  "llm_api_model": "",
+  "llm_api_key": "",
+  "llm_governance_wrapper": false,
+  "llm_retain_voice": true,
+  "morb_deployment_enabled": true,
+  "mesh_traversal_enabled": true,
+  "aggressive_learning_enabled": true,
+  "auto_diagnostics_enabled": false,
+  "diagnostic_interval_minutes": 30,
+  "diagnostic_tier": "standard"
+}

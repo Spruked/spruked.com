@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 
@@ -23,10 +24,12 @@ export default function ExampleObjectPage() {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Image Column */}
           <div className="bg-[#050505] p-6 rounded-xl border border-gray-800 shadow-[0_0_30px_rgba(255,255,255,0.05)] lg:sticky lg:top-24">
-            <img 
-              src="/assets/CertificateKNFTsample.png" 
-              alt="K-NFT Spruked Certificate Sample" 
-              className="w-full h-auto rounded-lg border border-gray-900 shadow-xl" 
+            <Image
+              src="/assets/CertificateKNFTsample.png"
+              alt="K-NFT Spruked Certificate Sample"
+              width={1400}
+              height={1000}
+              className="w-full h-auto rounded-lg border border-gray-900 shadow-xl"
             />
             
             <div className="mt-8 flex justify-center">

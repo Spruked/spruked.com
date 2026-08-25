@@ -1,6 +1,7 @@
 import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Alpha CertSig Mint Engine — Spruked',
@@ -167,10 +168,12 @@ export default function AlphaCertSigPage() {
           <h2 className="mb-6 text-3xl font-bold text-truth">Example Certificate Output</h2>
 
           <div className="bg-[#050505] border border-gray-800 p-6 rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-            <img 
-              src="/assets/CertificateKNFTsample.png" 
-              alt="Alpha CertSig Engine Output Sample" 
-              className="w-full h-auto rounded-lg border border-gray-900 shadow-xl" 
+            <Image
+              src="/assets/CertificateKNFTsample.png"
+              alt="Alpha CertSig Engine Output Sample"
+              width={1400}
+              height={1000}
+              className="w-full h-auto rounded-lg border border-gray-900 shadow-xl"
             />
             <div className="mt-4 text-sm text-gray-400 bg-black/40 border border-gray-900 p-4 rounded-lg">
               <strong className="text-white block mb-1">Example Forensic Certificate Output</strong>
