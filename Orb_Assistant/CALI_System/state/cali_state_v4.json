@@ -133,16 +133,16 @@
     "locked": false
   },
   "current_path": {
-    "value": "/products/truemark-mint",
+    "value": "/",
     "layer": "runtime",
-    "timestamp": "2026-08-24T19:17:50.254891",
+    "timestamp": "2026-08-24T22:03:47.415174",
     "source": "website_orb",
     "locked": false
   },
   "last_reasoning_timestamp": {
-    "value": "2026-08-24T19:17:50.839599",
+    "value": "2026-08-24T22:03:47.580706",
     "layer": "runtime",
-    "timestamp": "2026-08-24T19:17:50.839645",
+    "timestamp": "2026-08-24T22:03:47.580784",
     "source": "cali",
     "locked": false
   }
