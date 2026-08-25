@@ -1,545 +1,902 @@
-.
-├── .agents
-├── .orb-web-runtime
-│   └── CALI_System
-│       ├── cache
-│       ├── config
-│       ├── logs
-│       ├── memory
-│       │   ├── a_priori
-│       │   └── patterns
-│       ├── swarm_results
-│       ├── v4
-│       │   └── CALI_System
-│       │       ├── cache
-│       │       ├── config
-│       │       ├── diagnostics
-│       │       ├── logs
-│       │       ├── memory
-│       │       │   ├── a_priori
-│       │       │   └── patterns
-│       │       ├── morb_logs
-│       │       └── swarm_results
-│       └── cali_state_v4.json
-├── .runlogs
-│   ├── archive
-│   │   ├── orb-assistant
-│   │   └── root-legacy
-│   │       └── nohup.out
-│   ├── README.md
-│   ├── cali-skg-21000.pid
-│   ├── next-3001.pid
-│   ├── spruked-dev-3001.pid
-│   └── spruked-start-3001.pid
-├── Affiliate_Sites
-│   ├── TrueMarkMint.html
-│   └── TrueMarkMint.jsx
-├── ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW
-│   ├── 00_manifest
-│   ├── 01_frontend
-│   │   └── components
-│   │       ├── Button.tsx
-│   │       ├── GlobalOrb.tsx
-│   │       ├── GlobalOrbMount.tsx
-│   │       ├── Input.tsx
-│   │       └── Section.tsx
-│   ├── 02_api
-│   │   └── orb
-│   │       ├── audio
-│   │       │   └── route.ts
-│   │       ├── capabilities
-│   │       │   └── route.ts
-│   │       ├── core
-│   │       │   └── route.ts
-│   │       ├── stt
-│   │       │   └── route.ts
-│   │       ├── tts
-│   │       │   └── route.ts
-│   │       ├── tts_audio
-│   │       │   └── route.ts
-│   │       ├── website_text
-│   │       │   └── route.ts
-│   │       └── website_voice
-│   │           └── route.ts
-│   ├── 03_orb_runtime
-│   │   ├── introspection
-│   │   │   └── orb-introspection.ts
-│   │   ├── pointer_mapping
-│   │   ├── server
-│   │   │   └── orb-server.ts
-│   │   └── service
-│   │       └── orb-service.ts
-│   ├── 04_behavior_skg
-│   │   ├── bridges
-│   │   │   ├── BrowserContext.ts
-│   │   │   ├── KayGeeHybridAdapter.ts
-│   │   │   └── QwenIntentPlugin.ts
-│   │   ├── core
-│   │   │   ├── DesireEngine.ts
-│   │   │   ├── IntentPredictor.ts
-│   │   │   ├── MotionGovernor.ts
-│   │   │   ├── OrbitalDynamics.ts
-│   │   │   ├── PresenceVisuals.ts
-│   │   │   ├── SelfPruner.ts
-│   │   │   └── types.ts
-│   │   ├── deployments
-│   │   │   ├── spruked
-│   │   │   │   └── SprukedOrb.ts
-│   │   │   └── truemark
-│   │   │       └── TrueMarkOrb.ts
-│   │   ├── vaults
-│   │   │   └── behavior_patterns.yaml
-│   │   └── index.ts
-│   ├── 05_cognition
-│   │   ├── cali_skg
-│   │   │   ├── core_4_minds
-│   │   │   │   ├── bspinoza
-│   │   │   │   │   └── spinoza_monism_skg.json
-│   │   │   │   ├── hhume
-│   │   │   │   │   └── hume_skepticism_skg.json
-│   │   │   │   ├── hlocke
-│   │   │   │   │   └── locke_empiricism_skg.json
-│   │   │   │   └── ikant
-│   │   │   │       └── kant_critical_skg.json
-│   │   │   ├── orb_runtime
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── bayesian_engine.py
-│   │   │   │   ├── floating_assistant_orb.py
-│   │   │   │   ├── orb_controller.py
-│   │   │   │   └── orb_skg_manager.py
-│   │   │   ├── cali_personal_skg.py
-│   │   │   ├── cali_routes.py
-│   │   │   ├── core_mind_reasoner.py
-│   │   │   ├── core_vaults.py
-│   │   │   ├── doctrine_governance.py
-│   │   │   ├── main.py
-│   │   │   └── orb_cognition_skg.py
-│   │   └── primitive_cache
-│   │       ├── primitive_normalization_aliases.json
-│   │       └── primitive_response_cache.json
-│   ├── 06_voice
-│   │   ├── stt_interfaces
-│   │   └── tts_interfaces
-│   ├── 07_memory
-│   │   ├── schemas
-│   │   └── vaults
-│   ├── 08_tools
-│   │   ├── admin
-│   │   │   ├── CaliOperationsHub.tsx
-│   │   │   └── admin-vault.ts
-│   │   ├── commerce
-│   │   │   └── commerce.ts
-│   │   └── page_content
-│   │       ├── page-content.data.ts
-│   │       ├── page-content.runtime.ts
-│   │       └── page-content.ts
-│   ├── 09_docs
-│   └── 10_tests
-├── Orb_Assistant
-│   ├── CALI_System
-│   │   ├── cache
-│   │   ├── cali_skg -> ../cali_skg
-│   │   ├── config
-│   │   │   ├── advanced_api_imports.json
-│   │   │   ├── api_registry.json
-│   │   │   └── orb_state.json
-│   │   ├── diagnostics
-│   │   ├── logs
-│   │   ├── memory
-│   │   │   ├── a_priori
-│   │   │   └── patterns
-│   │   ├── morb_logs
-│   │   ├── state
-│   │   │   └── cali_state_v4.json
-│   │   ├── swarm_results
-│   │   ├── temp
-│   │   └── vault
-│   │       └── cali_identity.json
-│   ├── api
-│   │   ├── OrbService.d.ts
-│   │   ├── OrbService.js
-│   │   ├── main.py
-│   │   ├── requirements.txt
-│   │   ├── stream_structure.json
-│   │   └── web_orb_bridge.py
-│   ├── archive
-│   │   └── cognition_legacy
-│   │       ├── CALI_System_cognition_shim
-│   │       │   └── __init__.py
-│   │       ├── duplicate_data_stores
-│   │       │   └── recreated_identity_2026-07-12.json
-│   │       ├── duplicate_v4_package
-│   │       │   ├── CHANGELOG_v3_5_to_v4_0.md
-│   │       │   ├── MISSING_INPUTS_NOTICE.md
-│   │       │   └── cali_skg_v4_0.py
-│   │       ├── CALI_System_init.py
-│   │       ├── README.md
-│   │       ├── reconstructed_README_v4.md
-│   │       ├── reconstructed_cali_skg_v4.py
-│   │       └── reconstructed_requirements.txt
-│   ├── audio_cache
-│   ├── cali_skg
-│   │   ├── api
-│   │   │   ├── __init__.py
-│   │   │   ├── cali_routes.py
-│   │   │   └── main.py
-│   │   ├── core
-│   │   │   ├── core_4_minds
-│   │   │   │   ├── bspinoza
-│   │   │   │   │   └── spinoza_monism_skg.json
-│   │   │   │   ├── hhume
-│   │   │   │   │   └── hume_skepticism_skg.json
-│   │   │   │   ├── hlocke
-│   │   │   │   │   └── locke_empiricism_skg.json
-│   │   │   │   └── ikant
-│   │   │   │       └── kant_critical_skg.json
-│   │   │   ├── logic_seeds
-│   │   │   │   ├── deductive_SKG
-│   │   │   │   │   ├── job
-│   │   │   │   │   │   └── execute.py
-│   │   │   │   │   ├── jobs
-│   │   │   │   │   │   └── execute.py
-│   │   │   │   │   └── logic
-│   │   │   │   │       ├── cognitive_state.py
-│   │   │   │   │       └── deductive_logic.py
-│   │   │   │   ├── deductive_validator
-│   │   │   │   │   ├── job
-│   │   │   │   │   │   └── validate.py
-│   │   │   │   │   ├── logic
-│   │   │   │   │   │   ├── deductive_validation.py
-│   │   │   │   │   │   └── validation_state.py
-│   │   │   │   │   └── vault
-│   │   │   │   ├── inductive
-│   │   │   │   ├── inductive_skg
-│   │   │   │   │   └── logic
-│   │   │   │   │       ├── cognitive_stat.py
-│   │   │   │   │       ├── cognitive_state.py
-│   │   │   │   │       └── inductive_logic.py
-│   │   │   │   ├── inductive_validator
-│   │   │   │   │   └── logic
-│   │   │   │   │       ├── inductive_validation.py
-│   │   │   │   │       └── validation_state.py
-│   │   │   │   ├── intuitive
-│   │   │   │   ├── intuitive_skg
-│   │   │   │   │   └── logic
-│   │   │   │   │       ├── cognitive_state.py
-│   │   │   │   │       └── intuitive_logic.py
-│   │   │   │   ├── intuitive_validator
-│   │   │   │   │   └── logic
-│   │   │   │   │       ├── intuitive_validation.py
-│   │   │   │   │       └── validation_state.py
-│   │   │   │   └── __init__.py
-│   │   │   ├── orb_runtime
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── bayesian_engine.py
-│   │   │   │   ├── floating_assistant_orb.py
-│   │   │   │   ├── orb_controller.py
-│   │   │   │   └── orb_skg_manager.py
-│   │   │   ├── orb_runtime_tests
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── test_bridge.py
-│   │   │   │   ├── test_full_pipeline.py
-│   │   │   │   └── test_pipeline.py
-│   │   │   ├── __init__.py
-│   │   │   ├── cali_personal_skg.py
-│   │   │   ├── cali_state_v4.py
-│   │   │   ├── core -> ../Orb_Assistant/CALI_System/core
-│   │   │   ├── core_mind_reasoner.py
-│   │   │   ├── core_vaults.py
-│   │   │   ├── doctrine_governance.py
-│   │   │   └── orb_cognition_skg.py
-│   │   ├── __init__.py
-│   │   ├── requirements.txt
-│   │   ├── run.sh
-│   │   └── runtime_manifest.json
-│   ├── docs
-│   │   └── r_drive
-│   │       ├── R_DRIVE_ORB_CONTINUITY_2026-04-03.md
-│   │       ├── R_DRIVE_PICKUP_CHECKLIST_NEXT_20_MIN.md
-│   │       ├── R_DRIVE_SESSION_HANDOFF_2026-04-29.md
-│   │       └── R_DRIVE_SESSION_HANDOFF_FROM_REGISTRY_2026-04-03.md
-│   ├── electron_dock_adapter
-│   │   └── main
-│   │       ├── README.md
-│   │       ├── main.js
-│   │       ├── orb-bridge.js
-│   │       └── preload_adapter.js
-│   ├── modules
-│   │   ├── Epistemic_Gravity_Field
-│   │   │   ├── README.md
-│   │   │   ├── __init__.py
-│   │   │   └── space_field.py
-│   │   └── Orb
-│   ├── orb_controller
-│   │   └── mcp_bridge.py
-│   ├── orb_core_standard
-│   │   ├── primitive_normalization_aliases.json
-│   │   └── primitive_response_cache.json
-│   ├── scripts
-│   │   ├── launch_orb_instance.sh
-│   │   └── provision_sovereign_orb.py
-│   ├── src
-│   │   ├── R_Orb_Assistant_Desktopsystem
-│   │   │   └── CALI_System
-│   │   │       └── memory
-│   │   │           └── hearing_skg_v3.json
-│   │   ├── audio_cache
-│   │   ├── core-bridges
-│   │   ├── hlsf_geometry
-│   │   ├── interface
-│   │   ├── ui
-│   │   ├── vault_system
-│   │   │   └── apriori
-│   │   ├── cali-launcher.js
-│   │   ├── dashboard.html
-│   │   ├── index.html
-│   │   ├── ingest_skin.py
-│   │   ├── kokoro_baseline
-│   │   ├── main.jsx
-│   │   ├── orb-renderer.js
-│   │   ├── orb-shell.html
-│   │   └── settings.html
-│   ├── vault_system
-│   ├── .gitignore
-│   ├── .orb-instance.env
-│   ├── .orb-instance.env.example
-│   ├── =5.0.0
-│   ├── README.md
-│   ├── generate_tree.ps1
-│   ├── launch-orb-wsl.sh
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── test_cali_skg.py
-│   ├── test_skg_manager.py
-│   └── tree.txt
-├── app
-│   ├── about
-│   │   └── page.tsx
-│   ├── admin
-│   │   └── page.tsx
-│   ├── api
-│   │   ├── admin
-│   │   │   ├── orb-state
-│   │   │   │   └── route.ts
-│   │   │   ├── system-scan
-│   │   │   │   └── route.ts
-│   │   │   └── vault
-│   │   │       └── route.ts
-│   │   ├── cali
-│   │   │   └── [...path]
-│   │   │       └── route.ts
-│   │   ├── orb
-│   │   │   ├── audio
-│   │   │   │   └── route.ts
-│   │   │   ├── capabilities
-│   │   │   │   └── route.ts
-│   │   │   ├── pointer-proof
-│   │   │   │   └── route.ts
-│   │   │   ├── skin
-│   │   │   │   └── route.ts
-│   │   │   ├── stt
-│   │   │   │   └── route.ts
-│   │   │   ├── tts
-│   │   │   │   ├── [audio_id]
-│   │   │   │   │   └── route.ts
-│   │   │   │   └── route.ts
-│   │   │   ├── website-text
-│   │   │   │   └── route.ts
-│   │   │   ├── website-voice
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   ├── page-content
-│   │   │   └── route.ts
-│   │   └── waitlist
-│   │       └── route.ts
-│   ├── artifacts
-│   │   └── page.tsx
-│   ├── brand
-│   │   └── page.tsx
-│   ├── cart
-│   │   ├── page.client.tsx
-│   │   └── page.tsx
-│   ├── checkout
-│   │   ├── page.client.tsx
-│   │   └── page.tsx
-│   ├── goat
-│   │   └── page.tsx
-│   ├── orb
-│   │   └── page.tsx
-│   ├── orb-marketplace
-│   │   └── page.tsx
-│   ├── products
-│   │   ├── alpha-certsig
-│   │   │   └── page.tsx
-│   │   ├── orb-weaver
-│   │   │   └── page.tsx
-│   │   ├── prompt-like-a-pro
-│   │   │   └── page.tsx
-│   │   ├── truemark-mint
-│   │   │   ├── object-types
-│   │   │   │   └── page.tsx
-│   │   │   ├── objects
-│   │   │   │   └── page.tsx
-│   │   │   └── page.tsx
-│   │   └── page.tsx
-│   ├── sitemap
-│   │   └── page.tsx
-│   ├── truemark
-│   │   └── example-object
-│   │       └── page.tsx
-│   ├── favicon.svg
-│   ├── globals.css
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── sitemap.ts
-├── artifacts
-│   ├── SPRUKED_CRM_MASTER_2026-05-05
-│   │   ├── source
-│   │   │   ├── app
-│   │   │   │   ├── api
-│   │   │   │   │   ├── orb
-│   │   │   │   │   └── waitlist
-│   │   │   │   └── page.tsx
-│   │   │   ├── cali_skg
-│   │   │   │   ├── api
-│   │   │   │   └── core
-│   │   │   └── components
-│   │   │       └── admin
-│   │   │           └── CaliOperationsHub.tsx
-│   │   ├── README_MIGRATION.md
-│   │   └── manifest.env
-│   ├── orb-route-backups
-│   │   ├── route.ts.bak.20260624-215516
-│   │   ├── route.ts.bak.20260624-215849
-│   │   ├── route.ts.bak.20260624-215925
-│   │   └── route.ts.bak.20260624-223600
-│   ├── CALI_SKG_v4_0_Current_Runtime_Package.zip
-│   ├── SPRUKED_CRM_MASTER_2026-05-05.tar.gz
-│   ├── render-check-home-final.png
-│   ├── render-check-home-fresh.png
-│   ├── render-check-home-ok.png
-│   └── render-check-home.png
-├── components
-│   ├── admin
-│   │   └── CaliOperationsHub.tsx
-│   ├── brand
-│   │   ├── CircularStamp.tsx
-│   │   ├── ColorSwatch.tsx
-│   │   ├── FaviconGrid.tsx
-│   │   ├── PrimaryLogo.tsx
-│   │   └── WordmarkLogo.tsx
-│   ├── commerce
-│   │   └── useCart.ts
-│   ├── layout
-│   │   ├── Footer.tsx
-│   │   ├── Header.tsx
-│   │   └── Navigation.tsx
-│   └── ui
-│       ├── Button.tsx
-│       ├── GlobalOrb.motion.snapshot.2026-03-27.tsx
-│       ├── GlobalOrb.tsx
-│       ├── GlobalOrbMount.tsx
-│       ├── Input.tsx
-│       ├── LandingSplash.tsx
-│       └── Section.tsx
-├── data
-│   └── page-content.ts
-├── doc
-│   ├── architecture
-│   │   └── orb-marketplace.md
-│   ├── crawl-reports
-│   │   ├── job-14
-│   │   │   ├── pointer_manifest.json
-│   │   │   └── pointer_plot_map.json
-│   │   └── spruked-job-14-audit.csv
-│   ├── session-notes
-│   │   └── website-dev-log-2026-06-12.md
-│   ├── admin-crm.md
-│   ├── cms.md
-│   └── orb-motion-snapshot-2026-03-27.md
-├── lib
-│   ├── orbital_behavior_skg
-│   │   ├── bridges
-│   │   │   ├── BrowserContext.ts
-│   │   │   ├── KayGeeHybridAdapter.ts
-│   │   │   └── QwenIntentPlugin.ts
-│   │   ├── core
-│   │   │   ├── DesireEngine.ts
-│   │   │   ├── IntentPredictor.ts
-│   │   │   ├── MotionGovernor.ts
-│   │   │   ├── OrbitalDynamics.ts
-│   │   │   ├── PresenceVisuals.ts
-│   │   │   ├── SelfPruner.ts
-│   │   │   └── types.ts
-│   │   ├── deployments
-│   │   │   ├── spruked
-│   │   │   │   └── SprukedOrb.ts
-│   │   │   └── truemark
-│   │   │       └── TrueMarkOrb.ts
-│   │   ├── vaults
-│   │   │   └── behavior_patterns.yaml
-│   │   └── index.ts
-│   ├── supabase
-│   │   └── server.ts
-│   ├── admin-vault.ts
-│   ├── commerce.ts
-│   ├── constants.ts
-│   ├── orb-browser-tools.ts
-│   ├── orb-capability-registry.ts
-│   ├── orb-internal-url.ts
-│   ├── orb-introspection.ts
-│   ├── orb-pointer-map-server.ts
-│   ├── orb-server.ts
-│   ├── orb-service.ts
-│   ├── orb-site-world.ts
-│   └── page-content.ts
-├── public
-│   ├── assets
-│   │   ├── CertificateKNFTsample.png
-│   │   ├── Founder Background, Faith & Professional Statement.pdf
-│   │   ├── Professional Résumé Summary (1).pdf
-│   │   ├── Prompt Like a Procopy.docx
-│   │   ├── Ulogo1024blk.png
-│   │   ├── Ulogo1024wht.png
-│   │   ├── Ulogo1600blk.png
-│   │   ├── Ulogo1600wht.png
-│   │   ├── Ulogo256blk.png
-│   │   ├── Ulogo256wht.png
-│   │   ├── Ulogo512blk.png
-│   │   ├── Ulogo512wht.png
-│   │   ├── Ulogo96blk.ico
-│   │   ├── Ulogo96wht.ico
-│   │   ├── Untitled.mp4
-│   │   ├── goatlog512.png
-│   │   ├── goatlogo512oval.png
-│   │   └── promptlikeapro.png
-│   ├── logos
-│   │   ├── spruked-stamp-white.svg
-│   │   ├── spruked-symbol-black.svg
-│   │   ├── spruked-symbol-white.svg
-│   │   └── spruked-wordmark-white.svg
-│   └── favicon.ico
-├── scripts
-│   └── start-cp3.sh
-├── spruked
-│   └── spruked_now.html
-├── styles
-│   └── globals.css
-├── .env.example
-├── .env.local
-├── .eslintrc.json
-├── .gitignore
-├── ENDPOINTS_FULL_MAP.txt
-├── LICENSE
-├── README.md
-├── next
-├── next-env.d.ts
-├── next.config.js
-├── package-lock.json
-├── package.json
-├── postcss.config.mjs
-├── spruked.com@1.0.0
-├── structure-tree.txt
-├── tailwind.config.ts
-├── tree.txt
-└── tsconfig.json
+"Orb_Assistant/src/R_\357\201\234Orb_Assistant_Desktop\357\201\234system/CALI_System/memory/hearing_skg_v3.json"
+"public/assets/Professional R\303\251sum\303\251 Summary (1).pdf"
+.env.example
+.eslintrc.json
+.gitignore
+.next-pre-pointer-20260824-1555/BUILD_ID
+.next-pre-pointer-20260824-1555/app-build-manifest.json
+.next-pre-pointer-20260824-1555/app-path-routes-manifest.json
+.next-pre-pointer-20260824-1555/build-manifest.json
+.next-pre-pointer-20260824-1555/cache/eslint/.cache_vz8q4j
+.next-pre-pointer-20260824-1555/cache/images/CKXPTap0oSrDfWx8sJ-vDaZL+PN0moBknVlqc4mg-T4=/60.1787599883076.UsM+DXWLK-NQkvOE-MS1Uj338-Jt48d10v1eO8zCXSg=.webp
+.next-pre-pointer-20260824-1555/cache/images/D0Xmb-iELS6Y6-1rPp5LXdo1j7t38z7wEel8lOOKYqU=/60.1786770781102.JAEiHVrkuvm1u4w-B43GGGr-GliUmhpCU+N4lq7bLFk=.png
+.next-pre-pointer-20260824-1555/cache/images/TdKhRnei1faEJoP2htdwFPoLKLQw2OeGxCZY99+oVwQ=/60.1783460887726.UsM+DXWLK-NQkvOE-MS1Uj338-Jt48d10v1eO8zCXSg=.webp
+.next-pre-pointer-20260824-1555/cache/images/ZSER1MFVGXb-2hnHXv0GFOUxan-UwRqywh0rB6i7JeI=/60.1787579149067.fYWCpurmpEY4rDzBEp9u2I5ejMRLXziwSUTslAitfJM=.webp
+.next-pre-pointer-20260824-1555/cache/images/cJmdP-RWUljj4SdAUjyYVt6CzvvM9UxUJUb10-QhJQU=/60.1787329287265.eHnsZ4qGBz9hsP+a19--Xzf8drRrH5e7vcwZUHi0LkA=.png
+.next-pre-pointer-20260824-1555/cache/images/k9+gWmrND0k-DMiK9-yaw5OIYzN9-8M2GrpZln3Wc0I=/60.1785430920005.JAEiHVrkuvm1u4w-B43GGGr-GliUmhpCU+N4lq7bLFk=.png
+.next-pre-pointer-20260824-1555/cache/images/zSm8Hq3QPJ+jeiPn-mBui0Q5xqOYjUr+79EbtQ4XmkE=/60.1787599952228.fYWCpurmpEY4rDzBEp9u2I5ejMRLXziwSUTslAitfJM=.webp
+.next-pre-pointer-20260824-1555/cache/webpack/client-development-fallback/0.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development-fallback/index.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/0.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/1.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/10.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/2.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/3.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/4.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/5.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/6.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/7.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/8.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/9.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/index.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/client-development/index.pack.gz.old
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/0.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/1.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/10.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/11.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/12.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/13.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/14.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/15.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/16.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/17.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/18.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/19.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/2.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/3.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/4.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/5.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/6.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/7.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/8.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/9.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/index.pack
+.next-pre-pointer-20260824-1555/cache/webpack/client-production/index.pack.old
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-development/0.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-development/1.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-development/index.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-development/index.pack.gz.old
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-production/0.pack
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-production/1.pack
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-production/2.pack
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-production/index.pack
+.next-pre-pointer-20260824-1555/cache/webpack/edge-server-production/index.pack.old
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/0.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/1.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/10.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/11.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/12.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/13.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/14.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/15.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/2.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/3.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/4.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/5.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/6.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/7.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/8.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/9.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/index.pack.gz
+.next-pre-pointer-20260824-1555/cache/webpack/server-development/index.pack.gz.old
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/0.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/1.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/10.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/11.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/12.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/13.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/14.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/15.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/16.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/17.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/18.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/19.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/2.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/3.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/4.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/5.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/6.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/7.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/8.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/9.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/index.pack
+.next-pre-pointer-20260824-1555/cache/webpack/server-production/index.pack.old
+.next-pre-pointer-20260824-1555/export-marker.json
+.next-pre-pointer-20260824-1555/images-manifest.json
+.next-pre-pointer-20260824-1555/next-minimal-server.js.nft.json
+.next-pre-pointer-20260824-1555/next-server.js.nft.json
+.next-pre-pointer-20260824-1555/package.json
+.next-pre-pointer-20260824-1555/prerender-manifest.json
+.next-pre-pointer-20260824-1555/react-loadable-manifest.json
+.next-pre-pointer-20260824-1555/required-server-files.json
+.next-pre-pointer-20260824-1555/routes-manifest.json
+.next-pre-pointer-20260824-1555/server/app-paths-manifest.json
+.next-pre-pointer-20260824-1555/server/app/_not-found/page.js
+.next-pre-pointer-20260824-1555/server/app/_not-found/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/_not-found/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/about/page.js
+.next-pre-pointer-20260824-1555/server/app/about/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/about/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/admin/page.js
+.next-pre-pointer-20260824-1555/server/app/admin/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/admin/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/api/admin/orb-state/route.js
+.next-pre-pointer-20260824-1555/server/app/api/admin/orb-state/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/admin/system-scan/route.js
+.next-pre-pointer-20260824-1555/server/app/api/admin/system-scan/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/admin/vault/route.js
+.next-pre-pointer-20260824-1555/server/app/api/admin/vault/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/cali/[...path]/route.js
+.next-pre-pointer-20260824-1555/server/app/api/cali/[...path]/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/audio/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/audio/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/capabilities/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/capabilities/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/pointer-proof/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/pointer-proof/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/skin/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/skin/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/stt/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/stt/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/tts/[audio_id]/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/tts/[audio_id]/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/tts/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/tts/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/website-text/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/website-text/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/orb/website-voice/route.js
+.next-pre-pointer-20260824-1555/server/app/api/orb/website-voice/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/page-content/route.js
+.next-pre-pointer-20260824-1555/server/app/api/page-content/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/api/waitlist/route.js
+.next-pre-pointer-20260824-1555/server/app/api/waitlist/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/artifacts/page.js
+.next-pre-pointer-20260824-1555/server/app/artifacts/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/artifacts/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/brand/page.js
+.next-pre-pointer-20260824-1555/server/app/brand/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/brand/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/cart/page.js
+.next-pre-pointer-20260824-1555/server/app/cart/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/cart/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/checkout/page.js
+.next-pre-pointer-20260824-1555/server/app/checkout/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/checkout/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/goat/page.js
+.next-pre-pointer-20260824-1555/server/app/goat/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/goat/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/orb-marketplace/page.js
+.next-pre-pointer-20260824-1555/server/app/orb-marketplace/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/orb-marketplace/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/orb/page.js
+.next-pre-pointer-20260824-1555/server/app/orb/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/orb/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/page.js
+.next-pre-pointer-20260824-1555/server/app/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/alpha-certsig/page.js
+.next-pre-pointer-20260824-1555/server/app/products/alpha-certsig/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/alpha-certsig/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/orb-weaver/page.js
+.next-pre-pointer-20260824-1555/server/app/products/orb-weaver/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/orb-weaver/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/page.js
+.next-pre-pointer-20260824-1555/server/app/products/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/prompt-like-a-pro/page.js
+.next-pre-pointer-20260824-1555/server/app/products/prompt-like-a-pro/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/prompt-like-a-pro/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/object-types/page.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/object-types/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/object-types/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/objects/page.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/objects/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/objects/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/page.js
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/products/truemark-mint/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/sitemap.xml.body
+.next-pre-pointer-20260824-1555/server/app/sitemap.xml.meta
+.next-pre-pointer-20260824-1555/server/app/sitemap.xml/route.js
+.next-pre-pointer-20260824-1555/server/app/sitemap.xml/route.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/sitemap/page.js
+.next-pre-pointer-20260824-1555/server/app/sitemap/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/sitemap/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/app/truemark/example-object/page.js
+.next-pre-pointer-20260824-1555/server/app/truemark/example-object/page.js.nft.json
+.next-pre-pointer-20260824-1555/server/app/truemark/example-object/page_client-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/chunks/1009.js
+.next-pre-pointer-20260824-1555/server/chunks/1682.js
+.next-pre-pointer-20260824-1555/server/chunks/2481.js
+.next-pre-pointer-20260824-1555/server/chunks/4138.js
+.next-pre-pointer-20260824-1555/server/chunks/5972.js
+.next-pre-pointer-20260824-1555/server/chunks/7639.js
+.next-pre-pointer-20260824-1555/server/chunks/7710.js
+.next-pre-pointer-20260824-1555/server/chunks/7857.js
+.next-pre-pointer-20260824-1555/server/chunks/86.js
+.next-pre-pointer-20260824-1555/server/chunks/8948.js
+.next-pre-pointer-20260824-1555/server/chunks/font-manifest.json
+.next-pre-pointer-20260824-1555/server/edge-runtime-webpack.js
+.next-pre-pointer-20260824-1555/server/edge-runtime-webpack.js.map
+.next-pre-pointer-20260824-1555/server/font-manifest.json
+.next-pre-pointer-20260824-1555/server/functions-config-manifest.json
+.next-pre-pointer-20260824-1555/server/interception-route-rewrite-manifest.js
+.next-pre-pointer-20260824-1555/server/middleware-build-manifest.js
+.next-pre-pointer-20260824-1555/server/middleware-manifest.json
+.next-pre-pointer-20260824-1555/server/middleware-react-loadable-manifest.js
+.next-pre-pointer-20260824-1555/server/middleware.js
+.next-pre-pointer-20260824-1555/server/middleware.js.map
+.next-pre-pointer-20260824-1555/server/next-font-manifest.js
+.next-pre-pointer-20260824-1555/server/next-font-manifest.json
+.next-pre-pointer-20260824-1555/server/pages-manifest.json
+.next-pre-pointer-20260824-1555/server/pages/500.html
+.next-pre-pointer-20260824-1555/server/pages/_app.js
+.next-pre-pointer-20260824-1555/server/pages/_app.js.nft.json
+.next-pre-pointer-20260824-1555/server/pages/_document.js
+.next-pre-pointer-20260824-1555/server/pages/_document.js.nft.json
+.next-pre-pointer-20260824-1555/server/pages/_error.js
+.next-pre-pointer-20260824-1555/server/pages/_error.js.nft.json
+.next-pre-pointer-20260824-1555/server/server-reference-manifest.js
+.next-pre-pointer-20260824-1555/server/server-reference-manifest.json
+.next-pre-pointer-20260824-1555/server/webpack-runtime.js
+.next-pre-pointer-20260824-1555/static/F7w14BxdsvCtc3r3R3qRP/_buildManifest.js
+.next-pre-pointer-20260824-1555/static/F7w14BxdsvCtc3r3R3qRP/_ssgManifest.js
+.next-pre-pointer-20260824-1555/static/chunks/117-c0bf855d4a5ba977.js
+.next-pre-pointer-20260824-1555/static/chunks/137-91324496e969a76d.js
+.next-pre-pointer-20260824-1555/static/chunks/157.d5e1668b4500eacf.js
+.next-pre-pointer-20260824-1555/static/chunks/878-1d8e9f6ae8cd68e1.js
+.next-pre-pointer-20260824-1555/static/chunks/972-f6b7752d26ac2ed7.js
+.next-pre-pointer-20260824-1555/static/chunks/app/_not-found/page-89c23b2bd0ad91ac.js
+.next-pre-pointer-20260824-1555/static/chunks/app/about/page-57b9221c8d34b026.js
+.next-pre-pointer-20260824-1555/static/chunks/app/admin/page-3cc35e188542075d.js
+.next-pre-pointer-20260824-1555/static/chunks/app/artifacts/page-23db026963db8e3d.js
+.next-pre-pointer-20260824-1555/static/chunks/app/brand/page-30b08b43e7098c6e.js
+.next-pre-pointer-20260824-1555/static/chunks/app/cart/page-54fcd57ca3149d29.js
+.next-pre-pointer-20260824-1555/static/chunks/app/checkout/page-1164260763d83351.js
+.next-pre-pointer-20260824-1555/static/chunks/app/goat/page-7da6d6b22c82665c.js
+.next-pre-pointer-20260824-1555/static/chunks/app/layout-305461a20c512f7d.js
+.next-pre-pointer-20260824-1555/static/chunks/app/orb-marketplace/page-5cd85a4383464e91.js
+.next-pre-pointer-20260824-1555/static/chunks/app/orb/page-cf9481779c6410da.js
+.next-pre-pointer-20260824-1555/static/chunks/app/page-298165c765f68fff.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/alpha-certsig/page-ca47e252df100135.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/orb-weaver/page-505698f4c3193755.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/page-67dac92959aa97f8.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/prompt-like-a-pro/page-23afa869f1943e3a.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/truemark-mint/object-types/page-e2f997dc0799bbd4.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/truemark-mint/objects/page-db782271f2381a43.js
+.next-pre-pointer-20260824-1555/static/chunks/app/products/truemark-mint/page-75a081a7b333c1cb.js
+.next-pre-pointer-20260824-1555/static/chunks/app/sitemap/page-6eb680a7f2de3ff3.js
+.next-pre-pointer-20260824-1555/static/chunks/app/truemark/example-object/page-7b658c338560e177.js
+.next-pre-pointer-20260824-1555/static/chunks/fd9d1056-cb5caf61ec72dd0b.js
+.next-pre-pointer-20260824-1555/static/chunks/framework-f66176bb897dc684.js
+.next-pre-pointer-20260824-1555/static/chunks/main-833ecf007918b87b.js
+.next-pre-pointer-20260824-1555/static/chunks/main-app-f7fcdad4ce800d47.js
+.next-pre-pointer-20260824-1555/static/chunks/pages/_app-72b849fbd24ac258.js
+.next-pre-pointer-20260824-1555/static/chunks/pages/_error-7ba65e1336b92748.js
+.next-pre-pointer-20260824-1555/static/chunks/polyfills-42372ed130431b0a.js
+.next-pre-pointer-20260824-1555/static/chunks/webpack-2b3b489ffa1acc16.js
+.next-pre-pointer-20260824-1555/static/css/b70bc8d7fd4ab57b.css
+.next-pre-pointer-20260824-1555/trace
+.next-pre-pointer-20260824-1555/types/app/about/page.ts
+.next-pre-pointer-20260824-1555/types/app/admin/page.ts
+.next-pre-pointer-20260824-1555/types/app/api/admin/orb-state/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/admin/system-scan/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/admin/vault/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/cali/[...path]/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/audio/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/capabilities/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/pointer-proof/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/skin/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/stt/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/tts/[audio_id]/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/tts/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/website-text/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/orb/website-voice/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/page-content/route.ts
+.next-pre-pointer-20260824-1555/types/app/api/waitlist/route.ts
+.next-pre-pointer-20260824-1555/types/app/artifacts/page.ts
+.next-pre-pointer-20260824-1555/types/app/brand/page.ts
+.next-pre-pointer-20260824-1555/types/app/cart/page.ts
+.next-pre-pointer-20260824-1555/types/app/checkout/page.ts
+.next-pre-pointer-20260824-1555/types/app/goat/page.ts
+.next-pre-pointer-20260824-1555/types/app/orb-marketplace/page.ts
+.next-pre-pointer-20260824-1555/types/app/orb/page.ts
+.next-pre-pointer-20260824-1555/types/app/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/alpha-certsig/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/orb-weaver/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/prompt-like-a-pro/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/truemark-mint/object-types/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/truemark-mint/objects/page.ts
+.next-pre-pointer-20260824-1555/types/app/products/truemark-mint/page.ts
+.next-pre-pointer-20260824-1555/types/app/sitemap/page.ts
+.next-pre-pointer-20260824-1555/types/app/truemark/example-object/page.ts
+.next-pre-pointer-20260824-1555/types/package.json
+Affiliate_Sites/TrueMarkMint.html
+Affiliate_Sites/TrueMarkMint.jsx
+ENDPOINTS_FULL_MAP.txt
+LICENSE
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/01_frontend/components/Button.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/01_frontend/components/GlobalOrb.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/01_frontend/components/GlobalOrbMount.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/01_frontend/components/Input.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/01_frontend/components/Section.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/audio/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/capabilities/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/core/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/stt/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/tts/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/tts_audio/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/website_text/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/02_api/orb/website_voice/route.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/03_orb_runtime/introspection/orb-introspection.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/03_orb_runtime/server/orb-server.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/03_orb_runtime/service/orb-service.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/bridges/BrowserContext.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/bridges/KayGeeHybridAdapter.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/bridges/QwenIntentPlugin.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/DesireEngine.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/IntentPredictor.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/MotionGovernor.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/OrbitalDynamics.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/PresenceVisuals.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/SelfPruner.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/core/types.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/deployments/spruked/SprukedOrb.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/deployments/truemark/TrueMarkOrb.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/index.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/vaults/behavior_patterns.yaml
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/04_behavior_skg/vaults/motion_memory.jsonl
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/cali_personal_skg.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/cali_routes.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_4_minds/bspinoza/spinoza_monism_skg.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_4_minds/hhume/hume_skepticism_skg.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_4_minds/hlocke/locke_empiricism_skg.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_4_minds/ikant/kant_critical_skg.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_mind_reasoner.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/core_vaults.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/doctrine_governance.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/main.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_cognition_skg.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_runtime/__init__.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_runtime/bayesian_engine.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_runtime/floating_assistant_orb.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_runtime/orb_controller.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/cali_skg/orb_runtime/orb_skg_manager.py
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/primitive_cache/primitive_normalization_aliases.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/05_cognition/primitive_cache/primitive_response_cache.json
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/admin/CaliOperationsHub.tsx
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/admin/admin-vault.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/commerce/commerce.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/page_content/page-content.data.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/page_content/page-content.runtime.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/08_tools/page_content/page-content.ts
+ORB_PRIMARY_WEBSITE_INSTALLATION_REVIEW/tree.;txt
+Orb_Assistant/.gitignore
+Orb_Assistant/.orb-assistant-wsl/Crashpad/client_id
+Orb_Assistant/.orb-assistant-wsl/DawnCache/data_0
+Orb_Assistant/.orb-assistant-wsl/DawnCache/data_1
+Orb_Assistant/.orb-assistant-wsl/DawnCache/data_2
+Orb_Assistant/.orb-assistant-wsl/DawnCache/data_3
+Orb_Assistant/.orb-assistant-wsl/DawnCache/index
+Orb_Assistant/.orb-assistant-wsl/Dictionaries/en-US-10-1.bdic
+Orb_Assistant/.orb-assistant-wsl/GPUCache/data_0
+Orb_Assistant/.orb-assistant-wsl/GPUCache/data_1
+Orb_Assistant/.orb-assistant-wsl/GPUCache/data_2
+Orb_Assistant/.orb-assistant-wsl/GPUCache/data_3
+Orb_Assistant/.orb-assistant-wsl/GPUCache/index
+Orb_Assistant/.orb-assistant-wsl/Network Persistent State
+Orb_Assistant/.orb-assistant-wsl/Preferences
+Orb_Assistant/.orb-assistant-wsl/Session Storage/CURRENT
+Orb_Assistant/.orb-assistant-wsl/Session Storage/LOCK
+Orb_Assistant/.orb-assistant-wsl/Session Storage/LOG
+Orb_Assistant/.orb-assistant-wsl/Session Storage/LOG.old
+Orb_Assistant/.orb-assistant-wsl/Session Storage/MANIFEST-000001
+Orb_Assistant/.orb-assistant-wsl/Trust Tokens
+Orb_Assistant/.orb-assistant-wsl/Trust Tokens-journal
+Orb_Assistant/.orb-assistant-wsl/skins/WORKORB21600_8eb49c628211c7d0.png
+Orb_Assistant/.orb-assistant-wsl/skins/metadata/WORKORB21600.png
+Orb_Assistant/.orb-assistant-wsl/skins/metadata/WORKORB21600_8eb49c628211c7d0.json
+Orb_Assistant/.orb-instance.env
+Orb_Assistant/.orb-instance.env.example
+Orb_Assistant/=5.0.0
+Orb_Assistant/CALI_System/cali_skg
+Orb_Assistant/CALI_System/config/advanced_api_imports.json
+Orb_Assistant/CALI_System/config/api_registry.json
+Orb_Assistant/CALI_System/config/orb_state.json
+Orb_Assistant/CALI_System/memory/a_posteriori/vault.jsonl
+Orb_Assistant/CALI_System/memory/a_priori/vault.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-03-28.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-05-05.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-07-03.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-07-06.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-07-07.jsonl
+Orb_Assistant/CALI_System/memory/memory_2026-07-12.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-03.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-06.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-07.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-12.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-13.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-14.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-15.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-16.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-18.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-19.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-20.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-21.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-22.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-07-31.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-08-24.jsonl
+Orb_Assistant/CALI_System/memory/orb_memory_2026-08-25.jsonl
+Orb_Assistant/CALI_System/state/cali_state_v4.json
+Orb_Assistant/CALI_System/vault/cali_identity.json
+Orb_Assistant/README.md
+Orb_Assistant/api/OrbService.d.ts
+Orb_Assistant/api/OrbService.js
+Orb_Assistant/api/requirements.txt
+Orb_Assistant/api/stream_structure.json
+Orb_Assistant/api/web_orb_bridge.py
+Orb_Assistant/archive/cognition_legacy/CALI_System_cognition_shim/__init__.py
+Orb_Assistant/archive/cognition_legacy/CALI_System_init.py
+Orb_Assistant/archive/cognition_legacy/README.md
+Orb_Assistant/archive/cognition_legacy/duplicate_data_stores/late_package_memory_2026-07-12.jsonl
+Orb_Assistant/archive/cognition_legacy/duplicate_data_stores/recreated_identity_2026-07-12.json
+Orb_Assistant/archive/cognition_legacy/duplicate_v4_package/CHANGELOG_v3_5_to_v4_0.md
+Orb_Assistant/archive/cognition_legacy/duplicate_v4_package/MISSING_INPUTS_NOTICE.md
+Orb_Assistant/archive/cognition_legacy/duplicate_v4_package/cali_skg_v4_0.py
+Orb_Assistant/archive/cognition_legacy/reconstructed_README_v4.md
+Orb_Assistant/archive/cognition_legacy/reconstructed_cali_skg_v4.py
+Orb_Assistant/archive/cognition_legacy/reconstructed_requirements.txt
+Orb_Assistant/archive/electron_dock_adapter_spruked_before_orb_weaver_sync_20260719T113420/electron_dock_adapter/main/README.md
+Orb_Assistant/archive/electron_dock_adapter_spruked_before_orb_weaver_sync_20260719T113420/electron_dock_adapter/main/main.js
+Orb_Assistant/archive/electron_dock_adapter_spruked_before_orb_weaver_sync_20260719T113420/electron_dock_adapter/main/orb-bridge.js
+Orb_Assistant/archive/electron_dock_adapter_spruked_before_orb_weaver_sync_20260719T113420/electron_dock_adapter/main/preload_adapter.js
+Orb_Assistant/archive/electron_legacy_20260719T113237/cali-launcher.js
+Orb_Assistant/archive/electron_legacy_20260719T113311/api/main.py
+Orb_Assistant/archive/electron_legacy_20260719T113311/scripts/launch_orb_instance.sh
+Orb_Assistant/archive/orb-assistant-profile-legacy-20260719T1116/Code Cache/js/index-dir/the-real-index
+Orb_Assistant/archive/orb-assistant-profile-legacy-20260719T1116/Code Cache/wasm/index-dir/the-real-index
+Orb_Assistant/archive/orb-assistant-profile-legacy-20260719T1116/Local State
+Orb_Assistant/archive/orb-assistant-profile-legacy-20260719T1116/Preferences
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_legacy_20260719T111341/CALI_SKG_DB/cali_skg/memory/memory_2026-05-31.jsonl
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_legacy_20260719T111341/CALI_SKG_DB/cali_skg/memory/memory_2026-06-03.jsonl
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_legacy_20260719T111341/CALI_SKG_DB/cali_skg/vault/cali_identity.json
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_root_moved_20260719T112905/cali_skg/memory/memory_2026-05-31.jsonl
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_root_moved_20260719T112905/cali_skg/memory/memory_2026-06-03.jsonl
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/archive/CALI_SKG_DB_root_moved_20260719T112905/cali_skg/vault/cali_identity.json
+Orb_Assistant/archive/root_home_spruked_com_legacy_20260719T115451/cali_skg/vault/cali_identity.json
+Orb_Assistant/cali_skg/__init__.py
+Orb_Assistant/cali_skg/api/__init__.py
+Orb_Assistant/cali_skg/api/cali_routes.py
+Orb_Assistant/cali_skg/api/main.py
+Orb_Assistant/cali_skg/core/__init__.py
+Orb_Assistant/cali_skg/core/cali_personal_skg.py
+Orb_Assistant/cali_skg/core/cali_state_v4.py
+Orb_Assistant/cali_skg/core/core
+Orb_Assistant/cali_skg/core/core_4_minds/bspinoza/spinoza_monism_skg.json
+Orb_Assistant/cali_skg/core/core_4_minds/hhume/hume_skepticism_skg.json
+Orb_Assistant/cali_skg/core/core_4_minds/hlocke/locke_empiricism_skg.json
+Orb_Assistant/cali_skg/core/core_4_minds/ikant/kant_critical_skg.json
+Orb_Assistant/cali_skg/core/core_mind_reasoner.py
+Orb_Assistant/cali_skg/core/core_vaults.py
+Orb_Assistant/cali_skg/core/doctrine_governance.py
+Orb_Assistant/cali_skg/core/logic_seeds/__init__.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_SKG/job/execute.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_SKG/jobs/execute.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_SKG/logic/cognitive_state.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_SKG/logic/deductive_logic.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_validator/job/validate.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_validator/logic/deductive_validation.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_validator/logic/validation_state.py
+Orb_Assistant/cali_skg/core/logic_seeds/deductive_validator/vault/observation_log.jsonl
+Orb_Assistant/cali_skg/core/logic_seeds/inductive_skg/logic/cognitive_stat.py
+Orb_Assistant/cali_skg/core/logic_seeds/inductive_skg/logic/cognitive_state.py
+Orb_Assistant/cali_skg/core/logic_seeds/inductive_skg/logic/inductive_logic.py
+Orb_Assistant/cali_skg/core/logic_seeds/inductive_validator/logic/inductive_validation.py
+Orb_Assistant/cali_skg/core/logic_seeds/inductive_validator/logic/validation_state.py
+Orb_Assistant/cali_skg/core/logic_seeds/intuitive_skg/logic/cognitive_state.py
+Orb_Assistant/cali_skg/core/logic_seeds/intuitive_skg/logic/intuitive_logic.py
+Orb_Assistant/cali_skg/core/logic_seeds/intuitive_validator/logic/intuitive_validation.py
+Orb_Assistant/cali_skg/core/logic_seeds/intuitive_validator/logic/validation_state.py
+Orb_Assistant/cali_skg/core/orb_cognition_skg.py
+Orb_Assistant/cali_skg/core/orb_runtime/__init__.py
+Orb_Assistant/cali_skg/core/orb_runtime/bayesian_engine.py
+Orb_Assistant/cali_skg/core/orb_runtime/floating_assistant_orb.py
+Orb_Assistant/cali_skg/core/orb_runtime/orb_controller.py
+Orb_Assistant/cali_skg/core/orb_runtime/orb_skg_manager.py
+Orb_Assistant/cali_skg/core/orb_runtime_tests/__init__.py
+Orb_Assistant/cali_skg/core/orb_runtime_tests/test_bridge.py
+Orb_Assistant/cali_skg/core/orb_runtime_tests/test_full_pipeline.py
+Orb_Assistant/cali_skg/core/orb_runtime_tests/test_pipeline.py
+Orb_Assistant/cali_skg/requirements.txt
+Orb_Assistant/cali_skg/run.sh
+Orb_Assistant/cali_skg/runtime_manifest.json
+Orb_Assistant/docs/ORB_ASSISTANT_RUNTIME_WIRING.md
+Orb_Assistant/docs/r_drive/R_DRIVE_ORB_CONTINUITY_2026-04-03.md
+Orb_Assistant/docs/r_drive/R_DRIVE_PICKUP_CHECKLIST_NEXT_20_MIN.md
+Orb_Assistant/docs/r_drive/R_DRIVE_SESSION_HANDOFF_2026-04-29.md
+Orb_Assistant/docs/r_drive/R_DRIVE_SESSION_HANDOFF_FROM_REGISTRY_2026-04-03.md
+Orb_Assistant/electron_dock_adapter/README.md
+Orb_Assistant/electron_dock_adapter/main.js
+Orb_Assistant/electron_dock_adapter/orb-bridge.js
+Orb_Assistant/electron_dock_adapter/preload_adapter.js
+Orb_Assistant/generate_tree.ps1
+Orb_Assistant/launch-orb-wsl.sh
+Orb_Assistant/modules/Epistemic_Gravity_Field/README.md
+Orb_Assistant/modules/Epistemic_Gravity_Field/__init__.py
+Orb_Assistant/modules/Epistemic_Gravity_Field/space_field.py
+Orb_Assistant/orb_controller/mcp_bridge.py
+Orb_Assistant/orb_core_standard/primitive_normalization_aliases.json
+Orb_Assistant/orb_core_standard/primitive_response_cache.json
+Orb_Assistant/package-lock.json
+Orb_Assistant/package.json
+Orb_Assistant/pointer_escalation/README.md
+Orb_Assistant/pointer_escalation/__init__.py
+Orb_Assistant/pointer_escalation/orbEscalation.ts
+Orb_Assistant/pointer_escalation/orbState.ts
+Orb_Assistant/pointer_escalation/pointerPlotTypes.ts
+Orb_Assistant/pointer_escalation/pointerResolution.ts
+Orb_Assistant/pointer_escalation/pointerRuntime.ts
+Orb_Assistant/pointer_escalation/pointer_plot_schema.py
+Orb_Assistant/pointer_escalation/promotion.py
+Orb_Assistant/pointer_escalation/scan_extraction.py
+Orb_Assistant/reference_audio.wav
+Orb_Assistant/scripts/provision_sovereign_orb.py
+Orb_Assistant/src/dashboard.html
+Orb_Assistant/src/index.html
+Orb_Assistant/src/ingest_skin.py
+Orb_Assistant/src/kokoro_baseline
+Orb_Assistant/src/main.jsx
+Orb_Assistant/src/orb-renderer.js
+Orb_Assistant/src/orb-shell.html
+Orb_Assistant/src/settings.html
+Orb_Assistant/test_cali_skg.py
+Orb_Assistant/test_skg_manager.py
+Orb_Assistant/tools
+Orb_Assistant/tree.txt
+Orb_Assistant/vault_system/posteriori/0052bbb0a05621086f0d900ee54d9ad7f685fa31fcbaf76fef6c8a96d9fe6ed3.json
+Orb_Assistant/vault_system/posteriori/036e9168597cd8795dbf145190de93180396e5a16b59edfe0ffa412b689402da.json
+Orb_Assistant/vault_system/posteriori/0724c20a9ea87fa8ae775d5206169b6d19130c0780d7fc1877e1cc43a817e820.json
+Orb_Assistant/vault_system/posteriori/0b61f09f066f57db7c4e49d4a2917b7cffb2d91040cc47bdcfe59919aa369913.json
+Orb_Assistant/vault_system/posteriori/0d9c021692c7c06ec426eaf2035079536c63752bb052184391305fbc6f7187cc.json
+Orb_Assistant/vault_system/posteriori/0e74d7fdd71a95dfde8834b1be01c40e56ee1c88a25bbb1cedf8938abbfee503.json
+Orb_Assistant/vault_system/posteriori/0f4a807fb870e70ca35856595137a37de059356c2ab51f8db9f565c911a95d8c.json
+Orb_Assistant/vault_system/posteriori/100061f4253a50008acdb4f388516b151910ae1459275923b359111a93f4cbe6.json
+Orb_Assistant/vault_system/posteriori/15dfd4326d77fa4b36334f20b9c53d6b1adddb59aa5a2c6b8e6ff6143257e4bb.json
+Orb_Assistant/vault_system/posteriori/16fea14b6fb37e0ccb3652cd3462ea515654824aa055de526cd4d37914e693a5.json
+Orb_Assistant/vault_system/posteriori/176421fd4433cc7aa848e9b8691b2d37fdb321388ad14615c81131bb9a7f27f0.json
+Orb_Assistant/vault_system/posteriori/1c63b0bd558d9a111771e4eeac4df330b3c0b060683d617fda0d2617e5979fa0.json
+Orb_Assistant/vault_system/posteriori/274eb4a2fff124260d6706c28f9f6e253138388949815c6a891760847845abd8.json
+Orb_Assistant/vault_system/posteriori/28db609fd80ac6f60330e246d99184ad00e853a0f22cd4245fe1c6091832d4ce.json
+Orb_Assistant/vault_system/posteriori/2c9b7f6f6239dbd55e9d2081803497afd719c0daf6b14631eaad22f6af50f9c2.json
+Orb_Assistant/vault_system/posteriori/2cc75c0f918f2ce2f42b89b956f4e1a5f72d59b125af5620c2dfac6b967ae55d.json
+Orb_Assistant/vault_system/posteriori/2db11d4db82d17be75fe4831af8a882c151410c2d4beeebaf1a7b935bacf863f.json
+Orb_Assistant/vault_system/posteriori/3b2219dc612a1e0baa539d79ca38e9f8b59f94ef23c63f7832f9d0bfdcfc8114.json
+Orb_Assistant/vault_system/posteriori/3b818909cc59d68b87643e1b8a32daaca75b360b9831116a255f7e8fe1357205.json
+Orb_Assistant/vault_system/posteriori/406b06b7e5a3f7b7fb7dcae0767aaf87d8b4c7cc82bcfe8f71c9de257867b869.json
+Orb_Assistant/vault_system/posteriori/40d910e91b1a893da6b3391eb99e5a99554cc7f830087968d547a65abec6b0d9.json
+Orb_Assistant/vault_system/posteriori/427c1596e3fcb28a1f43f99a392e817028c6659c0e2a28b60423124146641721.json
+Orb_Assistant/vault_system/posteriori/428aab472a6bac060bed202bf4fcd2776443895c9e8666c86ff514efe576b243.json
+Orb_Assistant/vault_system/posteriori/4a6ec9a20321bab71ddd90649afb47bec0de401517c94ab7957fcf579fa569a4.json
+Orb_Assistant/vault_system/posteriori/4e7f9bf0f8ccd87dbe8d9198c445854defd0bc8d01c4487d23bfe0a38f4a26f1.json
+Orb_Assistant/vault_system/posteriori/4e8d093ca192e68840edcefb55384cb4d99425f19ee6867cccdaf1fd01d03547.json
+Orb_Assistant/vault_system/posteriori/5026091626deb4e410788b8b0e8f68a8eb1c1bd0051248f92b19b78b96f83d5c.json
+Orb_Assistant/vault_system/posteriori/562e70681f8545dcd5a4aed7347f134450af482a8be7a56056d133e0729e8b04.json
+Orb_Assistant/vault_system/posteriori/5715e1501a0d8e9652d9352cc411bbde06ec09fd9d7bfb4494050c2a376d387c.json
+Orb_Assistant/vault_system/posteriori/57c65c29d960265bdd2ede37aed4617d8cbe99018c5d88817b6bc5cc0a29d6d1.json
+Orb_Assistant/vault_system/posteriori/5f88dd4b717db29950a9a924e76d9640f1a8f633ed0fbc6a40c17a88390509e0.json
+Orb_Assistant/vault_system/posteriori/6167efe9bb7d319e483700696a576c80a09cc81d313ce0d62d72d5b024a8fa9e.json
+Orb_Assistant/vault_system/posteriori/6314c5305485d7e9c291b02d876eb172588f6f92e7c5f5ccbf4cfcf41ad2291a.json
+Orb_Assistant/vault_system/posteriori/6beeb6616e799919ef1a976dc79ff5ab7e00cfadb64f29d807907f3b78e01fdc.json
+Orb_Assistant/vault_system/posteriori/6d71e558faebdb1b68b9a5435533736a65211c27e01c29ac6829304208e0e279.json
+Orb_Assistant/vault_system/posteriori/6f1488295794a99b1416bcbae2c1a5d1787d2eb132c1d076483d08c7dc09fbbc.json
+Orb_Assistant/vault_system/posteriori/6f2e6932a806b5aa600c3d7745966f8052b7f46673b95148ffda0b75904356c6.json
+Orb_Assistant/vault_system/posteriori/6fefe2ba4cc425f2cbc851b57cf651368436fd2d68812857ed8b1933eb04717e.json
+Orb_Assistant/vault_system/posteriori/73210c1c550ca77005e862220404de43ebe42c142c0bc85c006fe8322cbfdc8c.json
+Orb_Assistant/vault_system/posteriori/7568919078ee256aa58b6df4a556c8128fb4477d69ed255b24bbf6e2ea80b091.json
+Orb_Assistant/vault_system/posteriori/7993ecdcd4c9aa868aab065b4e7ab7b0d159bec8985668da11d7998edda59e6e.json
+Orb_Assistant/vault_system/posteriori/7b995e784f720e5f6ffbdb3bd079a70b1376ec50359b8ccb9a0afd4411e05575.json
+Orb_Assistant/vault_system/posteriori/7befea97eece552303872dee2efcb5c77511f1b9230a3cabf90ff481422a6169.json
+Orb_Assistant/vault_system/posteriori/7eb10aa8f842f804f7bedad7e11cb7a7e1d5c884f44c1d2acc87a790735e7d86.json
+Orb_Assistant/vault_system/posteriori/801f6f9b316f84a6156da55c46b30352300c820ef39b3dac07acc621c7ed6444.json
+Orb_Assistant/vault_system/posteriori/8043c4fc1ad96e45ba93b3a58eec03bc741246a6fb1cd8736fa06c5a9b49b62e.json
+Orb_Assistant/vault_system/posteriori/811cc9fafd80c25f4862396ef1282e3c8ea1ffc232f22f7e6d9cbffe697627b3.json
+Orb_Assistant/vault_system/posteriori/86fea38804aadad826abb19f08256b6b0375d4331c18858fed8ce23c0b1c256b.json
+Orb_Assistant/vault_system/posteriori/8efda0dd746dbaa4c6c55d86c75237bd017b7d6f12c06779c9d98c5637562766.json
+Orb_Assistant/vault_system/posteriori/910feaabe14c6b693c0669527ba2760c39cb6cb9d97252d8cfcdbb9a0ebaacd6.json
+Orb_Assistant/vault_system/posteriori/92c5309816ef2f4cba165e670a5e3f74ac2d67b16201e448a8fb1bf4c2316ab8.json
+Orb_Assistant/vault_system/posteriori/950c06663d00959dc0d593672281ad80e524c2c461c7292306f9d744c0242fc9.json
+Orb_Assistant/vault_system/posteriori/96b762614df40115856fcae11359f8719c61e5e5dbdc2461975bb3e0f86eefa1.json
+Orb_Assistant/vault_system/posteriori/975e40267842e5212d2e8058a4993bb665bb92dfddb51e2c07225ff15bce16e7.json
+Orb_Assistant/vault_system/posteriori/98152415ec7c65482cfb162e5d101dab741774f62ee8cd97467dbd2a58b5b967.json
+Orb_Assistant/vault_system/posteriori/9b99c07ea6b74d7436ce879d896683bbfbababddfb02053edabb8c23e8369d28.json
+Orb_Assistant/vault_system/posteriori/9bfb17a7b6a747b0325565becca46a359315bb4dbb92ffd3a3781b6dad7e23f9.json
+Orb_Assistant/vault_system/posteriori/9c181cdd399f3524d09b661cc5fc180f0718e1034fb7ed1a399613302c5fbb2d.json
+Orb_Assistant/vault_system/posteriori/9c82dc21d4b0aa272e24e82dc1d0def42b1afcb9dfbfe1123a6a431d987ef937.json
+Orb_Assistant/vault_system/posteriori/a5e188c5fab8e0cda018aee1d329485f56b5b4cd459ecc19dc61fbf61c721e5f.json
+Orb_Assistant/vault_system/posteriori/a7f4101dc5751a39eecd92b9f47a39648321af2c2a89d20037280207fc96a1d8.json
+Orb_Assistant/vault_system/posteriori/a7ff8a58ec2800ec242cb77892deb33574275fd77845a00db5fd7be4a590a4ec.json
+Orb_Assistant/vault_system/posteriori/a9bae43218ce8a4ce001c052b14fc33c658c7cb20fcd43a7515748fdf4eb305d.json
+Orb_Assistant/vault_system/posteriori/b5b5971e299b584ccc0a0f135e85fa7da7dfceffc5f5915cc8fa929e4b2bad01.json
+Orb_Assistant/vault_system/posteriori/b6ee2beef5219ef6cf29e96b006fb0ef83304b4ac763e9ca66062becf279250a.json
+Orb_Assistant/vault_system/posteriori/b7dad47b33ac1919bd7e56a17c6202e92b7467ac7904b54ab1c09352071d2fb7.json
+Orb_Assistant/vault_system/posteriori/bbbabc276c0ae88ba54d1f5b3bb521c9b52c326855978c1ebc33643d1944888f.json
+Orb_Assistant/vault_system/posteriori/bc50ac00eeef1ae1ccac404d2f6ed0cce6c171309f086badf075112d6f2e9007.json
+Orb_Assistant/vault_system/posteriori/bd6eae47af557d6f7f6373e2a4c4c9ecb2a60fb5594c43e5075faa6e97eff346.json
+Orb_Assistant/vault_system/posteriori/c2c95ea218c66762565b7fff53d86e71204fb43f14615722e5eea5042e6fc666.json
+Orb_Assistant/vault_system/posteriori/c6a95e9a6cdb4dc5b1f2455a984d4054a28f649f276d42d097b3d782e036d2da.json
+Orb_Assistant/vault_system/posteriori/c742108bbd0cc363283b21daae044214d4a32dfe1dec8985a16f8fd866bf11c1.json
+Orb_Assistant/vault_system/posteriori/cdb43ae5f1dd71607a1c02d4be45eac449ea629ef47469d69f1b5bd280712e0a.json
+Orb_Assistant/vault_system/posteriori/d1c2a73edbe96193cfc130b51f5f9eb2795af2fc28084c545c91b98f257cdd46.json
+Orb_Assistant/vault_system/posteriori/d4473010f672515ad7cd500cf3b3221cfea1f2c782f8b7f65f9029c42ff8e4d1.json
+Orb_Assistant/vault_system/posteriori/d4b84b224afde735ea6d43a8fae02eb215e7b3d04637e639804d7837b7003897.json
+Orb_Assistant/vault_system/posteriori/d914b8d2f49e9c5045a391eb590722fb290fad39b67e4c5589cc128b295ebb29.json
+Orb_Assistant/vault_system/posteriori/dac8ad828cc3387efb59b26fcf23edfc9e6258b2efdc331627542e9ce924f81b.json
+Orb_Assistant/vault_system/posteriori/dd34edaff544093a899720701fb98496dd271c2b9467ad98f22e0d758eaa7f9a.json
+Orb_Assistant/vault_system/posteriori/dd4ef92724420612ff915a980586e0cad8b6ef051af8e1bb228f007152c450ee.json
+Orb_Assistant/vault_system/posteriori/ddb12451e873f0eef7c99e964df70c4490d7c21056e83020c62293ff5dbe3e28.json
+Orb_Assistant/vault_system/posteriori/df3c1648433f49ba38bf34ee0924c0ca89e98ca698c2260bc85765b91f7113d8.json
+Orb_Assistant/vault_system/posteriori/e1f5cdd16270521ff8298737f2560fb97d3478bb06ec816967e53a4b7386597c.json
+Orb_Assistant/vault_system/posteriori/e40724bcaa947665e44c229eb8aa13281521b3556836be6fadde270e617d1f6a.json
+Orb_Assistant/vault_system/posteriori/e46b541ed8b8ac34c9b4e3351cd41e37e3682d348380387a77332af18e0f9e29.json
+Orb_Assistant/vault_system/posteriori/e5d3e21cedad7a2a5df7053177416160980d024e128c6bd915b1f35878278a9c.json
+Orb_Assistant/vault_system/posteriori/e999379aa57ff712631beb390e9ca45d60ea60cea74d8451f0905d388283e803.json
+Orb_Assistant/vault_system/posteriori/ea60c81da5cb1d2c795731b03162ce7275cf31847e19df6e9e3a14e3a3ef6e76.json
+Orb_Assistant/vault_system/posteriori/eb0a5e11a80647aff0cf84470865a41ee968f36ae27ee8ec2f26d768bc71b4b4.json
+Orb_Assistant/vault_system/posteriori/edbd34d0d9f8142b2b42f46a0242a1529279d347942519218f26c1d66802f6a0.json
+Orb_Assistant/vault_system/posteriori/f41b56c9617267d084e1caf7dddc29792a111d3efb55309b953eb636c4bfeb69.json
+Orb_Assistant/vault_system/posteriori/f63c0827744accadb01e1b60f444964cd315d10e59ea1d187d94814f356e0185.json
+Orb_Assistant/vault_system/posteriori/f7ae5e8152817444c5d76a3fe79ce3354443e6bc9deac05218b4ad8c182a2d8d.json
+Orb_Assistant/vault_system/posteriori/f80381df406a557b9382823ffe0f7aa0b005832070d0fe38f15f25742e4711a9.json
+Orb_Assistant/vault_system/posteriori/ff4478fba46a372905287f77716203673ed84485baab4df2a2db4d6118eef315.json
+README.md
+app/about/page.tsx
+app/admin/page.tsx
+app/api/admin/orb-state/route.ts
+app/api/admin/system-scan/route.ts
+app/api/admin/vault/route.ts
+app/api/cali/[...path]/route.ts
+app/api/orb/audio/route.ts
+app/api/orb/capabilities/route.ts
+app/api/orb/pointer-proof/route.ts
+app/api/orb/route.ts
+app/api/orb/skin/route.ts
+app/api/orb/stt/route.ts
+app/api/orb/tts/[audio_id]/route.ts
+app/api/orb/tts/route.ts
+app/api/orb/website-text/route.ts
+app/api/orb/website-voice/route.ts
+app/api/page-content/route.ts
+app/api/waitlist/route.ts
+app/artifacts/page.tsx
+app/brand/page.tsx
+app/cart/page.client.tsx
+app/cart/page.tsx
+app/checkout/page.client.tsx
+app/checkout/page.tsx
+app/favicon.svg
+app/globals.css
+app/goat/page.tsx
+app/layout.tsx
+app/orb-marketplace/page.tsx
+app/orb/page.tsx
+app/page.tsx
+app/products/alpha-certsig/page.tsx
+app/products/orb-weaver/page.tsx
+app/products/page.tsx
+app/products/prompt-like-a-pro/page.tsx
+app/products/truemark-mint/object-types/page.tsx
+app/products/truemark-mint/objects/page.tsx
+app/products/truemark-mint/page.tsx
+app/sitemap.ts
+app/sitemap/page.tsx
+app/truemark/example-object/page.tsx
+artifacts/CALI_SKG_v4_0_Current_Runtime_Package.zip
+artifacts/SPRUKED_CRM_MASTER_2026-05-05.tar.gz
+artifacts/SPRUKED_CRM_MASTER_2026-05-05/README_MIGRATION.md
+artifacts/SPRUKED_CRM_MASTER_2026-05-05/manifest.env
+artifacts/SPRUKED_CRM_MASTER_2026-05-05/source/app/page.tsx
+artifacts/SPRUKED_CRM_MASTER_2026-05-05/source/components/admin/CaliOperationsHub.tsx
+artifacts/blueeyeorb1600.png
+artifacts/gpt_voice_samples (267).wav
+artifacts/orb-route-backups/route.ts.bak.20260624-215516
+artifacts/orb-route-backups/route.ts.bak.20260624-215849
+artifacts/orb-route-backups/route.ts.bak.20260624-215925
+artifacts/orb-route-backups/route.ts.bak.20260624-223600
+artifacts/pointeerping.mp3
+artifacts/purplemorb50px.png
+artifacts/render-check-home-final.png
+artifacts/render-check-home-fresh.png
+artifacts/render-check-home-ok.png
+artifacts/render-check-home.png
+artifacts/splash-spruked-3d-test.png
+artifacts/travel_morb2.mp3
+artifacts/weaver-red-blue-center.png
+components/admin/CaliOperationsHub.tsx
+components/brand/CircularStamp.tsx
+components/brand/ColorSwatch.tsx
+components/brand/FaviconGrid.tsx
+components/brand/PrimaryLogo.tsx
+components/brand/WordmarkLogo.tsx
+components/commerce/useCart.ts
+components/layout/Footer.tsx
+components/layout/Header.tsx
+components/layout/Navigation.tsx
+components/ui/Button.tsx
+components/ui/GlobalOrb.motion.snapshot.2026-03-27.tsx
+components/ui/GlobalOrb.tsx
+components/ui/GlobalOrbMount.tsx
+components/ui/Input.tsx
+components/ui/LandingSplash.tsx
+components/ui/Section.tsx
+data/page-content.ts
+doc/admin-crm.md
+doc/architecture/orb-marketplace.md
+doc/cms.md
+doc/crawl-reports/job-14/pointer_manifest.json
+doc/crawl-reports/job-14/pointer_plot_map.json
+doc/crawl-reports/spruked-job-14-audit.csv
+doc/orb-motion-snapshot-2026-03-27.md
+doc/session-notes/website-dev-log-2026-06-12.md
+lib/admin-vault.ts
+lib/commerce.ts
+lib/constants.ts
+lib/morb-runtime.ts
+lib/orb-browser-tools.ts
+lib/orb-capability-registry.ts
+lib/orb-internal-url.ts
+lib/orb-introspection.ts
+lib/orb-pointer-map-server.ts
+lib/orb-server.ts
+lib/orb-service.ts
+lib/orb-site-world.ts
+lib/orbital_behavior_skg/bridges/BrowserContext.ts
+lib/orbital_behavior_skg/bridges/KayGeeHybridAdapter.ts
+lib/orbital_behavior_skg/bridges/QwenIntentPlugin.ts
+lib/orbital_behavior_skg/core/DesireEngine.ts
+lib/orbital_behavior_skg/core/IntentPredictor.ts
+lib/orbital_behavior_skg/core/MotionGovernor.ts
+lib/orbital_behavior_skg/core/OrbitalDynamics.ts
+lib/orbital_behavior_skg/core/PresenceVisuals.ts
+lib/orbital_behavior_skg/core/SelfPruner.ts
+lib/orbital_behavior_skg/core/types.ts
+lib/orbital_behavior_skg/deployments/spruked/SprukedOrb.ts
+lib/orbital_behavior_skg/deployments/truemark/TrueMarkOrb.ts
+lib/orbital_behavior_skg/index.ts
+lib/orbital_behavior_skg/vaults/behavior_patterns.yaml
+lib/orbital_behavior_skg/vaults/motion_memory.jsonl
+lib/page-content.ts
+lib/spruked-vault.ts
+lib/supabase/server.ts
+middleware.ts
+next
+next.config.js
+package-lock.json
+package.json
+postcss.config.mjs
+public/assets/CertificateKNFTsample.png
+public/assets/Founder Background, Faith & Professional Statement.pdf
+public/assets/Prompt Like a Procopy.docx
+public/assets/Ulogo1024blk.png
+public/assets/Ulogo1024wht.png
+public/assets/Ulogo1600blk.png
+public/assets/Ulogo1600wht.png
+public/assets/Ulogo256blk.png
+public/assets/Ulogo256wht.png
+public/assets/Ulogo512blk.png
+public/assets/Ulogo512wht.png
+public/assets/Ulogo96blk.ico
+public/assets/Ulogo96wht.ico
+public/assets/Untitled.mp4
+public/assets/goatlog512.png
+public/assets/goatlogo512oval.png
+public/assets/promptlikeapro.png
+public/favicon.ico
+public/logos/spruked-stamp-white.svg
+public/logos/spruked-symbol-black.svg
+public/logos/spruked-symbol-white.svg
+public/logos/spruked-wordmark-white.svg
+public/orb/blueeyeorb1600.png
+public/orb/pointeerping.mp3
+public/orb/purplemorb50px.png
+public/orb/travel_morb2.mp3
+public/orb/weaver-red-blue-center.png
+scripts/scan-runtime-pointers.mjs
+scripts/start-cp3.sh
+scripts/test-pointer-browser.mjs
+scripts/test-pointer-routing.mjs
+scripts/test-site-world.mjs
+spruked_Vault/.gitignore
+spruked_Vault/README.md
+spruked_Vault/SPRUKED_VAULT_MANIFEST.json
+spruked_Vault/config/environments/dev.yaml
+spruked_Vault/config/environments/prod.yaml
+spruked_Vault/config/environments/test.yaml
+spruked_Vault/config/telemetry.yaml
+spruked_Vault/config/vault_config.yaml
+spruked_Vault/docs/architecture.md
+spruked_Vault/docs/glyph_guide.md
+spruked_Vault/docs/memory_matrix.md
+spruked_Vault/docs/migration_guide.md
+spruked_Vault/docs/telemetry_best_practices.md
+spruked_Vault/docs/vault_types.md
+spruked_Vault/engine/evaluator.py
+spruked_Vault/engine/integration_hooks/on_vault_apply.py
+spruked_Vault/engine/integration_hooks/post_resolution.yaml
+spruked_Vault/engine/resolver.js
+spruked_Vault/engine/signal_map.json
+spruked_Vault/examples/input_career_change.json
+spruked_Vault/examples/input_game_quest.json
+spruked_Vault/examples/input_medical_triage.json
+spruked_Vault/frameworks/README.md
+spruked_Vault/glyphs/_template/custom_glyph.json
+spruked_Vault/glyphs/glyph_map.json
+spruked_Vault/glyphs/trace_engine.js
+spruked_Vault/identity/README.md
+spruked_Vault/interfaces/api/openapi.yaml
+spruked_Vault/interfaces/cli/commands.md
+spruked_Vault/knowledge/README.md
+spruked_Vault/knowledge/skg/README.md
+spruked_Vault/knowledge/skg/orb-weaver/README.md
+spruked_Vault/knowledge/skg/orb-weaver/knowledge_graph.json
+spruked_Vault/knowledge/skg/orb-weaver/lexical_index.json
+spruked_Vault/knowledge/skg/orb-weaver/retrieval_index.json
+spruked_Vault/knowledge/skg/orb-weaver/route_classification.json
+spruked_Vault/knowledge/skg/orb-weaver/source_validation.json
+spruked_Vault/knowledge/website/orb-weaver/IMPORT_MANIFEST.json
+spruked_Vault/knowledge/website/orb-weaver/README.md
+spruked_Vault/knowledge/website/orb-weaver/commercial_catalog.json
+spruked_Vault/knowledge/website/orb-weaver/knowledge_chunks.json
+spruked_Vault/knowledge/website/orb-weaver/latest_context.json
+spruked_Vault/knowledge/website/orb-weaver/latest_crawl.json
+spruked_Vault/knowledge/website/orb-weaver/lexical_index.json
+spruked_Vault/knowledge/website/orb-weaver/pointer_plot_map.json
+spruked_Vault/knowledge/website/orb-weaver/retrieval_index.json
+spruked_Vault/knowledge/website/orb-weaver/route_classification.json
+spruked_Vault/knowledge/website/orb-weaver/scan_stage_execution.json
+spruked_Vault/knowledge/website/orb-weaver/source_validation.json
+spruked_Vault/knowledge/website/runtime_verified_pointer_map.json
+spruked_Vault/knowledge/website/site_world_routes.json
+spruked_Vault/memory/_template/custom_matrix.json
+spruked_Vault/memory/consolidation.py
+spruked_Vault/memory/domains/long_term.json
+spruked_Vault/memory/domains/sensory.json
+spruked_Vault/memory/domains/short_term.json
+spruked_Vault/memory/matrix_store.yaml
+spruked_Vault/preferences/README.md
+spruked_Vault/scripts/consolidate_memory.py
+spruked_Vault/scripts/export_telemetry.js
+spruked_Vault/scripts/export_to_json.lua
+spruked_Vault/scripts/generate_glyph_report.py
+spruked_Vault/scripts/validate_vaults.sh
+spruked_Vault/state/README.md
+spruked_Vault/telemetry/alerts.yaml
+spruked_Vault/telemetry/audit/README.md
+spruked_Vault/telemetry/collector.py
+spruked_Vault/telemetry/dashboard/anomaly_detector.js
+spruked_Vault/telemetry/dashboard/metrics_dashboard.md
+spruked_Vault/telemetry/telemetry.yaml
+spruked_Vault/telemetry/traces/agent_decisions.json
+spruked_Vault/telemetry/traces/glyphs/README.md
+spruked_Vault/telemetry/traces/latency_buckets.json
+spruked_Vault/tests/integration/test_ethical_dilemma.json
+spruked_Vault/tests/integration/test_glyph_drift.json
+spruked_Vault/tests/integration/test_memory_consolidation.json
+spruked_Vault/tests/integration/test_pricing_edge_case.json
+spruked_Vault/tests/unit/test_telemetry_alerts.json
+spruked_Vault/tests/unit/vault_template_test.json
+spruked_Vault/tree.txt
+spruked_Vault/vaults/_template/logic.md
+spruked_Vault/vaults/_template/rules/condition.js
+spruked_Vault/vaults/_template/vault.json
+spruked_Vault/voice/README.md
+structure-tree-path-changes-20260725_021108.txt
+structure-tree.txt
+structure_tre.txt
+styles/globals.css
+tailwind.config.ts
+tree.txt
+tsconfig.json
