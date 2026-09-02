@@ -5,7 +5,11 @@ from __future__ import annotations
 import json
 import os
 import re
+import base64
+import threading
+import time
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 from fastapi import APIRouter, Depends, FastAPI, HTTPException
@@ -24,6 +28,7 @@ router = APIRouter(prefix="/cali", tags=["cali-personal"])
 security = HTTPBearer(auto_error=False)
 _REDIS_CLIENT: Any | None = None
 _REDIS_ERROR: Optional[str] = None
+_REDIS_LOCK = threading.Lock()
 
 
 def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
@@ -46,8 +51,8 @@ def _doctrine_require_decision_envelope() -> bool:
     return str(os.getenv("CALI_DOCTRINE_REQUIRE_ENVELOPE", "0")).strip() == "1"
 
 
-def _use_qwen_for_unknown() -> bool:
-    return str(os.getenv("CALI_HYBRID_USE_QWEN", "1")).strip() == "1"
+def _use_llm_for_unknown() -> bool:
+    return str(os.getenv("CALI_HYBRID_USE_LLM", "1")).strip() == "1"
 
 
 def _kaygee_api_base() -> str:
@@ -64,6 +69,10 @@ def _kaygee_voice() -> str:
 
 def _local_kokoro_tts_url() -> str:
     return str(os.getenv("CALI_LOCAL_KOKORO_URL", "http://127.0.0.1:12000/api/kokoro/tts")).strip()
+
+
+def _qwen_tts_url() -> str:
+    return str(os.getenv("CALI_QWEN_TTS_URL", "http://127.0.0.1:9880/speak")).strip()
 
 
 def _local_kokoro_speed() -> float:
@@ -84,11 +93,11 @@ def _timeout_seconds() -> float:
 
 
 def _llm_max_tokens() -> int:
-    raw = str(os.getenv("CALI_OLLAMA_MAX_TOKENS", "140")).strip()
+    raw = str(os.getenv("CALI_LLM_MAX_TOKENS") or os.getenv("CALI_OLLAMA_MAX_TOKENS") or "48").strip()
     try:
-        return min(800, max(50, int(raw)))
+        return min(800, max(8, int(raw)))
     except ValueError:
-        return 140
+        return 48
 
 
 def _llm_temperature() -> float:
@@ -115,6 +124,28 @@ def _llm_device() -> Optional[str]:
     if not raw:
         return None
     return raw
+
+
+def _llm_provider() -> str:
+    raw = str(os.getenv("CALI_LLM_PROVIDER", "llama_cpp")).strip().lower()
+    normalized = raw.replace("-", "_").replace(".", "_")
+    if normalized in {"llama", "llamacpp", "llama_cpp", "llama_cpp_server"}:
+        return "llama_cpp"
+    if normalized == "ollama":
+        return "ollama"
+    return "llama_cpp"
+
+
+def _llama_cpp_base_url() -> str:
+    return str(
+        os.getenv("LLAMA_CPP_API_BASE")
+        or os.getenv("LLAMA_CPP_SERVER_URL")
+        or "http://127.0.0.1:8080"
+    ).strip().rstrip("/")
+
+
+def _llama_cpp_model_name() -> str:
+    return str(os.getenv("CALI_LLAMA_CPP_MODEL_NAME", "local-llama-cpp")).strip() or "local-llama-cpp"
 
 
 def _ollama_model_name() -> str:
@@ -279,33 +310,7 @@ def _collect_substrate_redis_snapshot() -> Dict[str, Any]:
     return snapshot
 
 
-def _substrate_response(prompt: str, snapshot: Dict[str, Any]) -> str:
-    research_mode = _is_research_testing_query(prompt)
-    sample_keys = [str(item.get("key")) for item in snapshot.get("samples", []) if item.get("key")]
-    key_preview = ", ".join(sample_keys[:5]) if sample_keys else "none sampled yet"
-    redis_state = "connected" if snapshot.get("redis_connected") else "unavailable"
-
-    lines: List[str] = [
-        "Epistemic geometry here is the governance-routed cognition state-space over the substrate.",
-        "Live path: /api/orb -> kaygee_hybrid -> /cali/orb/respond -> qwen-core + doctrine governance -> kokoro voice.",
-        f"Substrate Redis state: {redis_state}; sampled keys: {key_preview}.",
-    ]
-    if research_mode:
-        lines.extend(
-            [
-                "Currently being researched/tested: hybrid provider stability, doctrine DDR enforcement, Redis substrate signal fidelity, and voice path reliability (KayGee TTS with local Kokoro fallback).",
-                "Validation surfaces: web insight artifact export, cognition metadata traces (provider_used/llm_core/doctrine_state), and ACP/voice fallback metrics in Orb_Assistant modules.",
-            ]
-        )
-    else:
-        lines.append(
-            "Ask for \"current research and tests\" and I will return active experiment lanes and validation checkpoints."
-        )
-    return " ".join(lines)
-
-
 def _normalize_companion_text(raw_text: str, prompt: str) -> str:
-    prompt_lower = str(prompt or "").lower()
     text = str(raw_text or "").strip()
     if not text:
         return ""
@@ -332,19 +337,6 @@ def _normalize_companion_text(raw_text: str, prompt: str) -> str:
     if re.search(r"offers the strongest frame for", text, flags=re.IGNORECASE):
         text = ""
 
-    # Handle specific prompts
-    if re.search(r"\b(what(?:'s| is)? your name|who are you)\b", prompt_lower):
-        return "I'm Cali. I'm here with you."
-    if re.search(r"\b(primary function|primary role|your role|your purpose|what do you do)\b", prompt_lower):
-        return (
-            "My primary function is to assist you as Cali with clear guidance, onboarding, "
-            "mint support, and execution help."
-        )
-    if re.search(r"\b(can you hear me|do you hear me)\b", prompt_lower):
-        return "I hear you clearly."
-    if re.match(r"^(hi|hello|hey)\b", prompt_lower):
-        return "Hey. I'm here."
-
     # Final cleanup
     text = re.sub(r"\s{2,}", " ", text).strip()
     if not text:
@@ -354,24 +346,7 @@ def _normalize_companion_text(raw_text: str, prompt: str) -> str:
     return text
 
 
-def _fast_path_response(prompt: str) -> str:
-    prompt_lower = str(prompt or "").strip().lower()
-    if re.search(r"\b(what(?:'s| is)? your name|who are you)\b", prompt_lower):
-        return "I'm Cali. I'm here with you."
-    if re.search(r"\b(primary function|primary role|your role|your purpose|what do you do)\b", prompt_lower):
-        return (
-            "My primary function is to assist you as Cali with clear guidance, onboarding, "
-            "mint support, and execution help."
-        )
-    if re.search(r"\b(can you hear me|do you hear me)\b", prompt_lower):
-        return "I hear you clearly."
-    if re.match(r"^(hi|hello|hey)\b", prompt_lower):
-        return "Hey. I'm here."
-    return ""
-
-
 def _generate_llm_response(prompt: str, context: Dict[str, Any], emotion: str) -> str:
-    model = _ollama_model_name()
     system_prompt = (
         "You are Cali, a female executive assistant for Bryan on spruked.com. "
         "Follow KayGee governance style: concise, calm, practical, and safe. "
@@ -382,6 +357,58 @@ def _generate_llm_response(prompt: str, context: Dict[str, Any], emotion: str) -
         context_hint = f"\nContext: {context}"
     full_prompt = f"Emotion: {emotion}\nUser: {prompt}{context_hint}"
 
+    if _llm_provider() == "llama_cpp":
+        base_url = _llama_cpp_base_url()
+        model = _llama_cpp_model_name()
+        try:
+            response = httpx.post(
+                f"{base_url}/v1/chat/completions",
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": full_prompt},
+                    ],
+                    "stream": False,
+                    "max_tokens": _llm_max_tokens(),
+                    "temperature": _llm_temperature(),
+                    "top_p": 0.9,
+                },
+                timeout=60.0,
+            )
+            response.raise_for_status()
+            result = response.json()
+            choices = result.get("choices") or []
+            if choices:
+                message = choices[0].get("message") or {}
+                content = message.get("content") or choices[0].get("text")
+                if content:
+                    return str(content).strip()
+
+            raise RuntimeError("empty chat completion response")
+        except Exception as chat_exc:
+            try:
+                response = httpx.post(
+                    f"{base_url}/completion",
+                    json={
+                        "prompt": f"{system_prompt}\n\n{full_prompt}\nCali:",
+                        "stream": False,
+                        "n_predict": _llm_max_tokens(),
+                        "temperature": _llm_temperature(),
+                        "top_p": 0.9,
+                    },
+                    timeout=60.0,
+                )
+                response.raise_for_status()
+                result = response.json()
+                response_text = result.get("content") or result.get("response") or result.get("text") or ""
+                return str(response_text or "").strip()
+            except Exception as completion_exc:
+                raise RuntimeError(
+                    f"llama.cpp API call failed: chat={chat_exc}; completion={completion_exc}"
+                ) from completion_exc
+
+    model = _ollama_model_name()
     try:
         response = httpx.post(
             "http://127.0.0.1:11434/api/generate",
@@ -406,123 +433,144 @@ def _generate_llm_response(prompt: str, context: Dict[str, Any], emotion: str) -
         raise RuntimeError(f"Ollama API call failed: {exc}") from exc
 
 
-async def _synthesize_voice(text: str) -> Dict[str, Optional[str]]:
+async def _synthesize_voice(text: str, voice: Optional[str] = None) -> Dict[str, Optional[str]]:
     if not _kaygee_voice_enabled() or not text:
         return {"audio_url": None, "audio_engine": None}
+    selected_voice = (voice or _kaygee_voice()).strip() or _kaygee_voice()
 
-    audio_url: Optional[str] = None
-    audio_engine: Optional[str] = None
+    async def parse_tts_response(response: httpx.Response, base_url: str, engine: str) -> Dict[str, Optional[str]]:
+        content_type = str(response.headers.get("content-type") or "").lower()
+        if content_type.startswith("audio/"):
+            return {
+                "audio_url": f"data:{content_type.split(';', 1)[0]};base64,{base64.b64encode(response.content).decode('ascii')}",
+                "audio_engine": engine,
+            }
+        data = response.json()
+        wav_b64 = str(data.get("audio_wav_base64") or "").strip()
+        raw_audio_url = str(data.get("audio_url") or "").strip()
+        if wav_b64:
+            return {
+                "audio_url": f"data:audio/wav;base64,{wav_b64}",
+                "audio_engine": str(data.get("audio_engine") or data.get("engine") or engine).strip() or engine,
+            }
+        if raw_audio_url:
+            if not raw_audio_url.startswith("http://") and not raw_audio_url.startswith("https://") and not raw_audio_url.startswith("data:"):
+                raw_audio_url = f"{base_url}{raw_audio_url if raw_audio_url.startswith('/') else '/' + raw_audio_url}"
+            return {
+                "audio_url": raw_audio_url,
+                "audio_engine": str(data.get("audio_engine") or data.get("engine") or engine).strip() or engine,
+            }
+        return {"audio_url": None, "audio_engine": None}
 
-    try:
-        async with httpx.AsyncClient(timeout=_timeout_seconds()) as client:
-            response = await client.post(
-                f"{_kaygee_api_base()}/plugin/tts",
-                json={"text": text, "voice": _kaygee_voice()},
-            )
-        if response.status_code == 200:
-            data = response.json()
-            raw_audio_url = str(data.get("audio_url") or "").strip()
-            if raw_audio_url:
-                if not raw_audio_url.startswith("http://") and not raw_audio_url.startswith("https://"):
-                    raw_audio_url = f"{_kaygee_api_base()}{raw_audio_url if raw_audio_url.startswith('/') else '/' + raw_audio_url}"
-                audio_url = raw_audio_url
-            audio_engine = str(data.get("engine") or data.get("audio_engine") or "").strip() or None
-    except Exception:
-        audio_url = None
-        audio_engine = None
-
-    if not audio_url:
+    local_tts_url = _local_kokoro_tts_url()
+    if local_tts_url:
         try:
-            async with httpx.AsyncClient(timeout=_timeout_seconds()) as client:
-                fallback = await client.post(
-                    f"{_kaygee_api_base()}/api/interact",
-                    json={
-                        "text": text,
-                        "voice_enabled": True,
-                        "voice_response": True,
-                        "voice": _kaygee_voice(),
-                    },
+            async with httpx.AsyncClient(timeout=max(5.0, _timeout_seconds())) as client:
+                response = await client.post(
+                    local_tts_url,
+                    json={"text": text, "voice": selected_voice, "speed": _local_kokoro_speed()},
                 )
-            if fallback.status_code == 200:
-                data = fallback.json()
-                raw_audio_url = str(data.get("audio_url") or "").strip()
-                if raw_audio_url:
-                    if not raw_audio_url.startswith("http://") and not raw_audio_url.startswith("https://"):
-                        raw_audio_url = f"{_kaygee_api_base()}{raw_audio_url if raw_audio_url.startswith('/') else '/' + raw_audio_url}"
-                    audio_url = raw_audio_url
-                audio_engine = str(data.get("audio_engine") or data.get("engine") or audio_engine or "").strip() or audio_engine
+            if response.status_code == 200:
+                parsed = await parse_tts_response(response, local_tts_url.rsplit("/", 3)[0], "kokoro_local")
+                if parsed.get("audio_url"):
+                    return parsed
         except Exception:
             pass
 
-    if not audio_url:
-        local_tts_url = _local_kokoro_tts_url()
-        if local_tts_url:
-            try:
-                async with httpx.AsyncClient(timeout=max(5.0, _timeout_seconds())) as client:
-                    fallback = await client.post(
-                        local_tts_url,
-                        json={
-                            "text": text,
-                            "voice": _kaygee_voice(),
-                        },
-                    )
-                    if fallback.status_code == 422:
-                        fallback = await client.post(
-                            local_tts_url,
-                            json={"text": text},
-                        )
-                if fallback.status_code == 200:
-                    data = fallback.json()
-                    wav_b64 = str(data.get("audio_wav_base64") or "").strip()
-                    raw_audio_url = str(data.get("audio_url") or "").strip()
-                    if wav_b64:
-                        audio_url = f"data:audio/wav;base64,{wav_b64}"
-                    elif raw_audio_url:
-                        if not raw_audio_url.startswith("http://") and not raw_audio_url.startswith("https://"):
-                            raw_audio_url = (
-                                f"{local_tts_url.rsplit('/', 3)[0]}{raw_audio_url if raw_audio_url.startswith('/') else '/' + raw_audio_url}"
-                            )
-                        audio_url = raw_audio_url
-                    if audio_url:
-                        audio_engine = "kokoro_local_api"
-            except Exception:
-                pass
+    qwen_tts_url = _qwen_tts_url()
+    if qwen_tts_url:
+        try:
+            async with httpx.AsyncClient(timeout=max(5.0, _timeout_seconds())) as client:
+                response = await client.post(
+                    qwen_tts_url,
+                    json={"text": text, "voice": selected_voice},
+                )
+            if response.status_code == 200:
+                parsed = await parse_tts_response(response, qwen_tts_url.rsplit("/", 1)[0], "qwen3_tts")
+                if parsed.get("audio_url"):
+                    return parsed
+        except Exception:
+            pass
 
     return {
-        "audio_url": audio_url or None,
-        "audio_engine": audio_engine,
+        "audio_url": None,
+        "audio_engine": None,
     }
 
 
-async def _query_kaygee_interact(prompt: str, context: Dict[str, Any], emotion: str) -> Dict[str, Any]:
+def _origin_for_url(raw_url: str) -> str:
+    parsed = urlsplit(raw_url)
+    return urlunsplit((parsed.scheme, parsed.netloc, "", "", "")).rstrip("/")
+
+
+def _kokoro_warmup_url() -> str:
+    raw = _local_kokoro_tts_url().rstrip("/")
+    if raw.endswith("/tts"):
+        return f"{raw[:-4]}/warmup"
+    return f"{raw.rsplit('/', 1)[0]}/warmup"
+
+
+async def _warmup_voice(voice: Optional[str] = None) -> Dict[str, Any]:
+    selected_voice = (voice or _kaygee_voice()).strip() or _kaygee_voice()
+    started = time.monotonic()
+    details: Dict[str, Any] = {
+        "kokoro": {"status": "not_attempted"},
+        "qwen3_tts": {"status": "not_attempted"},
+    }
+
     try:
-        async with httpx.AsyncClient(timeout=_timeout_seconds()) as client:
+        async with httpx.AsyncClient(timeout=max(5.0, _timeout_seconds())) as client:
             response = await client.post(
-                f"{_kaygee_api_base()}/api/interact",
-                json={
-                    "text": prompt,
-                    "context": context,
-                    "emotion": emotion,
-                    "voice_enabled": _kaygee_voice_enabled(),
-                    "voice_response": _kaygee_voice_enabled(),
-                    "voice": _kaygee_voice(),
-                },
+                _kokoro_warmup_url(),
+                json={"voice": selected_voice, "speed": _local_kokoro_speed()},
             )
-        data = response.json() if response.status_code == 200 else {}
-    except Exception:
-        return {"response": "", "audio_url": None, "audio_engine": None}
+        data = response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
+        details["kokoro"] = {
+            "status": "ready" if response.status_code == 200 and data.get("status") in {"success", "ready", "warming"} else "error",
+            "http_status": response.status_code,
+            "latency_ms": data.get("latency_ms"),
+            "prewarm_seconds": data.get("prewarm_seconds"),
+        }
+        if response.status_code == 200 and data.get("status") in {"success", "ready", "warming"}:
+            return {
+                "status": "success",
+                "warmup_state": str(data.get("status") or "ready"),
+                "voice_ready": bool(data.get("voice_ready", True)),
+                "audio_engine": "kokoro_local",
+                "latency_ms": round((time.monotonic() - started) * 1000, 2),
+                "metadata": {"details": details, "voice": selected_voice},
+            }
+    except Exception as exc:
+        details["kokoro"] = {"status": "error", "message": str(exc)}
 
-    if response.status_code != 200:
-        return {"response": "", "audio_url": None, "audio_engine": None}
-
-    audio_url = str(data.get("audio_url") or "").strip()
-    if audio_url and not audio_url.startswith("http://") and not audio_url.startswith("https://"):
-        audio_url = f"{_kaygee_api_base()}{audio_url if audio_url.startswith('/') else '/' + audio_url}"
+    qwen_url = _qwen_tts_url()
+    if qwen_url:
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                response = await client.get(f"{_origin_for_url(qwen_url)}/health")
+            details["qwen3_tts"] = {
+                "status": "ready" if response.status_code == 200 else "unavailable",
+                "http_status": response.status_code,
+            }
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "warmup_state": "qwen3_tts_ready",
+                    "voice_ready": True,
+                    "audio_engine": "qwen3_tts",
+                    "latency_ms": round((time.monotonic() - started) * 1000, 2),
+                    "metadata": {"details": details, "voice": selected_voice},
+                }
+        except Exception as exc:
+            details["qwen3_tts"] = {"status": "unavailable", "message": str(exc)}
 
     return {
-        "response": str(data.get("response") or data.get("text") or "").strip(),
-        "audio_url": audio_url or None,
-        "audio_engine": str(data.get("audio_engine") or "").strip() or None,
+        "status": "error",
+        "warmup_state": "tts_unavailable",
+        "voice_ready": False,
+        "audio_engine": None,
+        "latency_ms": round((time.monotonic() - started) * 1000, 2),
+        "metadata": {"details": details, "voice": selected_voice},
     }
 
 
@@ -626,6 +674,15 @@ class OrbRespondRequest(BaseModel):
     context: Optional[Dict[str, Any]] = None
     emotion: Optional[str] = "thoughtful_warm"
     session_id: Optional[str] = None
+
+
+class OrbTtsRequest(BaseModel):
+    text: str
+    voice: Optional[str] = None
+
+
+class OrbTtsWarmupRequest(BaseModel):
+    voice: Optional[str] = None
 
 
 @router.get("/status")
@@ -865,46 +922,7 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
     context = dict(payload.context or {})
     if _is_substrate_query(prompt):
         substrate_snapshot = _collect_substrate_redis_snapshot()
-        substrate_text = _substrate_response(prompt, substrate_snapshot)
-        voice_payload = await _synthesize_voice(substrate_text)
-        return {
-            "status": "success",
-            "response": substrate_text,
-            "response_text": substrate_text,
-            "data": {"substrate_snapshot": substrate_snapshot},
-            "intent": {"type": "substrate_explain"},
-            "audio_url": voice_payload.get("audio_url"),
-            "audio_engine": voice_payload.get("audio_engine"),
-            "metadata": {
-                "provider": "kaygee_hybrid",
-                "cognition": "qwen-core + cali-skg-articulation",
-                "llm_core": "substrate-redis-brief",
-                "leading_mind": "cali",
-                "confidence": 0.9,
-                "truth_likelihood": 0.9,
-            },
-        }
-
-    quick_response = _fast_path_response(prompt)
-    if quick_response:
-        voice_payload = await _synthesize_voice(quick_response)
-        return {
-            "status": "success",
-            "response": quick_response,
-            "response_text": quick_response,
-            "data": None,
-            "intent": {"type": "fast_path"},
-            "audio_url": voice_payload.get("audio_url"),
-            "audio_engine": voice_payload.get("audio_engine"),
-            "metadata": {
-                "provider": "kaygee_hybrid",
-                "cognition": "qwen-core + cali-skg-articulation",
-                "llm_core": "fast-path",
-                "leading_mind": "cali",
-                "confidence": 0.96,
-                "truth_likelihood": 0.96,
-            },
-        }
+        context["substrate_snapshot"] = substrate_snapshot
 
     cali = get_cali_skg()
     current_path = str(context.get("current_path") or context.get("currentPath") or "/")
@@ -919,30 +937,20 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
     audio_engine: Optional[str] = None
 
     if intent_type in {"unknown", ""} or not response_text:
-        if _use_qwen_for_unknown():
+        if _use_llm_for_unknown():
             try:
-                llm_core = f"ollama:{_ollama_model_name()}"
+                llm_core = (
+                    f"llama.cpp:{_llama_cpp_model_name()}@{_llama_cpp_base_url()}"
+                    if _llm_provider() == "llama_cpp"
+                    else f"ollama:{_ollama_model_name()}"
+                )
                 response_text = _generate_llm_response(prompt, context=context, emotion=str(payload.emotion or "thoughtful_warm"))
             except Exception as exc:
-                if _strict_mode():
-                    raise HTTPException(status_code=503, detail=f"Hybrid cognition unavailable: {exc}") from exc
-                llm_core = "kaygee-fallback"
-
-        if not response_text:
-            kaygee_response = await _query_kaygee_interact(
-                prompt=prompt,
-                context=context,
-                emotion=str(payload.emotion or "thoughtful_warm"),
-            )
-            if kaygee_response.get("response"):
-                response_text = str(kaygee_response["response"])
-                audio_url = kaygee_response.get("audio_url")
-                audio_engine = kaygee_response.get("audio_engine")
-                llm_core = "kaygee-fallback"
+                raise HTTPException(status_code=503, detail=f"Hybrid cognition unavailable: {exc}") from exc
 
     governed = _normalize_companion_text(response_text, prompt)
     if not governed:
-        governed = "I'm here with you. Tell me what you need next."
+        raise HTTPException(status_code=503, detail="CALI cognition produced no response.")
 
     voice_payload = {"audio_url": audio_url, "audio_engine": audio_engine}
     if not voice_payload.get("audio_url"):
@@ -958,11 +966,48 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
         "audio_engine": voice_payload.get("audio_engine"),
         "metadata": {
             "provider": "kaygee_hybrid",
-            "cognition": "qwen-core + cali-skg-articulation",
+            "cognition": "llama.cpp-core + cali-skg-articulation",
             "llm_core": llm_core,
             "leading_mind": "cali",
             "confidence": 0.86 if llm_core != "fallback" else 0.65,
             "truth_likelihood": 0.86 if llm_core != "fallback" else 0.65,
+        },
+    }
+
+
+@router.post("/orb/tts")
+async def cali_orb_tts(payload: OrbTtsRequest) -> Dict[str, Any]:
+    text = str(payload.text or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text is required.")
+    voice_payload = await _synthesize_voice(text, payload.voice)
+    return {
+        "status": "success" if voice_payload.get("audio_url") else "error",
+        "response": text,
+        "text": text,
+        "audio_url": voice_payload.get("audio_url"),
+        "audio_engine": voice_payload.get("audio_engine"),
+        "metadata": {
+            "provider": "cali-tts",
+            "voice_provider_order": "kokoro_local -> qwen3_tts",
+            "voice": payload.voice or _kaygee_voice(),
+            "voice_ready": bool(voice_payload.get("audio_url")),
+            "audio_engine": voice_payload.get("audio_engine"),
+        },
+    }
+
+
+@router.post("/orb/tts/warmup")
+async def cali_orb_tts_warmup(payload: OrbTtsWarmupRequest) -> Dict[str, Any]:
+    result = await _warmup_voice(payload.voice)
+    return {
+        **result,
+        "metadata": {
+            **dict(result.get("metadata") or {}),
+            "provider": "cali-tts-warmup",
+            "voice_provider_order": "kokoro_local -> qwen3_tts",
+            "voice_ready": bool(result.get("voice_ready")),
+            "audio_engine": result.get("audio_engine"),
         },
     }
 

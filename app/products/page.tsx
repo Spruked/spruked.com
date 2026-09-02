@@ -41,7 +41,7 @@ export default function ProductsPage() {
       <Section className="mx-auto max-w-5xl pt-8 pb-24">
         <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6 border-t border-gray-900 pt-8">Knowledge Infrastructure</h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8">
+          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8" data-orb-target="spruked.products.alpha-certsig">
             <h2 className="mb-4 text-3xl font-bold">Alpha CertSig</h2>
             <p className="mb-6 text-gray-400">Licensed digital object infrastructure. A self-hosted mint engine for institutions and sovereign creators.</p>
             <div className="flex flex-wrap gap-4">
@@ -53,7 +53,7 @@ export default function ProductsPage() {
               </Link>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8">
+          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8" data-orb-target="spruked.products.truemark">
             <h2 className="mb-4 text-3xl font-bold">TrueMark Mint</h2>
             <p className="mb-6 text-gray-400">The curated digital object vault. Cryptographically verified registry of meaningful intellectual artifacts.</p>
             <div className="flex flex-wrap gap-4">
@@ -65,7 +65,7 @@ export default function ProductsPage() {
               </Link>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8">
+          <div className="rounded-xl border border-gray-800 bg-[#050505] p-8" data-orb-target="spruked.products.goat">
             <h2 className="mb-4 text-3xl font-bold">The GOAT</h2>
             <p className="mb-6 text-gray-400">Legacy preservation engine that captures, verifies, and premieres your story with truth-first storytelling.</p>
             <div className="flex flex-wrap gap-4">

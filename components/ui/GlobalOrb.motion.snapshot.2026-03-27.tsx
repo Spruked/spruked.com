@@ -330,7 +330,7 @@ export default function GlobalOrb() {
                   <p className="mb-2 uppercase tracking-widest">Observer Entity Initialized.</p>
                   <p className="mb-4 opacity-50 uppercase tracking-widest">Monitoring epistemic environment...</p>
                   <p className="mb-2 uppercase tracking-widest opacity-70">{meshState}</p>
-                  <p className="mb-2 uppercase tracking-widest opacity-70">{voiceEnabled ? 'Voice synthesis armed' : 'Voice synthesis muted'}</p>
+                  <p className="mb-2 uppercase tracking-widest opacity-70">{voiceEnabled ? 'Server TTS armed' : 'Server TTS muted'}</p>
                   <p className="mb-4 uppercase tracking-widest opacity-40">Commands: /status, /research query :: domain1,domain2, /speak text</p>
                   <p className="animate-pulse" style={{ color: pulseColor }}>{status.toUpperCase()}</p>
                 </div>

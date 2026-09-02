@@ -1,13 +1,14 @@
 type MindCallback = (color: string, mind: string) => void;
 
-type SpeechStateCallback = (
+type VoicePlaybackStateCallback = (
   active: boolean,
   meta?: { text?: string; engine?: string },
 ) => void;
 
 type SendMessageOptions = {
   speak?: boolean;
-  onSpeechState?: SpeechStateCallback;
+  onVoicePlaybackState?: VoicePlaybackStateCallback;
+  onResponseReady?: (data: OrbResponse) => void;
 };
 
 type OrbResponse = {
@@ -20,6 +21,8 @@ type OrbResponse = {
   metadata?: Record<string, any>;
   [key: string]: any;
 };
+
+let unlockedAudioContext: AudioContext | null = null;
 
 function responseText(data: OrbResponse): string {
   return String(data?.response || data?.text || '').trim();
@@ -35,93 +38,85 @@ function audioSource(data: OrbResponse): string | null {
   return null;
 }
 
-function preferredBrowserVoice(): SpeechSynthesisVoice | null {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+async function primeServerAudioPlayback(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextCtor) return;
+    const context = unlockedAudioContext || new AudioContextCtor();
+    unlockedAudioContext = context;
+    if (context.state === 'suspended') {
+      await context.resume();
+    }
+    const source = context.createBufferSource();
+    source.buffer = context.createBuffer(1, 1, 22050);
+    source.connect(context.destination);
+    source.start(0);
+  } catch (error) {
+    console.warn('ORB audio unlock failed.', error);
+  }
+}
 
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-
-  const english = voices.filter((voice) => /^en[-_]/i.test(voice.lang));
-  const preferredPatterns = [
-    /microsoft.*(aria|jenny|guy|david)/i,
-    /google.*english/i,
-    /samantha/i,
-    /alex/i,
-  ];
-
-  for (const pattern of preferredPatterns) {
-    const match = english.find((voice) => pattern.test(voice.name));
-    if (match) return match;
+async function playableAudioSource(source: string): Promise<{ source: string; cleanup: () => void }> {
+  if (typeof window === 'undefined' || !source.startsWith('data:')) {
+    return { source, cleanup: () => {} };
   }
 
-  return english[0] || voices[0] || null;
+  try {
+    const blob = await fetch(source).then((response) => response.blob());
+    const objectUrl = URL.createObjectURL(blob);
+    return {
+      source: objectUrl,
+      cleanup: () => URL.revokeObjectURL(objectUrl),
+    };
+  } catch (error) {
+    console.warn('ORB audio blob conversion failed; using original source.', error);
+    return { source, cleanup: () => {} };
+  }
 }
 
 async function playServerAudio(
   source: string,
   text: string,
   engine: string,
-  onSpeechState?: SpeechStateCallback,
+  onVoicePlaybackState?: VoicePlaybackStateCallback,
 ): Promise<void> {
   if (typeof window === 'undefined') return;
+  await primeServerAudioPlayback();
+  const playable = await playableAudioSource(source);
 
   await new Promise<void>((resolve, reject) => {
-    const audio = new Audio(source);
+    const audio = new Audio(playable.source);
     audio.preload = 'auto';
+    (audio as any).playsInline = true;
+
+    let settled = false;
 
     const finish = () => {
-      onSpeechState?.(false, { text, engine });
+      if (settled) return;
+      settled = true;
+      playable.cleanup();
+      onVoicePlaybackState?.(false, { text, engine });
       resolve();
     };
 
     audio.onended = finish;
     audio.onerror = () => {
-      onSpeechState?.(false, { text, engine });
+      if (settled) return;
+      settled = true;
+      playable.cleanup();
+      onVoicePlaybackState?.(false, { text, engine });
       reject(new Error('Server audio playback failed.'));
     };
 
-    onSpeechState?.(true, { text, engine });
+    onVoicePlaybackState?.(true, { text, engine });
     void audio.play().catch((error) => {
-      onSpeechState?.(false, { text, engine });
+      if (settled) return;
+      settled = true;
+      playable.cleanup();
+      onVoicePlaybackState?.(false, { text, engine });
       reject(error);
     });
-  });
-}
-
-async function speakInBrowser(
-  text: string,
-  onSpeechState?: SpeechStateCallback,
-): Promise<void> {
-  if (
-    typeof window === 'undefined' ||
-    !('speechSynthesis' in window) ||
-    typeof SpeechSynthesisUtterance === 'undefined'
-  ) {
-    return;
-  }
-
-  await new Promise<void>((resolve) => {
-    const synthesis = window.speechSynthesis;
-    synthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voice = preferredBrowserVoice();
-    if (voice) utterance.voice = voice;
-    utterance.lang = voice?.lang || 'en-US';
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-
-    const finish = () => {
-      onSpeechState?.(false, { text, engine: 'browser-speech-synthesis' });
-      resolve();
-    };
-
-    utterance.onend = finish;
-    utterance.onerror = finish;
-
-    onSpeechState?.(true, { text, engine: 'browser-speech-synthesis' });
-    synthesis.speak(utterance);
   });
 }
 
@@ -133,24 +128,86 @@ async function speakResponse(
   if (!text || !options.speak) return;
 
   const source = audioSource(data);
-  if (source) {
-    try {
-      await playServerAudio(
-        source,
-        text,
-        String(data?.audio_engine || data?.metadata?.audio_engine || 'server-tts'),
-        options.onSpeechState,
-      );
-      return;
-    } catch (error) {
-      console.warn('ORB server audio unavailable; using browser voice fallback.', error);
-    }
+  if (!source) {
+    options.onVoicePlaybackState?.(false, { text, engine: 'server-tts-unavailable' });
+    return;
   }
 
-  await speakInBrowser(text, options.onSpeechState);
+  try {
+    await playServerAudio(
+      source,
+      text,
+      String(data?.audio_engine || data?.metadata?.audio_engine || 'server-tts'),
+      options.onVoicePlaybackState,
+    );
+  } catch (error) {
+    console.warn('ORB server audio playback failed.', error);
+    options.onVoicePlaybackState?.(false, { text, engine: 'server-tts-playback-failed' });
+  }
 }
 
 export const OrbService = {
+  primeAudio: primeServerAudioPlayback,
+
+  async warmVoiceInput(): Promise<OrbResponse> {
+    const response = await fetch('/api/orb/stt', {
+      method: 'GET',
+      cache: 'no-store',
+    });
+    const data = (await response.json().catch(() => ({}))) as OrbResponse;
+    if (!response.ok || data?.status === 'error') {
+      throw new Error(String(data?.message || data?.error || `Website ORB STT warm-up failed (${response.status}).`));
+    }
+    return data;
+  },
+
+  async transcribeAudio(audio: Blob): Promise<OrbResponse> {
+    const form = new FormData();
+    form.set('audio', audio, `cali-input-${Date.now()}.webm`);
+    form.set('language', 'en');
+
+    const response = await fetch('/api/orb/stt', {
+      method: 'POST',
+      cache: 'no-store',
+      body: form,
+    });
+    const data = (await response.json().catch(() => ({}))) as OrbResponse;
+    if (!response.ok || data?.status === 'error') {
+      throw new Error(String(data?.message || data?.error || `Website ORB transcription failed (${response.status}).`));
+    }
+    return data;
+  },
+
+  async warmVoice(): Promise<OrbResponse> {
+    const response = await fetch('/api/orb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({
+        action: 'voice_warmup',
+        context: {
+          source: 'website',
+          currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
+          site_world: {
+            site: 'spruked.com',
+            role: 'public Website ORB',
+            navigation_contract: 'CALI cognition first, then verified site pointer/navigation action',
+            key_routes: '/, /products, /cart, /checkout',
+          },
+        },
+      }),
+    });
+
+    const data = (await response.json().catch(() => ({}))) as OrbResponse;
+    if (!response.ok || data?.status === 'error') {
+      throw new Error(
+        String(data?.message || data?.error || `Website ORB voice warm-up failed (${response.status}).`),
+      );
+    }
+
+    return data;
+  },
+
   async sendMessage(
     message: string,
     onMind?: MindCallback,
@@ -185,6 +242,7 @@ export const OrbService = {
 
     const mind = String(data?.metadata?.leading_mind || data?.metadata?.provider || 'orb');
     onMind?.('#ffffff', mind);
+    options.onResponseReady?.(data);
 
     if (options.speak) {
       await speakResponse(data, options);

@@ -23,3 +23,57 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@keyframes orb-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orb-orbit-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes orb-core-swirl {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes orb-node-pulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    box-shadow: 0 0 6px rgba(125, 220, 255, 0.55);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(125, 220, 255, 0.96), 0 0 20px rgba(99, 255, 106, 0.2);
+  }
+}
+
+@keyframes website-orb-target-ping {
+  0% {
+    opacity: 1;
+    transform: scale(0.98);
+  }
+  72% {
+    opacity: 0.82;
+    transform: scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

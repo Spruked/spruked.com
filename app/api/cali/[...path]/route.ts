@@ -8,7 +8,7 @@ function trimTrailingSlash(value: string): string {
 }
 
 function targetBase() {
-  return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8002');
+  return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8022');
 }
 
 async function proxy(request: NextRequest, method: string, segments: string[]) {

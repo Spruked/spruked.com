@@ -104,7 +104,7 @@ export default function CartPageClient() {
           )}
         </div>
 
-        <aside className="h-fit rounded-2xl border border-gray-800 bg-black/50 p-6">
+        <aside className="h-fit rounded-2xl border border-gray-800 bg-black/50 p-6" data-orb-target="spruked.cart.summary">
           <h2 className="mb-5 text-xl font-bold uppercase tracking-widest text-light">Summary</h2>
           <div className="space-y-2 text-sm text-gray-400">
             <p className="flex items-center justify-between"><span>Items</span><span>{totals.count}</span></p>

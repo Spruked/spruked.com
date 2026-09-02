@@ -46,6 +46,10 @@ function statePath(siteId: string, orbId: string): string {
   return path.join(stateDir(), `${safeSite}__${safeOrb}.json`);
 }
 
+function tempPath(file: string): string {
+  return `${file}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+}
+
 function classify(mode: OrbReasoningMode, fallbackState: string): OrbClassification {
   if (/fallback-native|shared generic|generic behavior/i.test(fallbackState || '')) {
     return 'shared central reasoning with site branding only';
@@ -109,7 +113,7 @@ export async function updateOrbState(update: OrbStateUpdate): Promise<OrbState> 
   next.classification = classify(next.reasoning_mode, next.fallback_state);
 
   const file = statePath(next.site_id, next.orb_id);
-  const temp = `${file}.tmp`;
+  const temp = tempPath(file);
   await fs.writeFile(temp, `${JSON.stringify(next, null, 2)}\n`, 'utf8');
   await fs.rename(temp, file);
   await writeIndex();
@@ -147,7 +151,7 @@ export async function writeIndex(): Promise<void> {
   };
   await fs.mkdir(stateDir(), { recursive: true });
   const file = path.join(stateDir(), 'orbs.json');
-  const temp = `${file}.tmp`;
+  const temp = tempPath(file);
   await fs.writeFile(temp, `${JSON.stringify(index, null, 2)}\n`, 'utf8');
   await fs.rename(temp, file);
 }

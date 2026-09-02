@@ -22,7 +22,7 @@ export default function CheckoutPageClient() {
       </p>
 
       <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-        <div className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8">
+        <div className="rounded-2xl border border-gray-800 bg-[#050505] p-6 sm:p-8" data-orb-target="spruked.checkout.form">
           {!hydrated ? (
             <p className="text-gray-400">Loading checkout...</p>
           ) : items.length === 0 ? (
@@ -79,7 +79,7 @@ export default function CheckoutPageClient() {
           )}
         </div>
 
-        <aside className="h-fit rounded-2xl border border-gray-800 bg-black/50 p-6">
+        <aside className="h-fit rounded-2xl border border-gray-800 bg-black/50 p-6" data-orb-target="spruked.checkout.summary">
           <h2 className="mb-5 text-xl font-bold uppercase tracking-widest text-light">Order Summary</h2>
 
           <div className="space-y-3">

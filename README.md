@@ -162,14 +162,18 @@ Run this before each release:
 
 The site orb UI/behavior can stay unchanged while cognition/voice is routed by API config.
 
-- `SPRUKED_ORB_COGNITION_PROVIDER=native|kaygee|calixone|kaygee_hybrid`
+- `SPRUKED_ORB_COGNITION_PROVIDER=kaygee_hybrid`
 - `KAYGEE_API_BASE` (default `http://127.0.0.1:8011`)
 - `KAYGEE_VOICE_ENABLED` (`1` or `0`)
 - `KAYGEE_VOICE` (default `af_bella`)
-- `CALIXONE_API_BASE` (default `http://127.0.0.1:8021`)
-- `CALIXONE_INTERACT_PATH` (default `/api/interact`)
-- `CALI_API_URL` (default `http://127.0.0.1:8002`)
+- `CALI_API_URL` (default `http://127.0.0.1:8022`)
 - `KAYGEE_HYBRID_RESPOND_PATH` (default `/cali/orb/respond`)
+- `CALI_LLM_PROVIDER=llama_cpp` routes CALI hybrid cognition to local llama.cpp
+- `LLAMA_CPP_API_BASE` (default `http://127.0.0.1:8080`)
+- `CALI_LLAMA_CPP_MODEL_NAME` (default `local-llama-cpp`)
+- `CALI_LOCAL_KOKORO_URL` (default `http://127.0.0.1:12000/api/kokoro/tts`)
+- `CALI_QWEN_TTS_URL` (default `http://127.0.0.1:9880/speak`)
+- `CALI_STT_API_URL` (default `http://127.0.0.1:13000`) for local faster-whisper voice recognition
 - `ADMIN_ACCESS_TOKEN` or `CALI_ADMIN_TOKEN` for admin/CALI protected operations
 - `BUSINESS_EMAIL_APP_PASSWORD` (or `EMAIL_APP_PASSWORD`) for IMAP mailbox polling
 

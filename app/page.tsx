@@ -31,10 +31,10 @@ export default function Home() {
         </p>
         <div className="mb-16 flex flex-col gap-6 sm:flex-row">
           <Button size="lg" asChild>
-            <Link href="#waitlist">Get Spruked</Link>
+            <Link href="#waitlist" data-orb-target="spruked.home.get-spruked">Get Spruked</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <a href="mailto:bryan@spruked.com">Contact</a>
+            <a href="mailto:bryan@spruked.com" data-orb-target="spruked.home.contact">Contact</a>
           </Button>
           <Button size="lg" variant="outline" asChild>
             <Link href="/orb-skin-studio">Orb Skin Studio Demo</Link>
@@ -298,7 +298,7 @@ export default function Home() {
             Ready to be <span className="text-truth">Spruked</span>?
           </h2>
           <p className="mb-10 text-lg text-gray-400">Join the private waitlist. First 100 receive lifetime status.</p>
-          <form action="/api/waitlist" method="post" className="mx-auto flex max-w-xl flex-col gap-4">
+          <form action="/api/waitlist" method="post" className="mx-auto flex max-w-xl flex-col gap-4" data-orb-target="spruked.home.waitlist-form">
             <select
               id="waitlist-lead-type"
               name="leadType"

@@ -42,6 +42,16 @@ function isGroupActive(pathname: string, hrefs: string[]) {
   return hrefs.some((href) => isActivePath(pathname, href));
 }
 
+function orbTargetForHref(href: string): string | undefined {
+  const targets: Record<string, string> = {
+    '/': 'spruked.nav.home',
+    '/products': 'spruked.nav.products',
+    '/cart': 'spruked.nav.cart',
+    '/checkout': 'spruked.nav.checkout',
+  };
+  return targets[href];
+}
+
 export function Navigation() {
   const pathname = usePathname();
 
@@ -59,6 +69,7 @@ export function Navigation() {
           <Link
             key={item.href}
             href={item.href}
+            data-orb-target={orbTargetForHref(item.href)}
             className={clsx(
               'whitespace-nowrap rounded-md px-2.5 py-1.5 transition-colors duration-200',
               isActivePath(pathname, item.href) ? 'text-light' : 'text-gray-500 hover:text-light',
@@ -73,6 +84,7 @@ export function Navigation() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
+            data-orb-target="spruked.nav.home"
             className={clsx(
               'rounded-md px-3 py-2 transition-colors duration-200 whitespace-nowrap',
               isActivePath(pathname, '/') ? 'text-light' : 'text-gray-500 hover:text-light',
@@ -112,6 +124,7 @@ export function Navigation() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    data-orb-target={orbTargetForHref(link.href)}
                     className={clsx(
                       'block rounded-lg px-3 py-2 text-xs tracking-[0.12em] transition-colors duration-200',
                       isActivePath(pathname, link.href)
@@ -131,6 +144,7 @@ export function Navigation() {
         <div className="ml-auto flex items-center gap-2 pl-4">
           <Link
             href="/cart"
+            data-orb-target="spruked.nav.cart"
             className={clsx(
               'rounded-md px-3 py-2 transition-colors duration-200 whitespace-nowrap',
               isActivePath(pathname, '/cart') ? 'text-light' : 'text-gray-500 hover:text-light',
@@ -141,6 +155,7 @@ export function Navigation() {
 
           <Link
             href="/checkout"
+            data-orb-target="spruked.nav.checkout"
             className={clsx(
               'rounded-md border border-gray-800 px-3 py-2 transition-colors duration-200 whitespace-nowrap',
               isActivePath(pathname, '/checkout')

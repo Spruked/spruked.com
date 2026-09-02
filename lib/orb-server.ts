@@ -25,7 +25,7 @@ export function getOrbPaths() {
   const meshRoot = process.env.ORB_SHARED_MESH_ROOT || '/mnt/r/orb_mesh';
   const webSystemRoot = process.env.ORB_WEB_SYSTEM_ROOT || path.join(siteRoot, '.orb-web-runtime');
   const cp3Root = process.env.CP3_ROOT || process.env.ACP3_ROOT || '/mnt/r/cochlear_processor_3.0';
-  const pythonPath = process.env.ORB_PYTHON_PATH || '/home/bryan/pro_prime_env/bin/python';
+  const pythonPath = process.env.ORB_PYTHON_PATH || '/usr/bin/python3';
   const bridgeScript = path.join(orbRoot, 'api', 'web_orb_bridge.py');
 
   return {
@@ -215,7 +215,7 @@ export async function ensureWebMeshScaffold(): Promise<void> {
     capabilities: [
       'website_chat_interface',
       'server_side_r_drive_access',
-      'browser_speech_fallback',
+      'kokoro_tts_via_cali',
       'mesh_publish_and_import',
     ],
     system_partition: 'WSL_SITE',

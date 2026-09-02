@@ -212,7 +212,7 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
               if (!response.ok) {
                 throw new Error(data?.message || 'Cali query failed.');
               }
-              setAssistantReply(String(data?.response || 'Cali is online.'));
+              setAssistantReply(String(data?.response || 'No CALI response returned.'));
               setAssistantQuery('');
               setStatus('Cali responded.');
             })

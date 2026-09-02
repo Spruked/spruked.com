@@ -11,4 +11,9 @@ fi
 
 export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 CALI_API_PORT="${CALI_API_PORT:-8022}"
-exec "$ROOT/venv/bin/python" -m uvicorn cali_skg.api.cali_routes:app --host 0.0.0.0 --port "$CALI_API_PORT"
+PYTHON_BIN="${PYTHON_BIN:-$ROOT/venv/bin/python}"
+if [[ ! -x "$PYTHON_BIN" ]]; then
+  PYTHON_BIN="$(command -v python3)"
+fi
+
+exec "$PYTHON_BIN" -m uvicorn cali_skg.api.cali_routes:app --host 0.0.0.0 --port "$CALI_API_PORT"
