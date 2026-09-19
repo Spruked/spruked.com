@@ -11,24 +11,34 @@ function targetBase() {
   return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8022');
 }
 
+function unauthorized() {
+  return NextResponse.json(
+    { error: 'Unauthorized' },
+    {
+      status: 401,
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    },
+  );
+}
+
 async function proxy(request: NextRequest, method: string, segments: string[]) {
+  const incomingAuth = String(request.headers.get('authorization') || '').trim();
+  if (!incomingAuth.toLowerCase().startsWith('bearer ')) {
+    return unauthorized();
+  }
+
   const path = segments.join('/');
   const targetUrl = new URL(`${targetBase()}/cali/${path}`);
   request.nextUrl.searchParams.forEach((value, key) => {
     targetUrl.searchParams.set(key, value);
   });
 
-  const incomingAuth = request.headers.get('authorization');
-  const fallbackToken = process.env.CALI_ADMIN_TOKEN || process.env.ADMIN_ACCESS_TOKEN || '';
-
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    Authorization: incomingAuth,
   };
-  if (incomingAuth) {
-    headers.Authorization = incomingAuth;
-  } else if (fallbackToken) {
-    headers.Authorization = `Bearer ${fallbackToken}`;
-  }
 
   const body = method === 'GET' ? undefined : await request.text();
   const response = await fetch(targetUrl.toString(), {
