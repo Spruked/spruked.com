@@ -459,7 +459,7 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        await publishWebArtifact(
+        void Promise.allSettled([publishWebArtifact(
           'insight',
           {
             kind: 'query_response',
@@ -473,9 +473,7 @@ export async function POST(request: NextRequest) {
             confidence: caliPersonal.metadata?.confidence || 0.5,
             tags: ['website_orb', 'query'],
           }
-        );
-
-        await reportSprukedOrbState(request, body, action, caliPersonal);
+        ), reportSprukedOrbState(request, body, action, caliPersonal)]);
         return NextResponse.json(caliPersonal);
       }
 
@@ -491,7 +489,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      await publishWebArtifact(
+      void Promise.allSettled([publishWebArtifact(
         'insight',
         {
           kind: 'query_response',
@@ -505,9 +503,7 @@ export async function POST(request: NextRequest) {
           confidence: response.metadata?.confidence || 0.5,
           tags: ['website_orb', 'query'],
         }
-      );
-
-      await reportSprukedOrbState(request, body, action, response);
+      ), reportSprukedOrbState(request, body, action, response)]);
       return NextResponse.json(response);
     }
 

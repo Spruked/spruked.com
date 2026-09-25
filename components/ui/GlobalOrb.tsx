@@ -156,6 +156,7 @@ export default function GlobalOrb() {
   const wakeOrb = () => {
     setIsAwake(true);
     isAwakeRef.current = true;
+    queueNextDrift();
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => {
       isAwakeRef.current = false;
@@ -234,9 +235,6 @@ export default function GlobalOrb() {
     let behaviorOrb: SprukedOrb | null = null;
     try {
       behaviorOrb = new SprukedOrb((snapshot) => {
-        const next = clampPosition(snapshot.position.x, snapshot.position.y);
-        orbPositionRef.current = next;
-        setOrbPosition(next);
         if (!isProcessingRef.current && !isSpeakingRef.current) {
           setPulseColor(getMindColor(snapshot.intent));
         }
