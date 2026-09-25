@@ -1396,8 +1396,11 @@ class CaliPersonalSKG:
 _cali_skg: Optional[CaliPersonalSKG] = None
 
 
-def get_cali_skg(base_path: str = "/home/bryan/spruked.com/cali_skg") -> CaliPersonalSKG:
+def get_cali_skg(base_path: Optional[str] = None) -> CaliPersonalSKG:
     global _cali_skg
     if _cali_skg is None:
-        _cali_skg = CaliPersonalSKG(base_path=base_path)
+        configured_path = str(base_path or os.getenv("CALI_SKG_BASE_PATH") or "").strip()
+        if not configured_path:
+            configured_path = str(Path(__file__).resolve().parents[1])
+        _cali_skg = CaliPersonalSKG(base_path=configured_path)
     return _cali_skg

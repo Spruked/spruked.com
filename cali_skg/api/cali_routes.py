@@ -18,6 +18,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from cali_skg.core.cali_personal_skg import get_cali_skg
+from cali_skg.core.doctrine_governance import evaluate_doctrine_governance
 
 try:
     import redis  # type: ignore
@@ -920,6 +921,16 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="Prompt is required.")
 
     context = dict(payload.context or {})
+    context.setdefault(
+        "cognition_sources",
+        {
+            "cali_personal_skg": "/home/bryan/projects/spruked.com/cali_skg/core/cali_personal_skg.py",
+            "cali_doctrine_governance": "/home/bryan/projects/spruked.com/cali_skg/core/doctrine_governance.py",
+            "orb_assistant": "/home/bryan/projects/spruked.com/Orb_Assistant",
+            "spruked_vault_system": "/home/bryan/projects/spruked.com/Spruked_Vault_System",
+            "memory_matrix": "/home/bryan/projects/spruked.com/Spruked_Vault_System/memory/matrix_store.yaml",
+        },
+    )
     if _is_substrate_query(prompt):
         substrate_snapshot = _collect_substrate_redis_snapshot()
         context["substrate_snapshot"] = substrate_snapshot
@@ -952,6 +963,17 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
     if not governed:
         raise HTTPException(status_code=503, detail="CALI cognition produced no response.")
 
+    governance = evaluate_doctrine_governance(
+        prompt=prompt,
+        context=context,
+        response_text=governed,
+        llm_core=llm_core,
+        intent_type=intent_type,
+        strict_mode=_strict_mode(),
+        enforce=_doctrine_enforce(),
+        require_decision_envelope=_doctrine_require_decision_envelope(),
+    )
+
     voice_payload = {"audio_url": audio_url, "audio_engine": audio_engine}
     if not voice_payload.get("audio_url"):
         voice_payload = await _synthesize_voice(governed)
@@ -971,6 +993,8 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
             "leading_mind": "cali",
             "confidence": 0.86 if llm_core != "fallback" else 0.65,
             "truth_likelihood": 0.86 if llm_core != "fallback" else 0.65,
+            "governance": governance,
+            "cognition_sources": context.get("cognition_sources"),
         },
     }
 
