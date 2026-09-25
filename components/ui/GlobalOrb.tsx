@@ -20,13 +20,13 @@ const IDLE_TIMEOUT_MS = 300000;
 const LISTENING_SEGMENT_MS = 5200;
 const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
-const DRIFT_MIN_MS = 5000;
-const DRIFT_MAX_MS = 9000;
+const DRIFT_MIN_MS = 14000;
+const DRIFT_MAX_MS = 26000;
 const ORB_SIZE = 206;
 const ORB_HALO = Math.ceil(ORB_SIZE * 0.3);
-const CURSOR_AVOID_RADIUS = 120;
-const EVADE_COOLDOWN_MS = 240;
-const EVADE_DISTANCE = 165;
+const CURSOR_NUDGE_RADIUS = 104;
+const CURSOR_NUDGE_COOLDOWN_MS = 1400;
+const CURSOR_NUDGE_DISTANCE = 28;
 const VIEWPORT_PADDING = 20;
 const DRIFT_MAX_HEIGHT_RATIO = 0.86;
 const ORB_IMAGE_SRC = '/orb-skin-studio/assets/caliorb1600.png';
@@ -111,9 +111,9 @@ export default function GlobalOrb() {
     };
   };
 
-  const maybeEvadeCursor = (cursorX: number, cursorY: number) => {
+  const maybeNudgeCursor = (cursorX: number, cursorY: number) => {
     const now = Date.now();
-    if (now - evadeCooldownRef.current < EVADE_COOLDOWN_MS) return;
+    if (now - evadeCooldownRef.current < CURSOR_NUDGE_COOLDOWN_MS) return;
 
     const centerX = orbPositionRef.current.x + ORB_SIZE / 2;
     const centerY = orbPositionRef.current.y + ORB_SIZE / 2;
@@ -121,18 +121,17 @@ export default function GlobalOrb() {
     const dy = centerY - cursorY;
     const distance = Math.hypot(dx, dy);
 
-    if (distance > CURSOR_AVOID_RADIUS) return;
+    if (distance > CURSOR_NUDGE_RADIUS) return;
 
     const safeDx = distance < 1 ? 1 : dx / distance;
     const safeDy = distance < 1 ? -0.6 : dy / distance;
-    const targetX = centerX + safeDx * EVADE_DISTANCE - ORB_SIZE / 2;
-    const targetY = centerY + safeDy * EVADE_DISTANCE - ORB_SIZE / 2;
+    const targetX = centerX + safeDx * CURSOR_NUDGE_DISTANCE - ORB_SIZE / 2;
+    const targetY = centerY + safeDy * CURSOR_NUDGE_DISTANCE - ORB_SIZE / 2;
     const next = clampPosition(targetX, targetY);
 
     evadeCooldownRef.current = now;
     setOrbPosition(next);
     wakeOrb();
-    queueNextDrift();
   };
 
   const queueNextDrift = () => {
@@ -247,6 +246,10 @@ export default function GlobalOrb() {
     const handleWake = () => {
       wakeOrb();
     };
+    const handlePointerMove = (event: PointerEvent) => {
+      handleWake();
+      maybeNudgeCursor(event.clientX, event.clientY);
+    };
     const primeVoicePlayback = () => {
       void OrbService.primeAudio();
     };
@@ -266,7 +269,7 @@ export default function GlobalOrb() {
       });
     };
 
-    window.addEventListener('mousemove', handleWake, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('click', handleWake, { passive: true });
     window.addEventListener('pointerdown', primeVoicePlayback, { passive: true, once: true });
     window.addEventListener('keydown', primeVoicePlayback, { passive: true, once: true });
@@ -276,7 +279,7 @@ export default function GlobalOrb() {
 
     return () => {
       behaviorOrb?.destroy();
-      window.removeEventListener('mousemove', handleWake);
+      window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('click', handleWake);
       window.removeEventListener('pointerdown', primeVoicePlayback);
       window.removeEventListener('keydown', primeVoicePlayback);
@@ -667,22 +670,29 @@ export default function GlobalOrb() {
         </div>
       )}
 
-      {isSpeaking && bubbleText && (
+      {(bubbleText || status) && (
         <div
-          className="fixed top-0 z-[10000] max-h-[min(220px,calc(100vh-40px))] overflow-auto rounded-2xl border border-gray-800 bg-black/80 px-4 py-3 text-sm leading-relaxed text-gray-100 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-xl pointer-events-auto transition-[left,top] duration-[1800ms] ease-in-out"
+          className="fixed top-0 z-[10000] overflow-hidden rounded-2xl border border-gray-800 bg-black/80 px-4 py-3 text-sm leading-relaxed text-gray-100 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-xl pointer-events-auto transition-[left,top] duration-[1800ms] ease-in-out"
+          aria-live="polite"
+          aria-label="CALI voice conversation"
           style={{
             borderColor: `${pulseColor}4d`,
             left: `${bubbleLeft}px`,
             top: `${bubbleTop}px`,
             width: `${bubbleWidth}px`,
+            maxHeight: '4.8em',
+            lineHeight: 1.6,
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 3,
           }}
         >
-          {bubbleText}
+          {bubbleText || status}
         </div>
       )}
 
       <div
-        className="pointer-events-none fixed left-0 top-0 z-[9999] transition-transform duration-[1800ms] ease-in-out"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] transition-transform duration-[4200ms] ease-in-out"
         style={{
           width: `${ORB_SIZE}px`,
           height: `${ORB_SIZE}px`,
