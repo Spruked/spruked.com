@@ -14,10 +14,6 @@ type CrawlContext = {
     route: string;
     title: string;
     h1: string;
-    h2: string[];
-    excerpt: string;
-    top_terms: string[];
-    orb_score: number | null;
   }>;
   lidar: {
     status: string;
@@ -62,24 +58,16 @@ export function getSprukedCrawlContext(): CrawlContext | null {
       orb_ready_score: Number(raw?.website_orb_context?.orb_ready_score || 0),
       key_facts: (Array.isArray(raw?.website_orb_context?.key_facts)
         ? raw.website_orb_context.key_facts
-        : []).map((fact: unknown) => compactText(fact, 260)).filter(Boolean).slice(0, 24),
+        : []).map((fact: unknown) => compactText(fact, 120)).filter(Boolean).slice(0, 6),
       route_hints: Object.fromEntries(
         Object.entries(raw?.website_orb_context?.route_hints || {})
-          .slice(0, 40)
-          .map(([label, route]) => [compactText(label, 120), compactText(route, 160)]),
+          .slice(0, 10)
+          .map(([label, route]) => [compactText(label, 100), compactText(route, 120)]),
       ),
-      pages: pages.map((page: any) => ({
+      pages: pages.slice(0, 15).map((page: any) => ({
         route: new URL(String(page?.url || 'https://spruked.com/')).pathname || '/',
-        title: compactText(page?.title, 160),
-        h1: compactText(page?.h1, 160),
-        h2: Array.isArray(page?.h2_tags) ? page.h2_tags.map((item: unknown) => compactText(item, 120)).filter(Boolean).slice(0, 8) : [],
-        excerpt: compactText(page?.semantic_analysis?.content_excerpt, 700),
-        top_terms: Array.isArray(page?.semantic_analysis?.top_terms)
-          ? page.semantic_analysis.top_terms.slice(0, 12).map((item: any) => compactText(item?.term, 60)).filter(Boolean)
-          : [],
-        orb_score: Number.isFinite(Number(page?.semantic_analysis?.orb_semantic_score?.overall))
-          ? Number(page.semantic_analysis.orb_semantic_score.overall)
-          : null,
+        title: compactText(page?.title, 120),
+        h1: compactText(page?.h1, 100),
       })),
       lidar: {
         status: String(lidarWeave?.status || 'candidate_inventory_complete'),
