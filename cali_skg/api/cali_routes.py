@@ -94,7 +94,7 @@ def _timeout_seconds() -> float:
 
 
 def _llm_max_tokens() -> int:
-    raw = str(os.getenv("CALI_LLM_MAX_TOKENS") or os.getenv("CALI_OLLAMA_MAX_TOKENS") or "48").strip()
+    raw = str(os.getenv("CALI_LLM_MAX_TOKENS") or os.getenv("CALI_OLLAMA_MAX_TOKENS") or "24").strip()
     try:
         return min(800, max(8, int(raw)))
     except ValueError:
