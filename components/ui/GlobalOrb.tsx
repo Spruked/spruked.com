@@ -22,7 +22,7 @@ const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
 const DRIFT_MIN_MS = 5000;
 const DRIFT_MAX_MS = 9000;
-const ORB_SIZE = 186;
+const ORB_SIZE = 206;
 const ORB_HALO = Math.ceil(ORB_SIZE * 0.3);
 const CURSOR_AVOID_RADIUS = 120;
 const EVADE_COOLDOWN_MS = 240;
@@ -367,8 +367,8 @@ export default function GlobalOrb() {
         }
         setGuide(nextGuide);
         setBubbleText(nextGuide.message);
-        setStatus(`Pointing to ${target.label}.`);
-        setPulseColor('#fbbf24');
+        setStatus(`LiDAR lock: ${target.label}.`);
+        setPulseColor('#d946ef');
         setOrbPosition(() => {
           const size = ORB_SIZE;
           const rightSide = nextGuide.rect.right + 22;
@@ -416,16 +416,16 @@ export default function GlobalOrb() {
   const getMindColor = (mind: string) => {
     switch (mind.toLowerCase()) {
       case 'cali': return '#ffffff';
-      case 'kant': return '#b4ff00';
+      case 'kant': return '#ff5277';
       case 'spinoza': return '#00ffcc';
       case 'hume': return '#ff00aa';
-      case 'locke': return '#ffaa00';
+      case 'locke': return '#c084fc';
       case 'deductive': return '#67c6ff';
       case 'inductive': return '#67c6ff';
-      case 'intuitive': return '#f5c96a';
+      case 'intuitive': return '#d946ef';
       case 'kaygee': return '#67c6ff';
       case 'tool_router': return '#67c6ff';
-      default: return '#b4ff00';
+      default: return '#c084fc';
     }
   };
 
@@ -647,7 +647,8 @@ export default function GlobalOrb() {
         <div className="pointer-events-none fixed inset-0 z-[9998]" aria-hidden="true">
           <div
             key={guide.pulseKey}
-            className="fixed rounded-lg border-2 border-amber-300 shadow-[0_0_0_9999px_rgba(7,10,15,0.18),0_0_34px_rgba(251,191,36,0.42),inset_0_0_20px_rgba(251,191,36,0.16)]"
+            data-orb-lidar="locked"
+            className="fixed rounded-lg border-2 border-fuchsia-300 shadow-[0_0_0_9999px_rgba(7,10,15,0.18),0_0_34px_rgba(217,70,239,0.48),inset_0_0_20px_rgba(217,70,239,0.2)]"
             style={{
               top: Math.max(8, guide.rect.top - 8),
               left: Math.max(8, guide.rect.left - 8),
@@ -656,6 +657,15 @@ export default function GlobalOrb() {
               animation: 'website-orb-target-ping 1.18s ease-out 2',
             }}
           ></div>
+          <div
+            className="fixed rounded-md border border-fuchsia-300/80 bg-[#1b0b26]/90 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-fuchsia-100 shadow-[0_0_16px_rgba(217,70,239,0.38)]"
+            style={{
+              top: Math.max(8, guide.rect.top - 34),
+              left: Math.max(8, guide.rect.left - 8),
+            }}
+          >
+            LiDAR lock · {guide.target.label}
+          </div>
         </div>
       )}
 
@@ -734,10 +744,7 @@ export default function GlobalOrb() {
           <div
             className="absolute inset-[7%] z-10 rounded-full mix-blend-screen transition-all duration-700"
             style={{
-                boxShadow: isSpeaking
-                ? '0 0 28px rgba(111,231,255,0.72), 0 0 58px rgba(58,196,255,0.45)'
-                : `0 0 ${isAwake ? '42px' : '18px'} ${pulseColor}`,
-              animation: isAwake ? 'pulse 1.8s infinite ease-in-out' : 'pulse 4s infinite ease-in-out',
+              boxShadow: `0 0 ${isAwake ? '30px' : '14px'} ${pulseColor}`,
             }}
           ></div>
 
