@@ -68,7 +68,7 @@ def _kaygee_voice() -> str:
 
 
 def _local_kokoro_tts_url() -> str:
-    return str(os.getenv("CALI_LOCAL_KOKORO_URL", "http://127.0.0.1:12000/api/kokoro/tts")).strip()
+    return str(os.getenv("CALI_LOCAL_KOKORO_URL", "http://127.0.0.1:8880/api/kokoro/tts")).strip()
 
 
 def _qwen_tts_url() -> str:

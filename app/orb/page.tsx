@@ -43,7 +43,7 @@ export default function OrbPresencePage() {
               }}
             ></div>
             <img
-              src="/assets/redorbbluecenter1600.png"
+              src="/orb-skin-studio/assets/caliorb1600.png"
               alt="Spruked CALI ORB"
               draggable={false}
               className="relative z-20 h-full w-full select-none object-contain drop-shadow-[0_0_38px_rgba(88,205,255,0.52)]"

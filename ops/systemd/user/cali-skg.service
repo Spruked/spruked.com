@@ -1,0 +1,23 @@
+[Unit]
+Description=Spruked CALI ORB API
+After=network-online.target llama-cpp.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/bryan/projects/spruked.com
+Environment=PYTHONUNBUFFERED=1
+Environment=CALI_API_PORT=8022
+Environment=LLAMA_CPP_API_BASE=http://172.19.80.1:40343
+Environment=CALI_LLAMA_CPP_MODEL_NAME=DeepSeek-R1-Distill-Qwen-7B-Q4_K_M
+Environment=CALI_LOCAL_KOKORO_URL=http://127.0.0.1:8880/api/kokoro/tts
+Environment=CALI_QWEN_TTS_URL=
+ExecStart=/usr/bin/python3 -m uvicorn cali_skg.api.cali_routes:app --host 127.0.0.1 --port 8022
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=0
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

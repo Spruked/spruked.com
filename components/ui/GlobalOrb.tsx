@@ -27,7 +27,7 @@ const EVADE_COOLDOWN_MS = 240;
 const EVADE_DISTANCE = 165;
 const VIEWPORT_PADDING = 20;
 const DRIFT_MAX_HEIGHT_RATIO = 0.86;
-const ORB_IMAGE_SRC = '/assets/redorbbluecenter1600.png';
+const ORB_IMAGE_SRC = '/orb-skin-studio/assets/caliorb1600.png';
 
 export default function GlobalOrb() {
   const pathname = usePathname();
@@ -187,6 +187,13 @@ export default function GlobalOrb() {
     if (typeof window === 'undefined') return;
 
     setOrbPosition(sleepPosition());
+    const handleWarmStart = (event: Event) => {
+      const permission = String((event as CustomEvent<{ permission?: string }>).detail?.permission || '');
+      setVoiceInputReady(permission === 'granted');
+      setStatus(permission === 'granted' ? 'Voice warmed.' : permission === 'blocked' ? 'Mic permission needed' : 'Voice output ready.');
+      setBubbleText(permission === 'granted' ? 'CALI is ready.' : permission === 'blocked' ? 'CALI voice is ready. Microphone permission is still needed.' : 'CALI voice is ready.');
+    };
+    window.addEventListener('spruked-orb-warm-start', handleWarmStart);
     const warmupStarted = performance.now();
     void OrbService.warmVoice()
       .then((result) => {
@@ -275,6 +282,7 @@ export default function GlobalOrb() {
       window.removeEventListener('keydown', primeVoicePlayback);
       window.removeEventListener('touchstart', primeVoicePlayback);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('spruked-orb-warm-start', handleWarmStart);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
       if (listeningRestartTimerRef.current) clearTimeout(listeningRestartTimerRef.current);
