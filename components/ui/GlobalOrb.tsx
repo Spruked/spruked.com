@@ -20,7 +20,7 @@ const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
 const DRIFT_MIN_MS = 5000;
 const DRIFT_MAX_MS = 9000;
-const ORB_SIZE = 168;
+const ORB_SIZE = 186;
 const ORB_HALO = Math.ceil(ORB_SIZE * 0.3);
 const CURSOR_AVOID_RADIUS = 120;
 const EVADE_COOLDOWN_MS = 240;
@@ -394,9 +394,9 @@ export default function GlobalOrb() {
       case 'hume': return '#ff00aa';
       case 'locke': return '#ffaa00';
       case 'deductive': return '#67c6ff';
-      case 'inductive': return '#63e6a6';
+      case 'inductive': return '#67c6ff';
       case 'intuitive': return '#f5c96a';
-      case 'kaygee': return '#63e6a6';
+      case 'kaygee': return '#67c6ff';
       case 'tool_router': return '#67c6ff';
       default: return '#b4ff00';
     }
@@ -506,7 +506,7 @@ export default function GlobalOrb() {
       setVoiceInputReady(true);
       setIsRecording(true);
       setStatus('Listening...');
-      setPulseColor('#63e6a6');
+      setPulseColor('#67c6ff');
       wakeOrb();
       if (stopRecordingTimerRef.current) clearTimeout(stopRecordingTimerRef.current);
       stopRecordingTimerRef.current = setTimeout(() => {
@@ -707,8 +707,8 @@ export default function GlobalOrb() {
           <div
             className="absolute inset-[7%] z-10 rounded-full mix-blend-screen transition-all duration-700"
             style={{
-              boxShadow: isSpeaking
-                ? '0 0 28px rgba(100,255,118,0.62), 0 0 58px rgba(58,196,255,0.45)'
+                boxShadow: isSpeaking
+                ? '0 0 28px rgba(111,231,255,0.72), 0 0 58px rgba(58,196,255,0.45)'
                 : `0 0 ${isAwake ? '42px' : '18px'} ${pulseColor}`,
               animation: isAwake ? 'pulse 1.8s infinite ease-in-out' : 'pulse 4s infinite ease-in-out',
             }}
@@ -722,7 +722,7 @@ export default function GlobalOrb() {
             className="relative z-20 h-full w-full select-none object-contain"
             style={{
               filter: isSpeaking
-                ? 'drop-shadow(0 0 22px rgba(76,220,255,0.72)) drop-shadow(0 0 34px rgba(95,255,106,0.24))'
+                ? 'drop-shadow(0 0 22px rgba(76,220,255,0.72)) drop-shadow(0 0 34px rgba(111,231,255,0.28))'
                 : 'drop-shadow(0 0 20px rgba(88,205,255,0.46))',
             }}
           />
@@ -731,8 +731,8 @@ export default function GlobalOrb() {
               className={`absolute inset-[7%] rounded-full blur-[8px] transition-opacity duration-300 ${isSpeaking ? 'opacity-[0.94]' : 'opacity-0'}`}
               style={{
                 background:
-                  'radial-gradient(circle, rgba(99,255,106,0.94) 0%, rgba(99,255,106,0.32) 42%, rgba(99,255,106,0) 72%)',
-                animation: isSpeaking ? 'pulse 720ms infinite ease-in-out' : undefined,
+                  'radial-gradient(circle, rgba(181,249,255,0.96) 0%, rgba(58,196,255,0.42) 42%, rgba(58,196,255,0) 72%)',
+                animation: isSpeaking ? 'orb-voice-pulse 720ms infinite ease-in-out' : undefined,
               }}
             ></div>
             <div
