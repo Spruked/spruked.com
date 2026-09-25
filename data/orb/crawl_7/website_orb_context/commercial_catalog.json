@@ -1,0 +1,80 @@
+{
+  "schema": "orb_weaver.commercial_catalog.v1",
+  "entry_count": 2,
+  "product_count": 2,
+  "service_count": 0,
+  "priced_entry_count": 0,
+  "sku_model_count": 0,
+  "availability_count": 0,
+  "variant_count": 0,
+  "specification_count": 0,
+  "source_page_count": 1,
+  "entries": [
+    {
+      "catalog_id": "catalog_1f283480c8650ac6",
+      "kind": "Product",
+      "name": "Browsing System Navigations Your",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/artifacts",
+      "source_page": "https://spruked.com/artifacts",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "catalog_id": "catalog_d90db1b7890f73b2",
+      "kind": "Product",
+      "name": "Spruked System",
+      "description": null,
+      "sku": null,
+      "gtin": null,
+      "brand": null,
+      "category": null,
+      "url": "https://spruked.com/artifacts",
+      "source_page": "https://spruked.com/artifacts",
+      "offers": [],
+      "availability": null,
+      "variants": [],
+      "specifications": {},
+      "schema_types": [],
+      "evidence": [
+        "entity_extraction"
+      ],
+      "confidence": 0.62
+    }
+  ],
+  "indexes": {
+    "by_name": {
+      "browsing system navigations your": [
+        "catalog_1f283480c8650ac6"
+      ],
+      "spruked system": [
+        "catalog_d90db1b7890f73b2"
+      ]
+    },
+    "by_sku_model": {},
+    "by_category": {},
+    "by_url": {
+      "https://spruked.com/artifacts": [
+        "catalog_1f283480c8650ac6",
+        "catalog_d90db1b7890f73b2"
+      ]
+    },
+    "prices": []
+  },
+  "runtime_policy": {
+    "deterministic_lookup_first": true,
+    "llm_required_for_exact_catalog_facts": false,
+    "source_evidence_required": true
+  }
+}

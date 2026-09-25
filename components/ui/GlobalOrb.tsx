@@ -9,10 +9,12 @@ import {
   buildGuideState,
   findPointerTargetElement,
   getPointerTarget,
+  SPRUKED_POINTER_TARGETS,
   resolvePointerTarget,
   scrollPointerTargetIntoView,
   type WebsiteOrbGuideState,
 } from '@/lib/website-orb/pointer-runtime';
+import { Lidar2DMappingCoordinateCache } from '@/lib/website-orb/lidar_2d_mapping/Lidar2DMappingCoordinateCache';
 
 const IDLE_TIMEOUT_MS = 300000;
 const LISTENING_SEGMENT_MS = 5200;
@@ -296,6 +298,18 @@ export default function GlobalOrb() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const lidar = Lidar2DMappingCoordinateCache.getInstance();
+    lidar.load(SPRUKED_POINTER_TARGETS.map((target) => ({
+      target_id: target.id,
+      semantic_locator: target.selector,
+      anchor_strategy: 'element_center',
+    })));
+    lidar.startDriftAudit();
+    return () => lidar.stopDriftAudit();
+  }, []);
+
+  useEffect(() => {
     const handleGuideEvent = (event: Event) => {
       const detail = (event as CustomEvent<{ targetId?: string; message?: string }>).detail;
       if (detail?.targetId && getPointerTarget(detail.targetId)) {
@@ -342,6 +356,15 @@ export default function GlobalOrb() {
 
         guidePulseRef.current += 1;
         const nextGuide = buildGuideState(target, verified, pendingGuide.message, guidePulseRef.current);
+        const lidarCoordinate = Lidar2DMappingCoordinateCache.getInstance().get(target.id);
+        if (lidarCoordinate) {
+          nextGuide.rect = new DOMRect(
+            lidarCoordinate.left,
+            lidarCoordinate.top,
+            lidarCoordinate.width,
+            lidarCoordinate.height,
+          );
+        }
         setGuide(nextGuide);
         setBubbleText(nextGuide.message);
         setStatus(`Pointing to ${target.label}.`);
@@ -375,7 +398,11 @@ export default function GlobalOrb() {
         setGuide(null);
         return;
       }
-      setGuide((current) => (current ? { ...current, rect: element.getBoundingClientRect() } : current));
+      const lidarCoordinate = Lidar2DMappingCoordinateCache.getInstance().get(guide.target.id);
+      const rect = lidarCoordinate
+        ? new DOMRect(lidarCoordinate.left, lidarCoordinate.top, lidarCoordinate.width, lidarCoordinate.height)
+        : element.getBoundingClientRect();
+      setGuide((current) => (current ? { ...current, rect } : current));
     };
 
     window.addEventListener('resize', refreshGuide);

@@ -1,0 +1,99 @@
+{
+  "schema": "orb_weaver.source_validation.v1",
+  "status": "COMPLETE",
+  "input_count": 15,
+  "validated_count": 15,
+  "invalid_count": 0,
+  "checks": [
+    {
+      "chunk_id": "b52e76040aa1939c79d0",
+      "source_url": "https://spruked.com",
+      "status": "VALID",
+      "content_hash": "196dcc0bdc97c5c3e47e28d86853bb24"
+    },
+    {
+      "chunk_id": "392beefc026210ef208f",
+      "source_url": "https://spruked.com/products/truemark-mint/objects",
+      "status": "VALID",
+      "content_hash": "312c2982bd1c127dd9f5472b0ce91f3a"
+    },
+    {
+      "chunk_id": "e72644526aa2e8e5e120",
+      "source_url": "https://spruked.com/products/truemark-mint",
+      "status": "VALID",
+      "content_hash": "d940bda88ad4354cd1832235a850eee8"
+    },
+    {
+      "chunk_id": "4f910a72c765a52dcbd4",
+      "source_url": "https://spruked.com/about",
+      "status": "VALID",
+      "content_hash": "563b11427b7d6f0cb6a077cca24e9790"
+    },
+    {
+      "chunk_id": "197f8093aaf8255528a5",
+      "source_url": "https://spruked.com/goat",
+      "status": "VALID",
+      "content_hash": "3536e810c6c1baecd8f98963455abd60"
+    },
+    {
+      "chunk_id": "b5f5f9fd35ed2f3f4253",
+      "source_url": "https://spruked.com/artifacts",
+      "status": "VALID",
+      "content_hash": "a9af99d1ae35a3446b612e34b3cdeec4"
+    },
+    {
+      "chunk_id": "0b724e687b131dcd266e",
+      "source_url": "https://spruked.com/products/alpha-certsig",
+      "status": "VALID",
+      "content_hash": "044cbe4a99d97d95e7cc77c6d355569d"
+    },
+    {
+      "chunk_id": "d75875792ff4f7e39689",
+      "source_url": "https://spruked.com/admin",
+      "status": "VALID",
+      "content_hash": "0749eefc9e5b281ca294e6fd5310a8ac"
+    },
+    {
+      "chunk_id": "81b0e3e6081e80f0df72",
+      "source_url": "https://spruked.com/orb",
+      "status": "VALID",
+      "content_hash": "7960fc0d83bc1d1e80e711284ee1f4b3"
+    },
+    {
+      "chunk_id": "c28397e6136eb3991783",
+      "source_url": "https://spruked.com/checkout",
+      "status": "VALID",
+      "content_hash": "5926e41003020e250c33a7bd30c5c40f"
+    },
+    {
+      "chunk_id": "232c9963dfbaa6977071",
+      "source_url": "https://spruked.com/cart",
+      "status": "VALID",
+      "content_hash": "32e8a7db8fe67406d579ccf2f9f6e2a0"
+    },
+    {
+      "chunk_id": "56417e872c6c7c100a5a",
+      "source_url": "https://spruked.com/products",
+      "status": "VALID",
+      "content_hash": "04109e6fbb37156ca39ddbad7dbd4560"
+    },
+    {
+      "chunk_id": "485f590178066953f65e",
+      "source_url": "https://spruked.com/orb-skin-studio",
+      "status": "VALID",
+      "content_hash": "3f8e77dc30e34e84289467e15493a2fd"
+    },
+    {
+      "chunk_id": "c5a1303dd369437b0574",
+      "source_url": "https://spruked.com/truemark/example-object",
+      "status": "VALID",
+      "content_hash": "14b8236042cf7eed68ea55db29862f47"
+    },
+    {
+      "chunk_id": "84f4582bb60ced2aab51",
+      "source_url": "https://spruked.com/products/truemark-mint/object-types",
+      "status": "VALID",
+      "content_hash": "cd187fc22f5b9d808dd6d5df947a10a0"
+    }
+  ]
+}

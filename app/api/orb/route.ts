@@ -8,6 +8,7 @@ import {
   submitWebTask,
 } from '@/lib/orb-server';
 import { updateOrbState, type OrbReasoningMode } from '@/lib/orb-introspection';
+import { getSprukedCrawlContext } from '@/lib/website-orb/crawl-context';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -372,12 +373,14 @@ async function reportSprukedOrbState(
 
 async function queryByProvider(prompt: string, context: Record<string, unknown>, emotion: string) {
   const provider = cognitionProvider();
+  const crawlContext = getSprukedCrawlContext();
   const websiteContext = {
     site_world: {
       site: 'spruked.com',
       role: 'public Website ORB',
       navigation_contract: 'CALI cognition first, then verified site pointer/navigation action',
       key_routes: '/, /products, /cart, /checkout',
+      crawl_context: crawlContext,
     },
     ...context,
   };

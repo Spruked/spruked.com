@@ -1,0 +1,87 @@
+{
+  "schema": "orb_weaver.route_classification.v1",
+  "route_count": 15,
+  "category_counts": {
+    "public_content": 11,
+    "utility": 1,
+    "admin": 1,
+    "transactional": 2
+  },
+  "routes": [
+    {
+      "url": "https://spruked.com",
+      "route": "/",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint/objects",
+      "route": "/products/truemark-mint/objects",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint",
+      "route": "/products/truemark-mint",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/about",
+      "route": "/about",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/goat",
+      "route": "/goat",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/artifacts",
+      "route": "/artifacts",
+      "category": "utility"
+    },
+    {
+      "url": "https://spruked.com/products/alpha-certsig",
+      "route": "/products/alpha-certsig",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/admin",
+      "route": "/admin",
+      "category": "admin"
+    },
+    {
+      "url": "https://spruked.com/orb",
+      "route": "/orb",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/checkout",
+      "route": "/checkout",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/cart",
+      "route": "/cart",
+      "category": "transactional"
+    },
+    {
+      "url": "https://spruked.com/products",
+      "route": "/products",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/orb-skin-studio",
+      "route": "/orb-skin-studio",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/truemark/example-object",
+      "route": "/truemark/example-object",
+      "category": "public_content"
+    },
+    {
+      "url": "https://spruked.com/products/truemark-mint/object-types",
+      "route": "/products/truemark-mint/object-types",
+      "category": "public_content"
+    }
+  ]
+}
