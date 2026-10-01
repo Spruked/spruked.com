@@ -2,8 +2,8 @@
 
 This module preserves the existing CALI API/router implementation and wraps only
 the LLM context assembly point. The existing route handlers continue to execute;
-prior-conversation recall and SeedVault reasoning context are injected before the
-existing provider call.
+prior-conversation recall, SeedVault reasoning context, and matching live-tool
+manifest options are injected before the existing provider call.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ from typing import Any, Dict
 
 from cali_skg.api import cali_routes as _legacy
 from cali_skg.core.cali_unified_substrate import get_unified_substrate
+from cali_skg.core.tool_manifest_registry import get_tool_manifest_registry
 
 _LOG = logging.getLogger("cali.memory")
 _ORIGINAL_GENERATE = _legacy._generate_llm_response
@@ -61,12 +62,28 @@ def _memory_aware_generate_llm_response(
 
     _ensure_substrate_ready()
     enriched_context: Dict[str, Any] = dict(context or {})
+
     try:
         memory_context = get_unified_substrate().build_llm_context(prompt)
         if memory_context.get("prior_conversations") or memory_context.get("reasoning_options"):
             enriched_context["cali_inherited_context"] = memory_context
     except Exception:
         _LOG.exception("[CALI memory] retrieval failed; continuing with existing context")
+
+    try:
+        registry = get_tool_manifest_registry()
+        registry.reload()
+        matching_tools = registry.find(prompt)
+        if matching_tools:
+            enriched_context["available_research_tools"] = {
+                "semantics": (
+                    "These are approved manifest capabilities relevant to the request. "
+                    "Their presence does not authorize invented execution. Use only the existing governed tool runtime."
+                ),
+                "matches": matching_tools,
+            }
+    except Exception:
+        _LOG.exception("[CALI tools] manifest lookup failed; continuing without tool hints")
 
     return _ORIGINAL_GENERATE(prompt, enriched_context, emotion)
 
