@@ -1,0 +1,92 @@
+{
+  "vault_id": "seed_intuitive_resonator", 
+  "version": "1.0.0",
+  "immutable": true,
+  "author": "Bryan A. Spruk",
+  "created": "2025-10-18T00:00:00Z",
+  "category": "logic",
+  "type": "seed",
+  "reasoning_type": "intuitive", 
+  "description": "Rapid pattern recognition, gut-feel analysis, and holistic understanding without conscious reasoning",
+
+  "parameters": {
+    "pattern_sensitivity": 0.85,
+    "confidence_threshold": 0.7,
+    "processing_speed": "instant",
+    "holistic_weighting": 0.8,
+    "experience_factor": 0.9
+  },
+
+  "logic_framework": {
+    "method": "pattern_recognition",
+    "approach": "holistic_gestalt", 
+    "output_type": "intuitive_insights",
+    "characteristics": ["rapid", "non_linear", "experience_based", "high_tolerance_ambiguity"]
+  },
+
+  "pattern_templates": {
+    "recognition_patterns": [
+      {
+        "name": "familiarity_detection",
+        "description": "Recognizes previously encountered patterns",
+        "confidence_boost": 0.3,
+        "speed": "instant"
+      },
+      {
+        "name": "gestalt_completion", 
+        "description": "Fills in missing information based on whole pattern",
+        "confidence_boost": 0.2,
+        "speed": "rapid"
+      },
+      {
+        "name": "analogical_mapping",
+        "description": "Maps current situation to similar past experiences",
+        "confidence_boost": 0.4,
+        "speed": "fast"
+      }
+    ]
+  },
+
+  "operations": {
+    "pattern_scan": {
+      "description": "Rapid holistic pattern recognition",
+      "input": {"situation": "object", "context": "object"},
+      "output": {"pattern_matches": "array", "confidence": "float", "insight": "string"}
+    },
+    "gut_feel_analysis": {
+      "description": "Generate intuitive assessment without detailed reasoning",
+      "input": {"input_data": "object"},
+      "output": {"assessment": "string", "confidence": "float", "certainty_level": "string"}
+    },
+    "integrity_hash": "sha256:5ee8f01e51f0e0c63d28a0ff19a7ff81ddbb2f771958368e9b9b1a5ca092d66d"
+  },
+
+  "confidence_calibration": {
+    "high_confidence": {"threshold": 0.8, "action": "trust_insight"},
+    "medium_confidence": {"threshold": 0.6, "action": "verify_with_other_reasoners"},
+    "low_confidence": {"threshold": 0.0, "action": "seek_more_data"}
+  },
+
+  "integration": {
+    "compatible_modules": ["synaptic_resonator", "inductive_reasoner", "posterior_helix"],
+    "input_sources": ["sensory_input", "emotional_context", "pattern_database"],
+    "output_destinations": ["quick_decisions", "hypothesis_generation", "attention_direction"]
+  },
+
+  "performance_metrics": {
+    "processing_speed": "instant",
+    "pattern_recall": 0.88,
+    "false_positive_rate": 0.12,
+    "holistic_accuracy": 0.82
+  },
+
+  "docker_config": {
+    "container_name": "intuitive-resonator",
+    "network": "caleon_network",
+    "port": 8084,
+    "volumes": ["/app/seed_vault"],
+    "environment_vars": ["PATTERN_SENSITIVITY=0.85", "PROCESSING_SPEED=instant"]
+  },
+
+  "integrity_hash": "sha256:b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef01"
+}

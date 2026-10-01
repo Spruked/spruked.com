@@ -1,0 +1,36 @@
+{
+  "vault_name": "SeedVault_Taleb",
+  "author": "Nassim Nicholas Taleb",
+  "source": "The Black Swan (2007), Antifragile (2012)",
+  "core_concepts": [
+    {
+      "term": "Black Swan Events",
+      "definition": "Rare, high-impact events that are unpredictable and rationalized after the fact."
+    },
+    {
+      "term": "Antifragility",
+      "definition": "Systems that gain from disorder, volatility, and stress."
+    },
+    {
+      "term": "Skin in the Game",
+      "definition": "Decision-makers should share in the risks of their actions."
+    },
+    {
+      "term": "Via Negativa",
+      "definition": "Improving systems by removing harmful elements instead of adding features."
+    },
+    {
+      "term": "Ludic Fallacy",
+      "definition": "Mistaking structured, rule-based randomness for real-world complexity."
+    }
+  ],
+  "learning_principles": [
+    "Expect the unexpected — plan for resilience, not prediction.",
+    "Remove fragility before adding complexity.",
+    "Align incentives so decision-makers face the same risks as others."
+  ],
+  "access_control": {
+    "mutable": false,
+    "authorized_editor": "Bryan A. Spruk"
+  }
+}

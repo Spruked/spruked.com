@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Apriori",
+  "vault_id": "seed_apriori",
+  "version": "1.1.0",
+  "category": "Epistemology",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-08-22T17:45:00-05:00",
+  "compatibility": "backward-compatible",
+  "description": "Knowledge and reasoning independent of experience, derived from pure reason and innate structures of the mind",
+  "author": "Bryan A. Spruk",
+  "reasoning_type": "a_priori",
+  "immutable": true,
+  "index": {
+    "a_priori_reasoning": "epi:a_priori_reasoning"
+  },
+  "entries": [
+    {
+      "id": "epi:a_priori_reasoning",
+      "term": "A Priori Reasoning",
+      "type": "concept",
+      "definition": "Knowledge or justification independent of experience; derived from pure reason, innate concepts, and necessary truths that hold universally.",
+      "lineage": "SEED-EPI-001",
+      "origin": "Immanuel Kant, building on Plato and Descartes",
+      "period": "18th Century Enlightenment",
+      "source": "Critique of Pure Reason",
+      "source_id": "WD:Q207967",
+      "reference_urls": [
+        "https://en.wikipedia.org/wiki/A_priori_and_a_posteriori",
+        "https://plato.stanford.edu/entries/apriori/"
+      ],
+      "applications": [
+        "Deductive Reasoning",
+        "Ethical Absolutes",
+        "Mathematical Truths",
+        "Logical Necessity",
+        "Symbolic Inference",
+        "Categorical Imperatives",
+        "Transcendental Arguments"
+      ],
+      "examples": [
+        "Mathematical theorems (2+2=4 is true regardless of experience)",
+        "Logical laws (law of non-contradiction)",
+        "Moral imperatives (certain duties are universally binding)",
+        "Causal principles (every event has a cause)"
+      ],
+      "related_ids": [
+        "epi:a_posteriori_reasoning",
+        "logic:deductive_reasoning",
+        "logic:mathematical_logic"
+      ],
+      "reflex_tier": "Tier 1 — Foundational Logic",
+      "certainty_level": "absolute",
+      "validation_methods": ["logical_consistency", "conceptual_analysis", "transcendental_argument"]
+    }
+  ],
+  "learning_principles": [
+    "Some knowledge is innate and independent of experience",
+    "Reason has necessary structures that make knowledge possible",
+    "Pure concepts and intuitions shape all experience",
+    "Certain truths are universally and necessarily true",
+    "The mind actively constitutes the world of experience"
+  ],
+  "parameters": {
+    "certainty_threshold": 1.0,
+    "inference_method": "deductive",
+    "evidence_requirement": "rational_necessity",
+    "contradiction_handling": "logical_impossibility"
+  },
+  "operations": {
+    "deductive_inference": {
+      "description": "Derive necessary conclusions from premises",
+      "input": {"premises": "array", "rules": "array"},
+      "output": {"conclusion": "string", "certainty": "float", "validity": "boolean"}
+    },
+    "conceptual_analysis": {
+      "description": "Analyze concepts to reveal necessary relations",
+      "input": {"concept": "string", "context": "object"},
+      "output": {"necessary_properties": "array", "relations": "object"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["deductive_reasoner", "logical_validator", "concept_processor"],
+    "input_sources": ["axioms", "necessary_truths", "innate_concepts"],
+    "output_destinations": ["foundation_builder", "necessity_checker", "universal_principle_engine"]
+  },
+  "performance_metrics": {
+    "inference_speed": "fast",
+    "certainty_range": "1.0",
+    "concept_capacity": "unlimited",
+    "revision_frequency": "never"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:8a2b4c6d8e0f2a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4"
+  }
+}

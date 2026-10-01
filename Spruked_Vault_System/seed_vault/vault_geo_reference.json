@@ -1,0 +1,224 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Geography Reference Vault",
+  "vault_id": "vault_geo_reference",
+  "version": "1.1.0",
+  "category": "Geography",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental geographical concepts including countries, coordinates, landmarks, and spatial relationships",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "world_countries": "geo:world_countries",
+    "coordinate_systems": "geo:coordinate_systems",
+    "major_landmarks": "geo:major_landmarks",
+    "continents_oceans": "geo:continents_oceans",
+    "climate_zones": "geo:climate_zones",
+    "spatial_concepts": "geo:spatial_concepts"
+  },
+  "entries": [
+    {
+      "id": "geo:world_countries",
+      "term": "World Countries",
+      "type": "knowledge",
+      "definition": "Major countries of the world with key geographical and demographic information",
+      "value": {
+        "continents": {
+          "africa": ["Nigeria", "Ethiopia", "Egypt", "South Africa", "Kenya"],
+          "asia": ["China", "India", "Japan", "Indonesia", "Pakistan"],
+          "europe": ["Russia", "Germany", "France", "United Kingdom", "Italy"],
+          "north_america": ["United States", "Canada", "Mexico", "Cuba", "Haiti"],
+          "south_america": ["Brazil", "Argentina", "Colombia", "Peru", "Venezuela"],
+          "oceania": ["Australia", "New Zealand", "Papua New Guinea"]
+        },
+        "largest_countries": [
+          {"name": "Russia", "area_km2": 17098242, "continent": "Europe/Asia"},
+          {"name": "Canada", "area_km2": 9984670, "continent": "North America"},
+          {"name": "China", "area_km2": 9596961, "continent": "Asia"},
+          {"name": "United States", "area_km2": 9833517, "continent": "North America"},
+          {"name": "Brazil", "area_km2": 8514877, "continent": "South America"}
+        ]
+      },
+      "examples": [
+        "United States: 50 states, capital Washington D.C., spans 4 time zones",
+        "China: Most populous country, diverse landscapes from deserts to mountains",
+        "Brazil: Largest South American country, Amazon rainforest covers much of territory"
+      ],
+      "related_ids": ["geo:continents_oceans", "geo:coordinate_systems"]
+    },
+    {
+      "id": "geo:coordinate_systems",
+      "term": "Coordinate Systems",
+      "type": "system",
+      "definition": "Methods for specifying locations on Earth's surface using latitude and longitude",
+      "value": {
+        "latitude": {
+          "range": "-90° to +90°",
+          "equator": "0°",
+          "north_pole": "90°N",
+          "south_pole": "90°S",
+          "description": "measures north-south position"
+        },
+        "longitude": {
+          "range": "-180° to +180°",
+          "prime_meridian": "0° (Greenwich, London)",
+          "international_date_line": "180°",
+          "description": "measures east-west position"
+        },
+        "formats": {
+          "decimal_degrees": "40.7128° N, 74.0060° W",
+          "degrees_minutes_seconds": "40° 42' 46\" N, 74° 0' 22\" W"
+        }
+      },
+      "examples": [
+        "New York City: 40.7128° N, 74.0060° W",
+        "London: 51.5074° N, 0.1278° W",
+        "Tokyo: 35.6762° N, 139.6503° E",
+        "Sydney: 33.8688° S, 151.2093° E"
+      ],
+      "related_ids": ["geo:major_landmarks", "geo:spatial_concepts"]
+    },
+    {
+      "id": "geo:major_landmarks",
+      "term": "Major Landmarks",
+      "type": "knowledge",
+      "definition": "Significant geographical features and man-made structures worldwide",
+      "value": {
+        "natural_landmarks": {
+          "mountains": {
+            "everest": {"height": "8,848m", "location": "Nepal/Tibet"},
+            "k2": {"height": "8,611m", "location": "Pakistan/China"},
+            "kangchenjunga": {"height": "8,586m", "location": "Nepal/India"}
+          },
+          "water_features": {
+            "amazon_river": {"length": "6,992km", "location": "South America"},
+            "nile_river": {"length": "6,853km", "location": "Africa"},
+            "yangtze_river": {"length": "6,300km", "location": "China"}
+          },
+          "other": {
+            "grand_canyon": {"location": "Arizona, USA", "depth": "1,857m"},
+            "great_barrier_reef": {"location": "Australia", "length": "2,300km"}
+          }
+        },
+        "man_made_landmarks": {
+          "great_wall_china": {"length": "21,196km", "purpose": "defense"},
+          "pyramids_giza": {"location": "Egypt", "age": "4,500 years"},
+          "eiffel_tower": {"location": "Paris, France", "height": "324m"}
+        }
+      },
+      "examples": [
+        "Mount Everest: Highest mountain, part of Himalayas",
+        "Grand Canyon: Carved by Colorado River over millions of years",
+        "Great Wall of China: Built over centuries, visible from space"
+      ],
+      "related_ids": ["geo:world_countries", "geo:continents_oceans"]
+    },
+    {
+      "id": "geo:continents_oceans",
+      "term": "Continents and Oceans",
+      "type": "knowledge",
+      "definition": "Major landmasses and water bodies that divide Earth's surface",
+      "value": {
+        "continents": {
+          "africa": {"area": "30.3 million km²", "population": "1.3 billion"},
+          "antarctica": {"area": "14.2 million km²", "population": "1,000-5,000"},
+          "asia": {"area": "44.5 million km²", "population": "4.6 billion"},
+          "europe": {"area": "10.2 million km²", "population": "748 million"},
+          "north_america": {"area": "24.7 million km²", "population": "579 million"},
+          "south_america": {"area": "17.8 million km²", "population": "434 million"},
+          "oceania": {"area": "8.5 million km²", "population": "45 million"}
+        },
+        "oceans": {
+          "pacific": {"area": "168.7 million km²", "depth": "4,188m"},
+          "atlantic": {"area": "85.1 million km²", "depth": "3,926m"},
+          "indian": {"area": "70.6 million km²", "depth": "3,741m"},
+          "arctic": {"area": "14.1 million km²", "depth": "1,205m"},
+          "southern": {"area": "21.9 million km²", "depth": "3,270m"}
+        }
+      },
+      "examples": [
+        "Asia: Largest continent by population and area",
+        "Pacific Ocean: Largest ocean, covers 1/3 of Earth's surface",
+        "Antarctica: Coldest, driest, windiest continent"
+      ],
+      "related_ids": ["geo:world_countries", "geo:climate_zones"]
+    },
+    {
+      "id": "geo:climate_zones",
+      "term": "Climate Zones",
+      "type": "classification",
+      "definition": "Major climate classifications based on temperature and precipitation patterns",
+      "value": {
+        "tropical": {
+          "characteristics": "hot year-round, high precipitation",
+          "subtypes": ["tropical rainforest", "tropical savanna", "tropical monsoon"],
+          "locations": ["Amazon Basin", "Southeast Asia", "Central Africa"]
+        },
+        "dry": {
+          "characteristics": "low precipitation, high temperature variation",
+          "subtypes": ["desert", "semiarid steppe"],
+          "locations": ["Sahara Desert", "Gobi Desert", "Australian Outback"]
+        },
+        "temperate": {
+          "characteristics": "moderate temperatures, distinct seasons",
+          "subtypes": ["oceanic", "continental", "mediterranean"],
+          "locations": ["Western Europe", "Eastern USA", "Southern Australia"]
+        },
+        "continental": {
+          "characteristics": "cold winters, warm summers, low precipitation",
+          "locations": ["Siberia", "Northern Canada", "Mongolia"]
+        },
+        "polar": {
+          "characteristics": "extremely cold year-round",
+          "subtypes": ["tundra", "ice cap"],
+          "locations": ["Arctic regions", "Antarctica", "Greenland"]
+        }
+      },
+      "examples": [
+        "Mediterranean climate: Mild, wet winters; hot, dry summers",
+        "Tropical rainforest: High temperatures, heavy rainfall year-round",
+        "Desert climate: Extreme temperature variations, very low precipitation"
+      ],
+      "related_ids": ["geo:continents_oceans", "geo:spatial_concepts"]
+    },
+    {
+      "id": "geo:spatial_concepts",
+      "term": "Spatial Concepts",
+      "type": "knowledge",
+      "definition": "Fundamental concepts for understanding spatial relationships and geography",
+      "value": {
+        "direction": ["north", "south", "east", "west", "northeast", "northwest", "southeast", "southwest"],
+        "scale": {
+          "global": "world-wide patterns",
+          "regional": "continent or large area patterns",
+          "local": "city or neighborhood scale"
+        },
+        "spatial_relationships": {
+          "adjacent": "sharing a boundary",
+          "near": "close in distance",
+          "distant": "far apart",
+          "connected": "linked by transportation or communication"
+        },
+        "map_concepts": {
+          "projection": "method of representing 3D Earth on 2D surface",
+          "scale": "ratio between map distance and real distance",
+          "legend": "explains symbols and colors on map"
+        }
+      },
+      "examples": [
+        "Compass rose shows cardinal directions",
+        "Map scale of 1:100,000 means 1cm on map = 1km on ground",
+        "Mercator projection distorts area near poles"
+      ],
+      "related_ids": ["geo:coordinate_systems", "geo:major_landmarks"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:geo_reference_2025"
+  }
+}

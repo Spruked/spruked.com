@@ -1,0 +1,255 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Psychology Reference Vault",
+  "vault_id": "vault_psych_reference",
+  "version": "1.1.0",
+  "category": "Psychology",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental psychological concepts including cognitive theory, behavior, memory systems, and learning processes",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "cognitive_theory": "psych:cognitive_theory",
+    "learning_theory": "psych:learning_theory",
+    "memory_systems": "psych:memory_systems",
+    "personality_theory": "psych:personality_theory",
+    "developmental_stages": "psych:developmental_stages",
+    "social_psychology": "psych:social_psychology"
+  },
+  "entries": [
+    {
+      "id": "psych:cognitive_theory",
+      "term": "Cognitive Theory",
+      "type": "theory",
+      "definition": "Study of mental processes including thinking, learning, memory, and problem-solving",
+      "value": {
+        "key_concepts": {
+          "information_processing": "mind as computer processing information",
+          "schema": "mental frameworks for organizing information",
+          "cognitive_dissonance": "mental discomfort from conflicting beliefs",
+          "confirmation_bias": "tendency to seek information confirming existing beliefs",
+          "availability_heuristic": "judging likelihood based on how easily examples come to mind"
+        },
+        "cognitive_processes": {
+          "attention": "selective focus on information",
+          "perception": "interpretation of sensory information",
+          "memory": "encoding, storage, and retrieval of information",
+          "thinking": "manipulation of mental representations",
+          "problem_solving": "finding solutions to complex situations"
+        },
+        "key_theorists": {
+          "jean_piaget": "cognitive development stages",
+          "lev_vygotsky": "sociocultural theory of development",
+          "noam_chomsky": "language acquisition theory",
+          "daniel_kahneman": "prospect theory and decision-making"
+        }
+      },
+      "examples": [
+        "Schema: Using 'bird' schema to identify new bird species",
+        "Cognitive dissonance: Feeling uncomfortable after buying expensive item you don't need",
+        "Confirmation bias: Only reading news that agrees with your political views"
+      ],
+      "related_ids": ["psych:memory_systems", "psych:learning_theory"]
+    },
+    {
+      "id": "psych:learning_theory",
+      "term": "Learning Theory",
+      "type": "theory",
+      "definition": "Principles and mechanisms of how organisms learn and adapt behavior",
+      "value": {
+        "classical_conditioning": {
+          "pavlov": "associating neutral stimulus with unconditioned stimulus",
+          "key_terms": ["unconditioned stimulus", "conditioned stimulus", "conditioned response"],
+          "example": "Dog salivates at bell after bell paired with food"
+        },
+        "operant_conditioning": {
+          "skinner": "learning through consequences",
+          "reinforcement": ["positive (adding pleasant stimulus)", "negative (removing unpleasant stimulus)"],
+          "punishment": ["positive (adding unpleasant stimulus)", "negative (removing pleasant stimulus)"],
+          "schedules": ["continuous", "fixed ratio", "variable ratio", "fixed interval", "variable interval"]
+        },
+        "observational_learning": {
+          "bandura": "learning by watching others",
+          "key_processes": ["attention", "retention", "reproduction", "motivation"],
+          "example": "Children learning aggression by watching violent TV"
+        },
+        "cognitive_learning": {
+          "insight_learning": "sudden understanding of problem solution",
+          "latent_learning": "learning without immediate reinforcement"
+        }
+      },
+      "examples": [
+        "Pavlov's dogs: Learning to associate bell with food",
+        "Skinner's box: Rats learning to press lever for food",
+        "Bandura's Bobo doll: Children imitating aggressive behavior"
+      ],
+      "related_ids": ["psych:cognitive_theory", "psych:memory_systems"]
+    },
+    {
+      "id": "psych:memory_systems",
+      "term": "Memory Systems",
+      "type": "system",
+      "definition": "Different types of memory and how information is stored and retrieved",
+      "value": {
+        "sensory_memory": {
+          "duration": "few seconds",
+          "capacity": "large but quickly decays",
+          "types": ["iconic (visual)", "echoic (auditory)", "haptic (touch)"]
+        },
+        "short_term_memory": {
+          "duration": "20-30 seconds without rehearsal",
+          "capacity": "7 ± 2 items (Miller's law)",
+          "also_known_as": "working memory",
+          "functions": ["temporary storage", "manipulation of information"]
+        },
+        "long_term_memory": {
+          "duration": "potentially lifetime",
+          "capacity": "virtually unlimited",
+          "types": {
+            "episodic": "personal experiences and events",
+            "semantic": "facts and general knowledge",
+            "procedural": "skills and how-to knowledge"
+          }
+        },
+        "memory_processes": {
+          "encoding": "converting information into memory",
+          "storage": "maintaining information over time",
+          "retrieval": "accessing stored information"
+        },
+        "memory_improvement": {
+          "chunking": "grouping information into meaningful units",
+          "mnemonics": "memory aids and techniques",
+          "spaced_repetition": "reviewing information at increasing intervals"
+        }
+      },
+      "examples": [
+        "Phone number: Chunked as area code + exchange + number",
+        "Flashbulb memory: Vivid recollection of surprising events",
+        "Tip-of-the-tongue: Knowing information is stored but can't retrieve it"
+      ],
+      "related_ids": ["psych:cognitive_theory", "psych:learning_theory"]
+    },
+    {
+      "id": "psych:personality_theory",
+      "term": "Personality Theory",
+      "type": "theory",
+      "definition": "Explanations of individual differences in behavior, emotion, and thought patterns",
+      "value": {
+        "psychoanalytic_theory": {
+          "freud": "unconscious mind, id/ego/superego, psychosexual stages",
+          "key_concepts": ["defense mechanisms", "Oedipus complex", "libido"]
+        },
+        "trait_theory": {
+          "big_five": ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"],
+          "cattell": "16 personality factors",
+          "eysenck": "three dimensions: extraversion, neuroticism, psychoticism"
+        },
+        "humanistic_theory": {
+          "maslow": "hierarchy of needs, self-actualization",
+          "rogers": "self-concept, unconditional positive regard",
+          "key_concepts": ["self-esteem", "self-actualization", "human potential"]
+        },
+        "behavioral_theory": {
+          "skinner": "personality shaped by learning and reinforcement",
+          "bandura": "social learning theory, reciprocal determinism"
+        },
+        "cognitive_theory": {
+          "beck": "cognitive distortions, negative thinking patterns",
+          "ellis": "rational emotive behavior therapy"
+        }
+      },
+      "examples": [
+        "Big Five: High extraversion = outgoing and energetic",
+        "Maslow's hierarchy: Physiological needs must be met before self-actualization",
+        "Defense mechanisms: Repression, denial, projection"
+      ],
+      "related_ids": ["psych:social_psychology"]
+    },
+    {
+      "id": "psych:developmental_stages",
+      "term": "Developmental Stages",
+      "type": "process",
+      "definition": "Stages of psychological development from infancy through adulthood",
+      "value": {
+        "piaget_cognitive_stages": {
+          "sensorimotor": "birth-2 years, object permanence",
+          "preoperational": "2-7 years, egocentric thinking, pretend play",
+          "concrete_operational": "7-11 years, logical thinking about concrete events",
+          "formal_operational": "12+ years, abstract thinking, hypothetical reasoning"
+        },
+        "freud_psychosexual_stages": {
+          "oral": "birth-1 year, mouth as pleasure center",
+          "anal": "1-3 years, toilet training",
+          "phallic": "3-6 years, Oedipus/Electra complex",
+          "latency": "6-12 years, sexual impulses repressed",
+          "genital": "12+ years, mature sexual relationships"
+        },
+        "erikson_psychosocial_stages": {
+          "trust_vs_mistrust": "birth-1 year",
+          "autonomy_vs_shame": "1-3 years",
+          "initiative_vs_guilt": "3-6 years",
+          "industry_vs_inferiority": "6-12 years",
+          "identity_vs_role_confusion": "12-18 years",
+          "intimacy_vs_isolation": "young adulthood",
+          "generativity_vs_stagnation": "middle adulthood",
+          "integrity_vs_despair": "late adulthood"
+        }
+      },
+      "examples": [
+        "Piaget: Child in preoperational stage can't understand conservation",
+        "Erikson: Teenager struggling with identity vs. role confusion",
+        "Freud: Adult personality shaped by early childhood experiences"
+      ],
+      "related_ids": ["psych:cognitive_theory", "psych:personality_theory"]
+    },
+    {
+      "id": "psych:social_psychology",
+      "term": "Social Psychology",
+      "type": "field",
+      "definition": "Study of how individuals think, feel, and behave in social contexts",
+      "value": {
+        "attitudes_and_persuasion": {
+          "cognitive_dissonance": "inconsistency between beliefs and actions",
+          "central_route": "careful consideration of arguments",
+          "peripheral_route": "superficial cues like attractiveness"
+        },
+        "group_dynamics": {
+          "conformity": "adjusting behavior to match group norms",
+          "obedience": "following authority figures",
+          "group_think": "poor decision-making in cohesive groups",
+          "social_loafing": "reduced effort in group settings"
+        },
+        "interpersonal_relations": {
+          "attraction": "physical attractiveness, similarity, proximity",
+          "love": "passionate, companionate, consummate",
+          "prejudice": "preconceived opinions, stereotypes, discrimination"
+        },
+        "self_and_identity": {
+          "self-esteem": "overall sense of self-worth",
+          "self-serving_bias": "attributing success to internal factors, failure to external",
+          "social_comparison": "evaluating oneself by comparing to others",
+          "self-presentation": "managing how others perceive us"
+        },
+        "key_experiments": {
+          "milgram_obedience": "65% obeyed authority to administer shocks",
+          "asch_conformity": "75% conformed to obviously wrong answers",
+          "stanford_prison": "guards and prisoners adopted roles quickly"
+        }
+      },
+      "examples": [
+        "Conformity: Asch experiment showed people deny own senses to fit in",
+        "Obedience: Milgram showed people obey authority even when harmful",
+        "Prejudice: Stereotypes lead to discrimination against out-groups"
+      ],
+      "related_ids": ["psych:personality_theory", "psych:cognitive_theory"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:psych_reference_2025"
+  }
+}

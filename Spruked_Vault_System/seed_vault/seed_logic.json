@@ -1,0 +1,162 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Logic",
+  "vault_id": "seed_logic",
+  "version": "1.1.0",
+  "category": "Logic",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-10-23T12:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental principles of logic including propositional logic, predicate logic, logical operators, and reasoning methods",
+  "author": "Bryan A. Spruk",
+  "immutable": true,
+  "index": {
+    "conjunction": "logic:gate_and",
+    "disjunction": "logic:gate_or",
+    "negation": "logic:gate_not",
+    "modus_ponens": "logic:modus_ponens",
+    "syllogism": "logic:syllogism"
+  },
+  "entries": [
+    {
+      "id": "logic:gate_and",
+      "term": "Logical Conjunction (AND)",
+      "type": "operator",
+      "symbol": "∧",
+      "definition": "A logical operator that produces a true result only when both operands are true.",
+      "value": {
+        "truth_table": [
+          {"inputs": [false, false], "output": false},
+          {"inputs": [false, true], "output": false},
+          {"inputs": [true, false], "output": false},
+          {"inputs": [true, true], "output": true}
+        ],
+        "properties": ["commutative", "associative", "idempotent"]
+      },
+      "source_id": "WD:Q190076",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Logical_conjunction"],
+      "examples": ["P ∧ Q: 'It is raining AND it is cold'", "A ∩ B: Set intersection"],
+      "related_ids": ["logic:gate_or", "logic:gate_not", "logic:truth_table"]
+    },
+    {
+      "id": "logic:gate_or",
+      "term": "Logical Disjunction (OR)",
+      "type": "operator",
+      "symbol": "∨",
+      "definition": "A logical operator that produces a true result when at least one operand is true.",
+      "value": {
+        "truth_table": [
+          {"inputs": [false, false], "output": false},
+          {"inputs": [false, true], "output": true},
+          {"inputs": [true, false], "output": true},
+          {"inputs": [true, true], "output": true}
+        ],
+        "properties": ["commutative", "associative", "inclusive"]
+      },
+      "source_id": "WD:Q191130",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Logical_disjunction"],
+      "examples": ["P ∨ Q: 'It is raining OR it is cold'", "A ∪ B: Set union"],
+      "related_ids": ["logic:gate_and", "logic:gate_not"]
+    },
+    {
+      "id": "logic:gate_not",
+      "term": "Logical Negation (NOT)",
+      "type": "operator",
+      "symbol": "¬",
+      "definition": "A logical operator that reverses the truth value of its operand.",
+      "value": {
+        "truth_table": [
+          {"input": false, "output": true},
+          {"input": true, "output": false}
+        ],
+        "properties": ["involutive", "unary_operator"]
+      },
+      "source_id": "WD:Q190078",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Negation"],
+      "examples": ["¬P: 'NOT it is raining'", "∼P: Alternative notation"],
+      "related_ids": ["logic:gate_and", "logic:gate_or"]
+    },
+    {
+      "id": "logic:modus_ponens",
+      "term": "Modus Ponens",
+      "type": "inference_rule",
+      "definition": "If P implies Q, and P is true, then Q must be true. The fundamental rule of deductive reasoning.",
+      "value": {
+        "form": "P → Q, P ⊨ Q",
+        "premises": ["If P then Q", "P is true"],
+        "conclusion": "Q is true",
+        "certainty": 1.0
+      },
+      "source_id": "WD:Q190888",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Modus_ponens"],
+      "examples": ["If it rains, the ground is wet. It is raining. Therefore, the ground is wet."],
+      "related_ids": ["logic:modus_tollens", "logic:deductive_reasoning"]
+    },
+    {
+      "id": "logic:syllogism",
+      "term": "Syllogism",
+      "type": "argument_form",
+      "definition": "A form of reasoning in which a conclusion is drawn from two premises that share a common term.",
+      "value": {
+        "standard_form": {
+          "major_premise": "All M are P",
+          "minor_premise": "All S are M",
+          "conclusion": "All S are P"
+        },
+        "types": ["universal", "particular", "categorical"]
+      },
+      "source_id": "WD:Q219703",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Syllogism"],
+      "examples": ["All men are mortal. Socrates is a man. Therefore, Socrates is mortal."],
+      "related_ids": ["logic:modus_ponens", "logic:aristotelian_logic"]
+    }
+  ],
+  "learning_principles": [
+    "Logic provides the foundation for valid reasoning.",
+    "Truth values follow strict rules of combination.",
+    "Valid arguments preserve truth from premises to conclusions.",
+    "Logical operators have well-defined truth tables.",
+    "Different logics serve different purposes (classical, modal, fuzzy)."
+  ],
+  "parameters": {
+    "logic_type": "classical_propositional",
+    "valuation": "two_valued",
+    "operators": ["and", "or", "not", "implies", "iff"],
+    "inference_rules": ["modus_ponens", "modus_tollens", "syllogism"]
+  },
+  "operations": {
+    "truth_table_evaluation": {
+      "description": "Evaluate logical expressions using truth tables",
+      "input": {"expression": "string", "variables": "array"},
+      "output": {"truth_table": "array", "tautology": "boolean"}
+    },
+    "validity_check": {
+      "description": "Determine if an argument is logically valid",
+      "input": {"premises": "array", "conclusion": "string"},
+      "output": {"valid": "boolean", "counterexample": "object"}
+    },
+    "logical_inference": {
+      "description": "Apply inference rules to derive conclusions",
+      "input": {"premises": "array", "rules": "array"},
+      "output": {"conclusions": "array", "certainty": "float"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["propositional_parser", "predicate_logic_engine", "automated_theorem_prover"],
+    "input_sources": ["logical_expressions", "argument_forms", "axioms"],
+    "output_destinations": ["reasoning_engine", "validation_system", "proof_assistant"]
+  },
+  "performance_metrics": {
+    "expression_complexity": "unlimited",
+    "inference_speed": "fast",
+    "correctness": "perfect",
+    "expressiveness": "high"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7"
+  }
+}

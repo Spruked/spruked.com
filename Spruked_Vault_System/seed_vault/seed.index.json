@@ -1,0 +1,33 @@
+[
+  {
+    "name": "SeedVault-Physics-Constants-1.1.0.json",
+    "hash": "sha256:3d528fd39d644f18b018e65aa5b37a0ce1c0a593c3b642ccf2e45cffe7e82c3c",
+    "entries": 10,
+    "size": 3120
+  },
+  {
+    "name": "SeedVault-Units-Measurements-1.1.0.json",
+    "hash": "sha256:1f1b80b0a41ccffc01093c275822d94040f5f82bf8b283af0de70435d7f8f321",
+    "entries": 10,
+    "size": 2460
+  }
+  ,
+  {
+    "name": "seed_deductive_reasoner.json",
+    "hash": "sha256:512e0f214a5f3b6cee25d15f7ab9d7682aa5e07a3cf0d809268959bc4bc3f6ef",
+    "entries": 2,
+    "size": 3200
+  },
+  {
+    "name": "seed_inductive_reasoner.json",
+    "hash": "sha256:d42ba0e93cb7bf0196a1986eb0d2963027ed82201c2c7b0087ba7431a75d59fc",
+    "entries": 2,
+    "size": 3400
+  },
+  {
+    "name": "seed_ituitive_reasoner.json",
+    "hash": "sha256:5ee8f01e51f0e0c63d28a0ff19a7ff81ddbb2f771958368e9b9b1a5ca092d66d",
+    "entries": 2,
+    "size": 3300
+  }
+]

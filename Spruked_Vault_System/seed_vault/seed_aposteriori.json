@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Aposteriori",
+  "vault_id": "seed_aposteriori",
+  "version": "1.1.0",
+  "category": "Epistemology",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-08-22T17:46:00-05:00",
+  "compatibility": "backward-compatible",
+  "description": "Knowledge and reasoning derived from empirical observation and experience, forming the foundation of inductive and scientific methods",
+  "author": "Bryan A. Spruk",
+  "reasoning_type": "a_posteriori",
+  "immutable": true,
+  "index": {
+    "a_posteriori_reasoning": "epi:a_posteriori_reasoning"
+  },
+  "entries": [
+    {
+      "id": "epi:a_posteriori_reasoning",
+      "term": "A Posteriori Reasoning",
+      "type": "concept",
+      "definition": "Knowledge or justification dependent on experience or empirical observation. Truths established through sensory data, experimentation, and observation of the world.",
+      "lineage": "SEED-EPI-002",
+      "origin": "Aristotle, refined by British Empiricists (Locke, Hume, Mill)",
+      "period": "Classical Philosophy to Modern Science",
+      "source": "Empirical Epistemology",
+      "source_id": "WD:Q208551",
+      "reference_urls": [
+        "https://en.wikipedia.org/wiki/A_posteriori",
+        "https://plato.stanford.edu/entries/apriori/"
+      ],
+      "applications": [
+        "Scientific Method",
+        "Inductive Reasoning",
+        "Scenario Evaluation",
+        "Outcome-Based Ethics",
+        "Telemetry Feedback",
+        "Empirical Calibration",
+        "Data-Driven Decision Making"
+      ],
+      "examples": [
+        "Observing that 'all observed ravens are black' leads to the generalization 'all ravens are black'",
+        "Testing hypotheses through controlled experiments",
+        "Learning language through immersion and practice"
+      ],
+      "related_ids": [
+        "epi:a_priori_reasoning",
+        "logic:inductive_reasoning",
+        "logic:empirical_method"
+      ],
+      "reflex_tier": "Tier 2 — Empirical Logic",
+      "certainty_level": "probabilistic",
+      "validation_methods": ["empirical_testing", "statistical_analysis", "peer_review"]
+    }
+  ],
+  "learning_principles": [
+    "Knowledge is built from sensory experience and observation",
+    "Truth claims require empirical verification",
+    "Induction from particular cases to general principles",
+    "Certainty is probabilistic, not absolute",
+    "Experience shapes and constrains possible knowledge"
+  ],
+  "parameters": {
+    "certainty_threshold": 0.85,
+    "inference_method": "inductive",
+    "evidence_requirement": "empirical",
+    "contradiction_handling": "evidence_based_revision"
+  },
+  "operations": {
+    "evaluate_evidence": {
+      "description": "Assess empirical evidence for truth claims",
+      "input": {"observations": "array", "hypothesis": "string"},
+      "output": {"support_level": "float", "confidence": "float"}
+    },
+    "inductive_generalization": {
+      "description": "Form general conclusions from specific observations",
+      "input": {"instances": "array", "property": "string"},
+      "output": {"generalization": "string", "certainty": "float"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["inductive_reasoner", "empirical_validator", "data_processor"],
+    "input_sources": ["sensory_data", "experimental_results", "observational_records"],
+    "output_destinations": ["hypothesis_generator", "theory_builder", "decision_engine"]
+  },
+  "performance_metrics": {
+    "inference_speed": "variable",
+    "certainty_range": "0.1-0.95",
+    "evidence_capacity": "unlimited",
+    "revision_frequency": "continuous"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:4f8c9e2a1b5d7f3e6c8a9b2d4e5f6a7c8b9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+  }
+}

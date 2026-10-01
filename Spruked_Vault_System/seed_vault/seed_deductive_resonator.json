@@ -1,0 +1,160 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Deductive_Resonator",
+  "vault_id": "seed_deductive_resonator",
+  "version": "1.1.0",
+  "category": "Logic",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-10-18T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fast, logical, rule-based reasoning from general principles to specific conclusions with deterministic certainty",
+  "author": "Bryan A. Spruk",
+  "reasoning_type": "deductive",
+  "immutable": true,
+  "index": {
+    "deductive_reasoning": "logic:deductive_reasoning",
+    "modus_ponens": "logic:modus_ponens",
+    "modus_tollens": "logic:modus_tollens",
+    "syllogism": "logic:syllogism"
+  },
+  "entries": [
+    {
+      "id": "logic:deductive_reasoning",
+      "term": "Deductive Reasoning",
+      "type": "method",
+      "definition": "Reasoning from general principles or premises to specific conclusions. Truth-preserving inference where conclusions necessarily follow from premises.",
+      "source_id": "WD:Q484277",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Deductive_reasoning"],
+      "examples": ["All men are mortal. Socrates is a man. Therefore, Socrates is mortal."],
+      "related_ids": ["logic:inductive_reasoning", "logic:modus_ponens", "logic:syllogism"]
+    },
+    {
+      "id": "logic:modus_ponens",
+      "term": "Modus Ponens",
+      "type": "inference_rule",
+      "definition": "If P implies Q, and P is true, then Q must be true. The fundamental rule of conditional reasoning.",
+      "value": {
+        "form": "P → Q, P ⊨ Q",
+        "premises": ["If P then Q", "P is true"],
+        "conclusion": "Q is true",
+        "certainty": 1.0
+      },
+      "source_id": "WD:Q190888",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Modus_ponens"],
+      "examples": ["If it rains, the ground gets wet. It is raining. Therefore, the ground is wet."],
+      "related_ids": ["logic:modus_tollens", "logic:conditional_logic"]
+    },
+    {
+      "id": "logic:modus_tollens",
+      "term": "Modus Tollens",
+      "type": "inference_rule",
+      "definition": "If P implies Q, and Q is false, then P must be false. The rule of denying the consequent.",
+      "value": {
+        "form": "P → Q, ¬Q ⊨ ¬P",
+        "premises": ["If P then Q", "Q is false"],
+        "conclusion": "P is false",
+        "certainty": 1.0
+      },
+      "source_id": "WD:Q191130",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Modus_tollens"],
+      "examples": ["If it rains, the ground gets wet. The ground is dry. Therefore, it is not raining."],
+      "related_ids": ["logic:modus_ponens", "logic:conditional_logic"]
+    },
+    {
+      "id": "logic:syllogism",
+      "term": "Syllogism",
+      "type": "argument_form",
+      "definition": "A form of deductive reasoning consisting of two premises and a conclusion, where the premises share a common middle term.",
+      "value": {
+        "standard_form": {
+          "major_premise": "All M are P",
+          "minor_premise": "All S are M",
+          "conclusion": "All S are P"
+        },
+        "valid_moods": ["AAA", "EAE", "AII", "EIO"]
+      },
+      "source_id": "WD:Q219703",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Syllogism"],
+      "examples": ["All mammals are animals. All dogs are mammals. Therefore, all dogs are animals."],
+      "related_ids": ["logic:categorical_logic", "logic:aristotelian_logic"]
+    }
+  ],
+  "learning_principles": [
+    "Conclusions necessarily follow from premises in valid arguments.",
+    "Deductive reasoning preserves truth from general to specific.",
+    "Invalid arguments can lead to false conclusions even from true premises.",
+    "Logical form determines validity, not content.",
+    "Certainty is absolute in valid deductive arguments."
+  ],
+  "parameters": {
+    "certainty_threshold": 0.95,
+    "inference_speed": "fast",
+    "rule_priority": ["logical_necessity", "empirical_support", "temporal_relevance"],
+    "contradiction_handling": "immediate_escalation"
+  },
+  "logic_framework": {
+    "method": "syllogistic_inference",
+    "approach": "top_down",
+    "output_type": "logical_conclusions",
+    "characteristics": ["deterministic", "rule_based", "certainty_focused", "fast_execution"]
+  },
+  "rule_sets": {
+    "logical_necessity": [
+      {
+        "premise": ["if A then B", "A is true"],
+        "conclusion": "B is true",
+        "certainty": 1.0,
+        "type": "modus_ponens"
+      },
+      {
+        "premise": ["if A then B", "B is false"],
+        "conclusion": "A is false",
+        "certainty": 1.0,
+        "type": "modus_tollens"
+      }
+    ],
+    "empirical_rules": [
+      {
+        "premise": ["all observed X have property Y", "new instance of X"],
+        "conclusion": "new X has property Y",
+        "certainty": 0.9,
+        "type": "universal_instantiation"
+      }
+    ]
+  },
+  "operations": {
+    "apply_rules": {
+      "description": "Apply deductive rules to premises",
+      "input": {"premises": "array", "context": "object"},
+      "output": {"conclusions": "array", "certainty": "float", "rule_used": "string"}
+    },
+    "check_validity": {
+      "description": "Validate logical structure and argument form",
+      "input": {"argument": "object"},
+      "output": {"valid": "boolean", "fallacy_detected": "string", "certainty": "float"}
+    },
+    "syllogistic_inference": {
+      "description": "Perform syllogistic reasoning on categorical propositions",
+      "input": {"major_premise": "string", "minor_premise": "string"},
+      "output": {"conclusion": "string", "valid": "boolean", "mood": "string"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["syllogism_engine", "propositional_calculus", "first_order_logic"],
+    "input_sources": ["established_premises", "axiomatic_truths", "rule_definitions"],
+    "output_destinations": ["conclusion_engine", "validation_system", "proof_verifier"]
+  },
+  "performance_metrics": {
+    "inference_speed": "fast",
+    "certainty_target": 0.95,
+    "rule_capacity": 500,
+    "contradiction_resolution": "immediate"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:512e0f214a5f3b6cee25d15f7ab9d7682aa5e07a3cf0d809268959bc4bc3f6ef"
+  }
+}

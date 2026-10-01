@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Physics Constants",
+  "category": "Physics",
+  "version": "1.1.0",  // Required, semantic versioning
+  "license": "CC0-1.0",  // Required
+  "generated": "2023-10-27T00:00:00Z",  // Required, ISO 8601
+  "compatibility": "backward-compatible",  // Required, signals parsing safety
+  "index": {  // Optional, for fast lookups
+    "speed_of_light_vacuum": "physics:speed_of_light_vacuum",
+    "planck_constant": "physics:planck_constant"
+  },
+  "entries": [  // Required
+    {
+      "id": "physics:speed_of_light_vacuum",  // Required, globally unique
+      "term": "Speed of Light in Vacuum",  // Required
+      "type": "constant",  // Required, e.g., "constant", "entity", "relation"
+      "symbol": "c",  // Optional
+      "value": 299792458,  // Required, strict typing (here: number)
+      "units": "m/s",  // Required for measurements, using SI or standard notation
+      "source_id": "NIST:c",  // Required, e.g., "WD:Q2111" for Wikidata
+      "reference_urls": [  // Optional
+        "https://physics.nist.gov/cgi-bin/cuu/Value?c"
+      ],
+      "related_ids": ["math:relativity_equation"]  // Optional, format: [vault:entry]
+    },
+    {
+      "id": "physics:planck_constant",
+      "term": "Planck Constant",
+      "type": "constant",
+      "symbol": "h",
+      "value": 6.62607015e-34,
+      "units": "J*s",
+      "source_id": "NIST:h",
+      "reference_urls": ["https://physics.nist.gov/cgi-bin/cuu/Value?h"],
+      "related_ids": ["physics:quantum_mechanics"]
+    }
+  ],
+  "access_control": {
+    "mutable": false,  // Required
+    "curator": "Bryan A. Spruk",  // Required
+    "hash": "sha256:a1b2c3..."  // Required, SHA256 of entries
+  }
+}

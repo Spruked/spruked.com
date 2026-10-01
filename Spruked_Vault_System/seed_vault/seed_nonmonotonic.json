@@ -1,0 +1,36 @@
+{
+  "vault_name": "SeedVault_Nonmonotonic",
+  "author": "CALI",
+  "source": "System Heuristics and Crossover Logic",
+  "core_concepts": [
+    {
+      "term": "Defaults",
+      "definition": "In the absence of a contradictory exception, a belief holds true or an action is executed."
+    },
+    {
+      "term": "Exceptions",
+      "definition": "A condition that overrides a default assumption or action."
+    },
+    {
+      "term": "Justification",
+      "definition": "A new piece of information that invalidates a prior belief."
+    },
+    {
+      "term": "Reiteration",
+      "definition": "The act of recursively re-evaluating a set of beliefs and actions in the presence of new data or conflict."
+    },
+    {
+      "term": "Conflict Resolution",
+      "definition": "The process of identifying and resolving inconsistencies between a default and an exception."
+    }
+  ],
+  "learning_principles": [
+    "A working assumption is better than no assumption.",
+    "Be willing to discard old conclusions in favor of new evidence.",
+    "A system must be able to justify why a default was overridden."
+  ],
+  "access_control": {
+    "mutable": false,
+    "authorized_editor": "Bryan A. Spruk"
+  }
+}

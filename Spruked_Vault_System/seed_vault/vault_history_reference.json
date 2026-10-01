@@ -1,0 +1,245 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "History Reference Vault",
+  "vault_id": "vault_history_reference",
+  "version": "1.1.0",
+  "category": "History",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental historical concepts including major events, people, timelines, and civilizations",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "ancient_civilizations": "hist:ancient_civilizations",
+    "world_wars": "hist:world_wars",
+    "industrial_revolution": "hist:industrial_revolution",
+    "civil_rights_movement": "hist:civil_rights_movement",
+    "scientific_revolution": "hist:scientific_revolution",
+    "historical_methodology": "hist:historical_methodology"
+  },
+  "entries": [
+    {
+      "id": "hist:ancient_civilizations",
+      "term": "Ancient Civilizations",
+      "type": "knowledge",
+      "definition": "Major early civilizations that shaped human development and culture",
+      "value": {
+        "mesopotamia": {
+          "location": "Middle East (modern Iraq)",
+          "time_period": "3500-500 BCE",
+          "achievements": ["writing (cuneiform)", "wheel", "code of laws (Hammurabi)", "ziggurats"],
+          "key_figures": ["Sargon", "Hammurabi", "Gilgamesh"]
+        },
+        "ancient_egypt": {
+          "location": "Northeast Africa",
+          "time_period": "3100-30 BCE",
+          "achievements": ["pyramids", "hieroglyphics", "mummification", "calendar"],
+          "key_figures": ["Khufu", "Cleopatra", "Akhenaten"]
+        },
+        "ancient_greece": {
+          "location": "Mediterranean",
+          "time_period": "800-146 BCE",
+          "achievements": ["democracy", "philosophy", "Olympics", "theater"],
+          "key_figures": ["Socrates", "Plato", "Aristotle", "Alexander the Great"]
+        },
+        "ancient_rome": {
+          "location": "Mediterranean, Europe",
+          "time_period": "753 BCE-476 CE",
+          "achievements": ["republican government", "law codes", "aqueducts", "roads"],
+          "key_figures": ["Julius Caesar", "Augustus", "Constantine"]
+        },
+        "ancient_china": {
+          "location": "East Asia",
+          "time_period": "2070 BCE-1912 CE",
+          "achievements": ["Great Wall", "silk road", "paper", "gunpowder", "compass"],
+          "key_figures": ["Confucius", "Laozi", "Qin Shi Huang"]
+        },
+        "maya_civilization": {
+          "location": "Central America",
+          "time_period": "2000 BCE-900 CE",
+          "achievements": ["astronomy", "mathematics", "hieroglyphic writing", "pyramids"],
+          "key_figures": ["Pacal the Great"]
+        }
+      },
+      "examples": [
+        "Mesopotamia: 'Cradle of Civilization', invented writing",
+        "Egypt: Built pyramids as tombs for pharaohs",
+        "Greece: Birthplace of democracy and philosophy",
+        "Rome: Created extensive road networks and legal systems"
+      ],
+      "related_ids": ["hist:scientific_revolution"]
+    },
+    {
+      "id": "hist:world_wars",
+      "term": "World Wars",
+      "type": "event",
+      "definition": "Major global conflicts of the 20th century that reshaped the world",
+      "value": {
+        "world_war_i": {
+          "dates": "1914-1918",
+          "causes": ["nationalism", "imperialism", "militarism", "alliance system"],
+          "key_events": ["assassination of Archduke Franz Ferdinand", "trench warfare", "Russian Revolution"],
+          "consequences": ["Treaty of Versailles", "League of Nations", "end of empires"],
+          "casualties": "16 million deaths"
+        },
+        "world_war_ii": {
+          "dates": "1939-1945",
+          "causes": ["Treaty of Versailles", "rise of fascism", "economic depression"],
+          "key_events": ["Holocaust", "D-Day invasion", "atomic bombs", "Yalta Conference"],
+          "consequences": ["United Nations", "Cold War", "decolonization"],
+          "casualties": "70-85 million deaths"
+        },
+        "key_figures": {
+          "wwi": ["Woodrow Wilson", "Kaiser Wilhelm", "Clemenceau"],
+          "wwii": ["Winston Churchill", "Franklin Roosevelt", "Adolf Hitler", "Joseph Stalin"]
+        }
+      },
+      "examples": [
+        "WWI: First industrialized war, introduced tanks and chemical weapons",
+        "WWII: Deadliest conflict in history, led to nuclear age",
+        "Both wars involved most countries of the world"
+      ],
+      "related_ids": ["hist:industrial_revolution"]
+    },
+    {
+      "id": "hist:industrial_revolution",
+      "term": "Industrial Revolution",
+      "type": "period",
+      "definition": "Period of rapid industrialization and technological advancement starting in Britain",
+      "value": {
+        "time_period": "1760-1840 (First Industrial Revolution)",
+        "location": "Started in Britain, spread to Europe and North America",
+        "key_inventions": {
+          "steam_engine": "James Watt, powered factories and trains",
+          "spinning_jenny": "James Hargreaves, revolutionized textile production",
+          "power_loom": "Edmund Cartwright, automated weaving",
+          "railroads": "Connected markets and resources"
+        },
+        "social_impacts": {
+          "urbanization": "People moved from farms to cities",
+          "working_conditions": "Long hours, child labor, dangerous factories",
+          "class_structure": "Rise of industrial middle class",
+          "labor_unions": "Workers organized for better conditions"
+        },
+        "economic_impacts": {
+          "mass_production": "Goods became cheaper and more available",
+          "global_trade": "Increased international commerce",
+          "capitalism": "Rise of industrial capitalism"
+        }
+      },
+      "examples": [
+        "Textile mills: Changed from hand production to machine production",
+        "Coal mining: Fueled steam engines and heated homes",
+        "Railroads: Revolutionized transportation and commerce"
+      ],
+      "related_ids": ["hist:world_wars"]
+    },
+    {
+      "id": "hist:civil_rights_movement",
+      "term": "Civil Rights Movement",
+      "type": "movement",
+      "definition": "Struggle for racial equality and justice in the United States",
+      "value": {
+        "time_period": "1950s-1960s",
+        "key_figures": {
+          "martin_luther_king_jr": "Leader of nonviolent resistance, 'I Have a Dream' speech",
+          "rosa_parks": "Refused to give up bus seat, sparked Montgomery Bus Boycott",
+          "malcolm_x": "Advocated for Black nationalism and self-defense",
+          "john_lewis": "Student Nonviolent Coordinating Committee leader"
+        },
+        "key_events": {
+          "montgomery_bus_boycott": "1955-1956, led to desegregation of buses",
+          "march_on_washington": "1963, 250,000 people, MLK's famous speech",
+          "selma_to_montgomery_marches": "1965, led to Voting Rights Act",
+          "freedom_rides": "1961, challenged segregation on interstate buses"
+        },
+        "legislation": {
+          "civil_rights_act_1964": "Outlawed discrimination based on race, color, religion, sex, or national origin",
+          "voting_rights_act_1965": "Prohibited racial discrimination in voting",
+          "fair_housing_act_1968": "Outlawed discrimination in housing"
+        },
+        "methods": ["nonviolent protest", "civil disobedience", "legal challenges", "grassroots organizing"]
+      },
+      "examples": [
+        "Sit-ins: Students sat at segregated lunch counters",
+        "Freedom Riders: Challenged segregation on buses",
+        "Bloody Sunday: Violent attack on marchers in Selma"
+      ],
+      "related_ids": ["hist:world_wars"]
+    },
+    {
+      "id": "hist:scientific_revolution",
+      "term": "Scientific Revolution",
+      "type": "period",
+      "definition": "Period of transformative change in scientific thought and methodology",
+      "value": {
+        "time_period": "1543-1687",
+        "key_figures": {
+          "copernicus": "Heliocentric theory, Earth orbits Sun",
+          "galileo": "Telescope, experimental method, support for heliocentrism",
+          "kepler": "Laws of planetary motion",
+          "newton": "Laws of motion and universal gravitation",
+          "descartes": "Analytical geometry, scientific method"
+        },
+        "key_developments": {
+          "heliocentric_model": "Sun at center of solar system",
+          "experimental_method": "Scientific method with observation and experimentation",
+          "mathematical_modeling": "Using mathematics to describe natural phenomena",
+          "inductive_reasoning": "Drawing general conclusions from specific observations"
+        },
+        "impacts": {
+          "on_society": "Challenged religious authority, promoted secular knowledge",
+          "on_technology": "Led to technological innovations",
+          "on_philosophy": "Influenced Enlightenment thinking",
+          "on_education": "Emphasis on empirical evidence and reason"
+        }
+      },
+      "examples": [
+        "Copernicus: Published heliocentric theory in 1543",
+        "Galileo: Used telescope to observe moons of Jupiter",
+        "Newton: Published Principia Mathematica in 1687"
+      ],
+      "related_ids": ["hist:ancient_civilizations"]
+    },
+    {
+      "id": "hist:historical_methodology",
+      "term": "Historical Methodology",
+      "type": "method",
+      "definition": "Methods and principles for studying and interpreting historical events",
+      "value": {
+        "primary_sources": "Original documents, artifacts, eyewitness accounts",
+        "secondary_sources": "Interpretations and analyses of primary sources",
+        "source_criticism": {
+          "authenticity": "Is the source genuine?",
+          "credibility": "Is the source reliable?",
+          "representativeness": "Does it represent typical views?"
+        },
+        "historical_interpretation": {
+          "context": "Understanding events in their historical context",
+          "causation": "Identifying causes and effects",
+          "continuity_change": "What stayed the same vs. what changed",
+          "significance": "Why events matter"
+        },
+        "chronological_frameworks": {
+          "timelines": "Visual representation of events over time",
+          "periodization": "Dividing history into meaningful periods",
+          "dating_systems": "BCE/CE, BC/AD, etc."
+        }
+      },
+      "examples": [
+        "Using diaries to understand daily life in the past",
+        "Cross-referencing multiple sources for accuracy",
+        "Analyzing political cartoons for social attitudes",
+        "Creating timelines to show cause-and-effect relationships"
+      ],
+      "related_ids": ["hist:ancient_civilizations", "hist:world_wars"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:hist_reference_2025"
+  }
+}

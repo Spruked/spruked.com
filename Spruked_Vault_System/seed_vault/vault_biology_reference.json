@@ -1,0 +1,184 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Biology Reference Vault",
+  "vault_id": "vault_biology_reference",
+  "version": "1.1.0",
+  "category": "Biology",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental biological concepts including cells, DNA, animal kingdoms, and evolution for scientific reasoning",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "cell_structure": "bio:cell_structure",
+    "dna_replication": "bio:dna_replication",
+    "animal_kingdoms": "bio:animal_kingdoms",
+    "evolution_theory": "bio:evolution_theory",
+    "photosynthesis": "bio:photosynthesis",
+    "cellular_respiration": "bio:cellular_respiration"
+  },
+  "entries": [
+    {
+      "id": "bio:cell_structure",
+      "term": "Cell Structure",
+      "type": "knowledge",
+      "definition": "Basic components and functions of eukaryotic and prokaryotic cells",
+      "value": {
+        "cell_types": ["eukaryotic", "prokaryotic"],
+        "organelles": {
+          "nucleus": "control center containing DNA",
+          "mitochondria": "energy production (ATP)",
+          "ribosomes": "protein synthesis",
+          "endoplasmic_reticulum": "protein and lipid processing",
+          "golgi_apparatus": "protein modification and transport",
+          "lysosomes": "waste digestion",
+          "vacuoles": "storage and waste management"
+        },
+        "cell_membrane": "selective barrier controlling substance movement"
+      },
+      "examples": [
+        "Plant cells have cell walls and chloroplasts",
+        "Bacterial cells are prokaryotic with no nucleus",
+        "Human cells contain specialized organelles for different functions"
+      ],
+      "related_ids": ["bio:dna_replication", "bio:cellular_respiration"]
+    },
+    {
+      "id": "bio:dna_replication",
+      "term": "DNA Replication",
+      "type": "process",
+      "definition": "The process by which DNA makes a copy of itself during cell division",
+      "value": {
+        "steps": [
+          "DNA helicase unwinds the double helix",
+          "DNA polymerase adds complementary nucleotides",
+          "Leading strand synthesized continuously",
+          "Lagging strand synthesized in fragments (Okazaki fragments)",
+          "DNA ligase joins fragments"
+        ],
+        "key_enzymes": ["helicase", "polymerase", "ligase", "primase"],
+        "base_pairing": {
+          "A": "T",
+          "T": "A",
+          "C": "G",
+          "G": "C"
+        }
+      },
+      "examples": [
+        "Semiconservative replication produces two DNA molecules",
+        "Each new molecule contains one original strand and one new strand",
+        "Errors in replication can lead to mutations"
+      ],
+      "related_ids": ["bio:cell_structure", "bio:evolution_theory"]
+    },
+    {
+      "id": "bio:animal_kingdoms",
+      "term": "Animal Kingdoms",
+      "type": "classification",
+      "definition": "Classification system for animal diversity and characteristics",
+      "value": {
+        "major_phyla": {
+          "porifera": "sponges - no true tissues",
+          "cnidaria": "jellyfish, corals - radial symmetry",
+          "platyhelminthes": "flatworms - bilateral symmetry",
+          "nematoda": "roundworms - cylindrical body",
+          "annelida": "segmented worms - earthworms",
+          "mollusca": "snails, clams, squid - muscular foot",
+          "arthropoda": "insects, spiders, crustaceans - jointed appendages",
+          "echinodermata": "starfish, sea urchins - five-fold symmetry",
+          "chordata": "vertebrates and related - notochord"
+        },
+        "classification_levels": ["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"],
+        "vertebrate_classes": ["fish", "amphibians", "reptiles", "birds", "mammals"]
+      },
+      "examples": [
+        "Humans belong to kingdom Animalia, phylum Chordata, class Mammalia",
+        "Insects (Arthropoda) make up over 80% of animal species",
+        "Vertebrates have a backbone, invertebrates do not"
+      ],
+      "related_ids": ["bio:evolution_theory"]
+    },
+    {
+      "id": "bio:evolution_theory",
+      "term": "Evolution Theory",
+      "type": "theory",
+      "definition": "Scientific theory explaining the diversity of life through natural selection and genetic change",
+      "value": {
+        "key_concepts": {
+          "natural_selection": "organisms better adapted to environment survive and reproduce",
+          "genetic_variation": "source of differences within populations",
+          "adaptation": "traits that improve survival and reproduction",
+          "speciation": "formation of new species"
+        },
+        "evidence_types": [
+          "fossil_record",
+          "comparative_anatomy",
+          "molecular biology",
+          "observed evolution in action"
+        ],
+        "mechanisms": ["mutation", "natural_selection", "genetic_drift", "gene_flow", "sexual_selection"]
+      },
+      "examples": [
+        "Peppered moths: dark forms became more common during industrial revolution",
+        "Antibiotic resistance: bacteria evolve resistance to antibiotics",
+        "Galapagos finches: beak shapes adapted to different food sources"
+      ],
+      "related_ids": ["bio:dna_replication", "bio:animal_kingdoms"]
+    },
+    {
+      "id": "bio:photosynthesis",
+      "term": "Photosynthesis",
+      "type": "process",
+      "definition": "Process by which plants and other organisms convert light energy into chemical energy",
+      "value": {
+        "equation": "6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂",
+        "stages": {
+          "light_dependent": "produces ATP and NADPH using light energy",
+          "light_independent": "Calvin cycle uses ATP and NADPH to make glucose"
+        },
+        "key_components": {
+          "chlorophyll": "pigment that absorbs light",
+          "thylakoids": "membranous structures in chloroplasts",
+          "stroma": "fluid in chloroplasts where Calvin cycle occurs"
+        }
+      },
+      "examples": [
+        "Plants use photosynthesis to produce food",
+        "Algae and some bacteria also perform photosynthesis",
+        "Oxygen released is essential for aerobic respiration"
+      ],
+      "related_ids": ["bio:cellular_respiration", "bio:cell_structure"]
+    },
+    {
+      "id": "bio:cellular_respiration",
+      "term": "Cellular Respiration",
+      "type": "process",
+      "definition": "Process by which cells break down glucose to produce ATP energy",
+      "value": {
+        "equation": "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP",
+        "stages": {
+          "glycolysis": "breaks glucose into pyruvate, produces 2 ATP",
+          "krebs_cycle": "produces NADH, FADH₂, and CO₂",
+          "electron_transport": "uses NADH/FADH₂ to produce ATP via oxidative phosphorylation"
+        },
+        "types": {
+          "aerobic": "requires oxygen, produces 36-38 ATP",
+          "anaerobic": "no oxygen needed, produces 2 ATP (fermentation)"
+        }
+      },
+      "examples": [
+        "Muscle cells use aerobic respiration during exercise",
+        "Yeast uses anaerobic respiration (fermentation) to make bread rise",
+        "Mitochondria are the primary site of cellular respiration"
+      ],
+      "related_ids": ["bio:photosynthesis", "bio:cell_structure"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:bio_reference_2025"
+  }
+}

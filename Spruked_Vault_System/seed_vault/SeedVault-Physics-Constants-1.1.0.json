@@ -1,0 +1,128 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "n": "Physics Constants",
+  "c": "Physics",
+  "v": "1.1.0",
+  "l": "CC0-1.0",
+  "g": "2025-10-21T11:37:00Z",
+  "k": "backward-compatible",
+  "idx": {
+    "speed_of_light": "physics:speed_of_light",
+    "planck_constant": "physics:planck_constant",
+    "gravitational_constant": "physics:gravitational_constant",
+    "boltzmann_constant": "physics:boltzmann_constant",
+    "avogadro_constant": "physics:avogadro_constant",
+    "elementary_charge": "physics:elementary_charge",
+    "fine_structure_constant": "physics:fine_structure_constant",
+    "vacuum_permittivity": "physics:vacuum_permittivity",
+    "vacuum_permeability": "physics:vacuum_permeability",
+    "bohr_radius": "physics:bohr_radius"
+  },
+  "e": [
+    {
+      "i": "physics:speed_of_light",
+      "t": "Speed of Light",
+      "y": "constant",
+      "s": "c",
+      "v": 299792458,
+      "u": "m/s",
+      "r": "NIST:c",
+      "l": ["math:relativity"]
+    },
+    {
+      "i": "physics:planck_constant",
+      "t": "Planck Constant",
+      "y": "constant",
+      "s": "h",
+      "v": 6.62607015e-34,
+      "u": "J*s",
+      "r": "NIST:h",
+      "l": ["physics:quantum_mechanics"]
+    },
+    {
+      "i": "physics:gravitational_constant",
+      "t": "Gravitational Constant",
+      "y": "constant",
+      "s": "G",
+      "v": 6.67430e-11,
+      "u": "m^3*kg^-1*s^-2",
+      "r": "NIST:G",
+      "l": ["physics:gravitation"]
+    },
+    {
+      "i": "physics:boltzmann_constant",
+      "t": "Boltzmann Constant",
+      "y": "constant",
+      "s": "k",
+      "v": 1.380649e-23,
+      "u": "J/K",
+      "r": "NIST:k",
+      "l": ["physics:thermodynamics"]
+    },
+    {
+      "i": "physics:avogadro_constant",
+      "t": "Avogadro Constant",
+      "y": "constant",
+      "s": "N_A",
+      "v": 6.02214076e23,
+      "u": "mol^-1",
+      "r": "NIST:N_A",
+      "l": ["chemistry:mole"]
+    },
+    {
+      "i": "physics:elementary_charge",
+      "t": "Elementary Charge",
+      "y": "constant",
+      "s": "e",
+      "v": 1.602176634e-19,
+      "u": "C",
+      "r": "NIST:e",
+      "l": ["physics:electromagnetism"]
+    },
+    {
+      "i": "physics:fine_structure_constant",
+      "t": "Fine Structure Constant",
+      "y": "constant",
+      "s": "α",
+      "v": 7.2973525693e-3,
+      "u": "",
+      "r": "NIST:alpha",
+      "l": ["physics:quantum_electrodynamics"]
+    },
+    {
+      "i": "physics:vacuum_permittivity",
+      "t": "Vacuum Permittivity",
+      "y": "constant",
+      "s": "ε_0",
+      "v": 8.8541878128e-12,
+      "u": "F/m",
+      "r": "NIST:eps_0",
+      "l": ["physics:electromagnetism"]
+    },
+    {
+      "i": "physics:vacuum_permeability",
+      "t": "Vacuum Permeability",
+      "y": "constant",
+      "s": "μ_0",
+      "v": 1.25663706212e-6,
+      "u": "N/A^2",
+      "r": "NIST:mu_0",
+      "l": ["physics:electromagnetism"]
+    },
+    {
+      "i": "physics:bohr_radius",
+      "t": "Bohr Radius",
+      "y": "constant",
+      "s": "a_0",
+      "v": 5.29177210903e-11,
+      "u": "m",
+      "r": "NIST:a_0",
+      "l": ["physics:quantum_mechanics"]
+    }
+  ],
+  "a": {
+    "m": false,
+    "c": "Bryan A. Spruk",
+  "h": "sha256:3d528fd39d644f18b018e65aa5b37a0ce1c0a593c3b642ccf2e45cffe7e82c3c"
+  }
+}

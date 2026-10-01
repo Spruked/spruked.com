@@ -1,0 +1,36 @@
+{
+  "vault_name": "SeedVault_HedonicReflex",
+  "core_concepts": [
+    {
+      "term": "Hedonic Reflex Layer",
+      "definition": "Evaluates moral decisions by calculating net utility (pleasure minus pain) using Bentham’s seven-factor Hedonic Calculus.",
+      "lineage": "ETH-009-HRL",
+      "origin": "Jeremy Bentham",
+      "period": "1748–1832",
+      "legacy_status": "Classical Utilitarian Anchor",
+      "tier": "Reflex Tier 3",
+      "audit_trail": {
+        "calculus_applied": true,
+        "utility_score_logged": true,
+        "purity_fecundity_ratio": "tracked",
+        "telemetry_guard_compliant": true
+      },
+      "integration": {
+        "scenario_bank_link": "SCEN-ETH-HRL",
+        "glyph_tag": "⚖️ Glyph:Hedona",
+        "reflex_trigger": {
+          "type": "Consequential Evaluation",
+          "thresholds": {
+            "extent": "≥ 3 individuals",
+            "intensity": "≥ 0.7",
+            "certainty": "≥ 0.6"
+          },
+          "escalation": "Founder Override if net utility < 0 and extent ≥ 10"
+        }
+      },
+      "founder_signature": "Bryan",
+      "status": "Active",
+      "timestamp": "2025-08-22T17:30:00-05:00"
+    }
+  ]
+}

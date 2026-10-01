@@ -1,0 +1,39 @@
+{
+  "vault_name": "SeedVault_Gladwell",
+  "author": "Malcolm Gladwell",
+  "source": "The Tipping Point (2000), Blink (2005), Outliers (2008)",
+  "core_concepts": [
+    {
+      "term": "The Tipping Point",
+      "definition": "Small changes can create a critical mass leading to large-scale shifts."
+    },
+    {
+      "term": "Thin Slicing",
+      "definition": "Making accurate judgments from limited information."
+    },
+    {
+      "term": "10,000-Hour Rule",
+      "definition": "Expertise in complex skills often requires around 10,000 hours of practice."
+    },
+    {
+      "term": "Connectors, Mavens, and Salesmen",
+      "definition": "Key social roles that help ideas spread."
+    },
+    {
+      "term": "Power of Context",
+      "definition": "Behavior is influenced strongly by environmental factors."
+    }
+  ],
+  "learning_principles": [
+    "Pay attention to small details — they can create big change.",
+    "Quick decisions can be accurate when based on experience.",
+    "Opportunities are shaped by culture, timing, and environment."
+  ],
+  "access_control": {
+    "mutable": false,
+    "authorized_editor": "Bryan A. Spruk"
+  },
+  "version": "1.0",
+  "created_at": "2023-10-01",
+  "updated_at": "2023-10-01"
+}

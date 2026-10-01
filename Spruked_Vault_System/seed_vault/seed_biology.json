@@ -1,0 +1,125 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Biology",
+  "vault_id": "seed_biology",
+  "version": "1.1.0",
+  "category": "Biology",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-10-23T12:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental biological concepts including taxonomy, evolution, cellular biology, and ecological principles",
+  "author": "Bryan A. Spruk",
+  "immutable": true,
+  "index": {
+    "homo_sapiens": "bio:taxonomy_homo_sapiens",
+    "evolution": "bio:evolution",
+    "cell_theory": "bio:cell_theory",
+    "photosynthesis": "bio:photosynthesis",
+    "dna": "bio:dna"
+  },
+  "entries": [
+    {
+      "id": "bio:taxonomy_homo_sapiens",
+      "term": "Homo sapiens",
+      "type": "entity",
+      "definition": "Modern humans, the only extant species in the genus Homo. Characterized by bipedalism, large brain size, and complex cognitive abilities.",
+      "value": {
+        "rank": "species",
+        "parent_taxon": "bio:taxonomy_homo",
+        "scientific_name": "Homo sapiens Linnaeus, 1758",
+        "common_name": "Human",
+        "characteristics": ["bipedal", "large_brain", "opposable_thumbs", "complex_language"]
+      },
+      "source_id": "WD:Q15978631",
+      "reference_urls": [
+        "https://www.wikidata.org/wiki/Q15978631",
+        "https://en.wikipedia.org/wiki/Human"
+      ],
+      "related_ids": ["bio:evolution", "bio:hominidae"]
+    },
+    {
+      "id": "bio:evolution",
+      "term": "Evolution",
+      "type": "process",
+      "definition": "The change in the heritable characteristics of biological populations over successive generations. Driven by natural selection, genetic drift, and other mechanisms.",
+      "source_id": "WD:Q1063",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Evolution"],
+      "examples": ["Peppered moth color change", "Antibiotic resistance in bacteria", "Galapagos finch beak variations"],
+      "related_ids": ["bio:natural_selection", "bio:genetics"]
+    },
+    {
+      "id": "bio:cell_theory",
+      "term": "Cell Theory",
+      "type": "theory",
+      "definition": "All living organisms are composed of one or more cells, the cell is the basic unit of life, and all cells arise from pre-existing cells.",
+      "source_id": "WD:Q217329",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Cell_theory"],
+      "examples": ["Plant cells", "Animal cells", "Bacterial cells"],
+      "related_ids": ["bio:cell_structure", "bio:mitosis"]
+    },
+    {
+      "id": "bio:photosynthesis",
+      "term": "Photosynthesis",
+      "type": "process",
+      "definition": "The process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll.",
+      "symbol": "6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂",
+      "source_id": "WD:Q21756",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Photosynthesis"],
+      "examples": ["Plants converting sunlight to glucose", "Algae in oceans producing oxygen"],
+      "related_ids": ["bio:chlorophyll", "bio:respiration"]
+    },
+    {
+      "id": "bio:dna",
+      "term": "DNA",
+      "type": "molecule",
+      "definition": "Deoxyribonucleic acid, a molecule that carries the genetic instructions for the development, functioning, growth and reproduction of all known organisms.",
+      "symbol": "DNA",
+      "source_id": "WD:Q7430",
+      "reference_urls": ["https://en.wikipedia.org/wiki/DNA"],
+      "examples": ["Double helix structure", "Genetic code", "Replication"],
+      "related_ids": ["bio:rna", "bio:genetics", "bio:protein_synthesis"]
+    }
+  ],
+  "learning_principles": [
+    "Life is organized hierarchically from molecules to ecosystems.",
+    "Evolution explains both unity and diversity of life.",
+    "Energy flows through biological systems.",
+    "Information is stored and transmitted via DNA.",
+    "Homeostasis maintains stable internal conditions."
+  ],
+  "parameters": {
+    "study_level": "fundamental",
+    "focus_areas": ["taxonomy", "evolution", "cellular_biology", "ecology"],
+    "methodology": "scientific_observation"
+  },
+  "operations": {
+    "taxonomic_classification": {
+      "description": "Classify organisms according to taxonomic hierarchy",
+      "input": {"organism": "object", "characteristics": "array"},
+      "output": {"classification": "object", "confidence": "float"}
+    },
+    "evolutionary_analysis": {
+      "description": "Analyze evolutionary relationships and mechanisms",
+      "input": {"species": "array", "traits": "object"},
+      "output": {"relationships": "object", "mechanisms": "array"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["taxonomy_processor", "evolution_simulator", "cellular_modeler"],
+    "input_sources": ["field_observations", "laboratory_data", "genetic_sequences"],
+    "output_destinations": ["classification_system", "evolution_tracker", "ecology_model"]
+  },
+  "performance_metrics": {
+    "classification_accuracy": "high",
+    "evolutionary_modeling": "advanced",
+    "data_integration": "comprehensive",
+    "predictive_power": "strong"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6"
+  }
+}

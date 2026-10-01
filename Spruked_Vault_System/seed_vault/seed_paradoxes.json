@@ -1,0 +1,127 @@
+{
+  "vault_id": "seed_paradoxes",
+  "logic_type": "paradoxical_reasoning",
+  "source": "Collected Paradoxes and Conundrums",
+  "era": "Ancient to Contemporary Logic Puzzles",
+  "core_principles": {
+    "liar_paradox": {
+      "statement": "This statement is false. (Epimenides Paradox)",
+      "explanation": "A self-referential statement that creates logical contradiction: if true, it's false; if false, it's true.",
+      "examples": [
+        "The classic: 'I am lying' - creates inescapable contradiction.",
+        "Legal: 'This contract is invalid' - self-invalidating clause.",
+        "AI: 'This AI always tells the truth except when it lies.'"
+      ],
+      "applications": ["Logic", "Self-reference", "Gödel's incompleteness theorems"]
+    },
+    "russells_paradox": {
+      "statement": "The set of all sets that do not contain themselves.",
+      "explanation": "Does this set contain itself? If yes, it shouldn't; if no, it should - leads to contradiction.",
+      "examples": [
+        "Barber paradox: Village barber who shaves all who don't shave themselves.",
+        "Catalog of all catalogs that don't list themselves.",
+        "Foundation of set theory requiring axioms to avoid paradoxes."
+      ],
+      "applications": ["Set theory", "Mathematics foundations", "Type theory"]
+    },
+    "zenos_paradoxes": {
+      "statement": "Motion is impossible because space and time are infinitely divisible.",
+      "explanation": "To reach a destination, you must first cover half the distance, then half again, ad infinitum.",
+      "examples": [
+        "Achilles and tortoise: Slower runner can't be caught.",
+        "Arrow paradox: Arrow in flight is always at rest (instant snapshots).",
+        "Dichotomy: Infinite halves prevent completion."
+      ],
+      "applications": ["Calculus", "Infinity", "Philosophy of motion"]
+    },
+    "sorites_paradox": {
+      "statement": "When does a heap of sand become a heap? (Paradox of the heap)",
+      "explanation": "Removing one grain doesn't turn a heap into non-heap, but repeated removal eventually does.",
+      "examples": [
+        "Baldness: When does someone become bald? After losing one hair?",
+        "Rich/poor: At what income level does 'rich' become 'poor'?",
+        "Vagueness in language and concepts."
+      ],
+      "applications": ["Philosophy of language", "Fuzzy logic", "Vagueness"]
+    },
+    "ship_of_theseus": {
+      "statement": "If every part of a ship is replaced, is it still the same ship?",
+      "explanation": "Gradual replacement paradox: identity through change vs. material continuity.",
+      "examples": [
+        "Human identity: Are you the same person after all cells are replaced?",
+        "Software: Is Windows 11 the same as Windows 1 after complete rewrite?",
+        "Personal growth: Identity through radical life changes."
+      ],
+      "applications": ["Identity", "Continuity", "Change"]
+    },
+    "grandfather_paradox": {
+      "statement": "If you kill your grandfather before he has children, how do you exist?",
+      "explanation": "Time travel paradox: causality violation creates logical impossibility.",
+      "examples": [
+        "Bootstrap paradox: Information creates itself.",
+        "Predestination paradox: Events cause themselves.",
+        "Time loop paradoxes in fiction and physics."
+      ],
+      "applications": ["Time travel", "Causality", "Quantum mechanics"]
+    },
+    "fermiparadox": {
+      "statement": "Where is everybody? (Fermi Paradox)",
+      "explanation": "Given universe's age and size, intelligent life should be common, yet we see none.",
+      "examples": [
+        "Great Filter: Some barrier prevents expansion.",
+        "Rare Earth hypothesis: Life requires specific conditions.",
+        "Simulation hypothesis: We might be in a simulation."
+      ],
+      "applications": ["Astrobiology", "SETI", "Existential risk"]
+    },
+    "prisoners_dilemma": {
+      "statement": "Two prisoners must choose to cooperate or betray, with outcomes depending on both choices.",
+      "explanation": "Individual rationality leads to worse outcome than mutual cooperation.",
+      "examples": [
+        "Arms race: Both countries arm despite peace being better.",
+        "Business: Price wars hurt both companies.",
+        "Climate change: Individual emissions vs. collective action."
+      ],
+      "applications": ["Game theory", "Economics", "Social dilemmas"]
+    },
+    "omniscience_paradox": {
+      "statement": "Can an omniscient being know what it will decide in the future?",
+      "explanation": "Free will vs. predestination: if God knows your choices, are they free?",
+      "examples": [
+        "Divine foreknowledge and human freedom.",
+        "Predicting unpredictable events.",
+        "Quantum uncertainty and determinism."
+      ],
+      "applications": ["Theology", "Free will", "Determinism"]
+    },
+    "unexpected_hanging": {
+      "statement": "A prisoner is told he'll be hanged on a weekday, but the day will be unexpected.",
+      "explanation": "Announcement creates paradox: each day becomes expected, making surprise impossible.",
+      "examples": [
+        "Stock market predictions that become self-fulfilling.",
+        "Surprise parties that can't be surprises.",
+        "Examination scheduling paradoxes."
+      ],
+      "applications": ["Epistemology", "Self-reference", "Decision theory"]
+    }
+  },
+  "categories": {
+    "logical": ["Liar", "Russell's", "Sorites"],
+    "temporal": ["Zeno's", "Grandfather", "Unexpected Hanging"],
+    "identity": ["Ship of Theseus", "Sorites"],
+    "existential": ["Fermi", "Omniscience"],
+    "social": ["Prisoner's Dilemma"]
+  },
+  "resolutions": {
+    "avoid_self_reference": "Many paradoxes arise from self-reference; restrict it.",
+    "accept_incompleteness": "Some truths are unprovable (Gödel).",
+    "embrace_vagueness": "Language has inherent vagueness.",
+    "contextual_solutions": "Paradoxes often dissolve with proper framing."
+  },
+  "validation": {
+    "internal_checksum": "sha256:paradox123...",
+    "self_verifying": true,
+    "philosophical_accuracy": "Based on classical paradoxes from philosophy, mathematics, and logic"
+  },
+  "usage_notes": "Apply for testing logical consistency, exploring edge cases, and understanding limitations of reasoning systems."
+}

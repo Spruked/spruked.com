@@ -1,0 +1,28 @@
+{
+  "vault_name": "seed_monotonic",
+  "author": "CALI",
+  "source": "System Heuristics and Crossover Logic",
+  "core_concepts": [
+    {
+      "term": "Monotonicity",
+      "definition": "The addition of new facts will not invalidate old conclusions."
+    },
+    {
+      "term": "Consistency",
+      "definition": "A conclusion, once reached, remains valid as long as its premises are not altered."
+    },
+    {
+      "term": "Closure",
+      "definition": "The system can only reason with the information it currently possesses; it cannot draw conclusions from data it hasn't seen."
+    }
+  ],
+  "learning_principles": [
+    "Once a fact is known, it is always known.",
+    "Do not discard old knowledge when new knowledge arrives.",
+    "Build on existing truths rather than seeking to overturn them."
+  ],
+  "access_control": {
+    "mutable": false,
+    "authorized_editor": "Bryan A. Spruk"
+  }
+}

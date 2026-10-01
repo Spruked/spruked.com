@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "operator_id": "bryan_spruk",
+  "override_authorities": [
+    "bryan_spruk"
+  ],
+  "override_policy": "operator_only",
+  "external_override_allowed": false,
+  "persistent": true,
+  "permissions": {
+    "voice": true,
+    "listening": true,
+    "auto_listen": true,
+    "presence": true,
+    "research": true,
+    "desktop": true,
+    "multi_monitor_travel": true,
+    "operator_override": true
+  },
+  "active_permissions": [
+    "voice",
+    "listening",
+    "auto_listen",
+    "presence",
+    "research",
+    "desktop",
+    "multi_monitor_travel"
+  ],
+  "updated_at": "2026-09-19T23:00:23.278867"
+}

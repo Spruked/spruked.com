@@ -1,0 +1,57 @@
+import json
+from jsonschema import validate, ValidationError
+
+schema = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["vault_name", "category", "version", "license", "generated", "entries", "access_control"],
+    "properties": {
+        "vault_name": {"type": "string", "minLength": 1},
+        "category": {"type": "string", "enum": ["Physics", "Geography", "Biology", "Logic"]},
+        "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+        "license": {"type": "string", "enum": ["CC0-1.0"]},
+        "generated": {"type": "string", "format": "date-time"},
+        "compatibility": {"type": "string", "enum": ["backward-compatible", "breaking"]},
+        "index": {"type": "object", "additionalProperties": {"type": "string"}},
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["id", "term", "type", "value", "source_id"],
+                "properties": {
+                    "id": {"type": "string", "pattern": "^[a-z]+:[a-z0-9_]+$"},
+                    "term": {"type": "string", "minLength": 1},
+                    "type": {"type": "string", "enum": ["constant", "entity", "relation"]},
+                    "symbol": {"type": "string"},
+                    "value": {"type": ["number", "string", "array", "object"]},
+                    "units": {"type": "string"},
+                    "source_id": {"type": "string", "pattern": "^(WD|NIST):.+$"},
+                    "reference_urls": {"type": "array", "items": {"type": "string", "format": "uri"}},
+                    "related_ids": {"type": "array", "items": {"type": "string", "pattern": "^[a-z]+:[a-z0-9_]+$"}}
+                }
+            }
+        },
+        "access_control": {
+            "type": "object",
+            "required": ["mutable", "curator", "hash"],
+            "properties": {
+                "mutable": {"type": "boolean", "const": false},
+                "curator": {"type": "string", "minLength": 1},
+                "hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+            }
+        }
+    }
+}
+
+def validate_vault(file_path):
+    with open(file_path, 'r') as f:
+        vault = json.load(f)
+    try:
+        validate(instance=vault, schema=schema)
+        print("Vault is valid!")
+    except ValidationError as e:
+        print(f"Validation error: {e.message}")
+    # Additional checks (e.g., hash verification, related_ids existence) can be added here
+
+# Example usage
+validate_vault("SeedVault-Physics-Constants-1.1.0.json")

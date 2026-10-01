@@ -1,0 +1,174 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Math Reference Vault",
+  "vault_id": "vault_math_reference",
+  "version": "1.1.0",
+  "category": "Mathematics",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental mathematical concepts and skills including algebra, geometry, calculus, and logic for computational reasoning",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "algebra_basics": "math:algebra_basics",
+    "geometry_fundamentals": "math:geometry_fundamentals",
+    "calculus_concepts": "math:calculus_concepts",
+    "logic_principles": "math:logic_principles",
+    "arithmetic_operations": "math:arithmetic_operations",
+    "probability_basics": "math:probability_basics"
+  },
+  "entries": [
+    {
+      "id": "math:algebra_basics",
+      "term": "Algebra Basics",
+      "type": "skill",
+      "definition": "Fundamental algebraic operations and concepts including variables, equations, and functions",
+      "value": {
+        "operations": ["addition", "subtraction", "multiplication", "division"],
+        "concepts": ["variables", "equations", "inequalities", "functions"],
+        "formulas": {
+          "quadratic_formula": "x = (-b ± √(b²-4ac)) / 2a",
+          "slope_formula": "m = (y₂ - y₁) / (x₂ - x₁)",
+          "distance_formula": "d = √((x₂ - x₁)² + (y₂ - y₁)²)"
+        }
+      },
+      "examples": [
+        "2x + 3 = 7 → x = 2",
+        "ax² + bx + c = 0",
+        "f(x) = mx + b"
+      ],
+      "related_ids": ["math:arithmetic_operations", "math:geometry_fundamentals"]
+    },
+    {
+      "id": "math:geometry_fundamentals",
+      "term": "Geometry Fundamentals",
+      "type": "skill",
+      "definition": "Basic geometric shapes, properties, and spatial relationships",
+      "value": {
+        "shapes": {
+          "triangle": {"sides": 3, "area": "½ × base × height"},
+          "circle": {"area": "πr²", "circumference": "2πr"},
+          "rectangle": {"area": "length × width", "perimeter": "2(l + w)"},
+          "square": {"area": "side²", "perimeter": "4 × side"}
+        },
+        "theorems": {
+          "pythagorean": "a² + b² = c²",
+          "area_triangle": "A = ½bh"
+        }
+      },
+      "examples": [
+        "Right triangle: 3-4-5 satisfies Pythagorean theorem",
+        "Circle with radius 5: area = 25π, circumference = 10π"
+      ],
+      "related_ids": ["math:algebra_basics", "math:calculus_concepts"]
+    },
+    {
+      "id": "math:calculus_concepts",
+      "term": "Calculus Concepts",
+      "type": "skill",
+      "definition": "Fundamental calculus operations including derivatives and integrals",
+      "value": {
+        "derivatives": {
+          "power_rule": "d/dx[xⁿ] = nxⁿ⁻¹",
+          "constant_rule": "d/dx[c] = 0",
+          "sum_rule": "d/dx[f+g] = f' + g'"
+        },
+        "integrals": {
+          "power_rule": "∫xⁿ dx = xⁿ⁺¹/(n+1) + C",
+          "constant_rule": "∫c dx = cx + C"
+        },
+        "concepts": ["limits", "continuity", "rates_of_change", "area_under_curve"]
+      },
+      "examples": [
+        "d/dx[x²] = 2x",
+        "∫x dx = ½x² + C",
+        "Limit as x→0 of sin(x)/x = 1"
+      ],
+      "related_ids": ["math:algebra_basics", "math:geometry_fundamentals"]
+    },
+    {
+      "id": "math:logic_principles",
+      "term": "Logic Principles",
+      "type": "skill",
+      "definition": "Fundamental principles of logical reasoning and mathematical logic",
+      "value": {
+        "logical_operators": {
+          "AND": "∧",
+          "OR": "∨",
+          "NOT": "¬",
+          "IMPLIES": "→",
+          "IFF": "↔"
+        },
+        "laws": {
+          "identity": "A = A",
+          "contradiction": "A ∧ ¬A = false",
+          "excluded_middle": "A ∨ ¬A = true"
+        },
+        "proof_methods": ["direct_proof", "proof_by_contradiction", "mathematical_induction"]
+      },
+      "examples": [
+        "Modus ponens: If P→Q and P, then Q",
+        "De Morgan's laws: ¬(A∧B) = ¬A∨¬B",
+        "Mathematical induction for sum of first n integers"
+      ],
+      "related_ids": ["math:probability_basics"]
+    },
+    {
+      "id": "math:arithmetic_operations",
+      "term": "Arithmetic Operations",
+      "type": "skill",
+      "definition": "Basic arithmetic operations and number properties",
+      "value": {
+        "operations": {
+          "addition": "a + b",
+          "subtraction": "a - b",
+          "multiplication": "a × b",
+          "division": "a ÷ b"
+        },
+        "properties": {
+          "commutative": "a + b = b + a, a × b = b × a",
+          "associative": "(a + b) + c = a + (b + c)",
+          "distributive": "a × (b + c) = a×b + a×c"
+        },
+        "number_types": ["integers", "rationals", "irrationals", "reals", "complex"]
+      },
+      "examples": [
+        "2 + 3 = 5",
+        "7 × 8 = 56",
+        "Order of operations: PEMDAS"
+      ],
+      "related_ids": ["math:algebra_basics"]
+    },
+    {
+      "id": "math:probability_basics",
+      "term": "Probability Basics",
+      "type": "skill",
+      "definition": "Fundamental concepts of probability and statistics",
+      "value": {
+        "basic_concepts": {
+          "probability": "P(E) = number of favorable outcomes / total outcomes",
+          "expected_value": "E[X] = Σ(x × P(x))",
+          "variance": "Var(X) = E[X²] - (E[X])²"
+        },
+        "distributions": {
+          "uniform": "equal probability for each outcome",
+          "normal": "bell-shaped curve",
+          "binomial": "n independent trials with success probability p"
+        }
+      },
+      "examples": [
+        "Fair coin: P(heads) = 0.5",
+        "Rolling a die: P(6) = 1/6",
+        "Expected value of fair die roll = 3.5"
+      ],
+      "related_ids": ["math:logic_principles", "math:calculus_concepts"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:math_reference_2025"
+  }
+}

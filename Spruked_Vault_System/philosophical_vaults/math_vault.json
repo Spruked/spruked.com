@@ -1,0 +1,124 @@
+{
+  "theme": "math",
+  "extraction_date": "2025-11-02T23:45:00.000000",
+  "total_conversations": 3,
+  "conversations": [
+    {
+      "title": "Euler's Identity",
+      "conversation_id": "math_euler_identity",
+      "timestamp": 1762127100.0,
+      "segments": [
+        {
+          "text": "Euler's Identity combines five of mathematics' most important constants into a single elegant equation. It bridges algebra, geometry, and analysis with symbolic grace.",
+          "keywords_found": 3,
+          "phrases_found": 1
+        }
+      ],
+      "themes": ["math"],
+      "relevance_score": 8,
+      "ref_data": {
+        "ref_id": "math_euler_identity",
+        "type": "reference_material",
+        "source": "Leonhard Euler, 1748",
+        "expression": "e^(iπ) + 1 = 0",
+        "components": [
+          { "symbol": "e", "meaning": "Base of natural logarithms; exponential growth" },
+          { "symbol": "i", "meaning": "Imaginary unit; sqrt(-1)" },
+          { "symbol": "π", "meaning": "Pi; circle ratio constant" },
+          { "symbol": "1", "meaning": "Multiplicative identity" },
+          { "symbol": "0", "meaning": "Additive identity; nothingness" }
+        ],
+        "glyph_trace": ["truth", "unity", "complexity", "perfection", "cosmos"],
+        "symbolic_weight": 0.98,
+        "emotion": "awe",
+        "text_commentary": "Euler's Identity combines five of mathematics' most important constants into a single elegant equation. It bridges algebra, geometry, and analysis with symbolic grace.",
+        "audio_file": "euler_identity_explained_by_gpt4.wav",
+        "vault_tags": ["math", "truth", "beauty", "symbolic_anchor"],
+        "access_control": {
+          "mutable": false,
+          "authorized_editor": "Bryan A. Spruk"
+        }
+      }
+    },
+    {
+      "title": "SI Base Units",
+      "conversation_id": "si_base_units_v1",
+      "timestamp": 1762127200.0,
+      "segments": [
+        {
+          "text": "These seven units form the backbone of modern science and engineering, used to measure every physical property with universal consistency.",
+          "keywords_found": 2,
+          "phrases_found": 1
+        }
+      ],
+      "themes": ["math", "units"],
+      "relevance_score": 9,
+      "ref_data": {
+        "ref_id": "si_base_units_v1",
+        "type": "reference_material",
+        "category": "units",
+        "source": "BIPM — International System of Units (SI)",
+        "content": {
+          "length": {"unit": "meter", "symbol": "m"},
+          "mass": {"unit": "kilogram", "symbol": "kg"},
+          "time": {"unit": "second", "symbol": "s"},
+          "electric_current": {"unit": "ampere", "symbol": "A"},
+          "temperature": {"unit": "kelvin", "symbol": "K"},
+          "amount_of_substance": {"unit": "mole", "symbol": "mol"},
+          "luminous_intensity": {"unit": "candela", "symbol": "cd"}
+        },
+        "glyph_trace": ["measurement", "precision", "foundation", "neutrality"],
+        "symbolic_weight": 0.91,
+        "text_commentary": "These seven units form the backbone of modern science and engineering, used to measure every physical property with universal consistency.",
+        "verified_by": "Bryan A. Spruk",
+        "access_control": {
+          "mutable": false,
+          "indoctrination_free": true
+        }
+      }
+    },
+    {
+      "title": "SI Derived Units",
+      "conversation_id": "si_derived_units_v1",
+      "timestamp": 1762127300.0,
+      "segments": [
+        {
+          "text": "Derived units are formed by combining base units through multiplication and division, representing complex physical quantities with precise mathematical relationships.",
+          "keywords_found": 3,
+          "phrases_found": 1
+        }
+      ],
+      "themes": ["math", "units", "physics"],
+      "relevance_score": 9,
+      "ref_data": {
+        "ref_id": "si_derived_units_v1",
+        "type": "reference_material",
+        "category": "derived_units",
+        "source": "BIPM — International System of Units (SI)",
+        "content": {
+          "force": {"unit": "newton", "symbol": "N", "definition": "kg⋅m/s²"},
+          "energy": {"unit": "joule", "symbol": "J", "definition": "N⋅m = kg⋅m²/s²"},
+          "power": {"unit": "watt", "symbol": "W", "definition": "J/s = kg⋅m²/s³"},
+          "pressure": {"unit": "pascal", "symbol": "Pa", "definition": "N/m² = kg/(m⋅s²)"},
+          "frequency": {"unit": "hertz", "symbol": "Hz", "definition": "1/s"},
+          "electric_charge": {"unit": "coulomb", "symbol": "C", "definition": "A⋅s"},
+          "voltage": {"unit": "volt", "symbol": "V", "definition": "W/A = kg⋅m²/(A⋅s³)"},
+          "resistance": {"unit": "ohm", "symbol": "Ω", "definition": "V/A = kg⋅m²/(A²⋅s³)"},
+          "capacitance": {"unit": "farad", "symbol": "F", "definition": "C/V = A²⋅s⁴/(kg⋅m²)"},
+          "magnetic_flux": {"unit": "weber", "symbol": "Wb", "definition": "V⋅s = kg⋅m²/(A⋅s²)"},
+          "magnetic_field": {"unit": "tesla", "symbol": "T", "definition": "Wb/m² = kg/(A⋅s²)"},
+          "luminous_flux": {"unit": "lumen", "symbol": "lm", "definition": "cd⋅sr"},
+          "illuminance": {"unit": "lux", "symbol": "lx", "definition": "lm/m²"}
+        },
+        "glyph_trace": ["combination", "complexity", "relationships", "precision"],
+        "symbolic_weight": 0.89,
+        "text_commentary": "Derived units extend the SI system by combining base units, enabling measurement of complex physical phenomena from mechanical forces to electromagnetic fields.",
+        "verified_by": "Bryan A. Spruk",
+        "access_control": {
+          "mutable": false,
+          "indoctrination_free": true
+        }
+      }
+    }
+  ]
+}

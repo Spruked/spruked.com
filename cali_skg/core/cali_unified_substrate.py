@@ -28,6 +28,15 @@ _LOG = logging.getLogger("cali.substrate")
 DEFAULT_LEGACY_SOURCE = Path(
     "/home/bryan/projects/spruked.com/Spruked_Vault_System/cali_legacy/spruk_legacy_orb"
 )
+DEFAULT_SEED_VAULT_SOURCE = Path(
+    "/home/bryan/projects/spruked.com/Spruked_Vault_System/seed_vault"
+)
+DEFAULT_DOMAIN_KNOWLEDGE_SOURCE = Path(
+    "/home/bryan/projects/spruked.com/Spruked_Vault_System/Domain_Knowledge"
+)
+DEFAULT_PHILOSOPHICAL_VAULT_SOURCE = Path(
+    "/home/bryan/projects/spruked.com/Spruked_Vault_System/philosophical_vaults"
+)
 _TOKEN_RE = re.compile(r"[A-Za-z0-9_'-]{3,}")
 
 
@@ -38,6 +47,7 @@ class AssetSpec:
     asset_class: str
     ingest: str = "preserve"
     canonical: bool = True
+    source_root: str = "legacy"
 
 
 def _utc_now() -> str:
@@ -53,7 +63,17 @@ def _sha256(path: Path) -> str:
 
 
 def _json_load(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Several inherited vaults are JSON-with-comments and/or retain a
+        # trailing comma from their authoring tools. Keep the source untouched
+        # and normalize only the in-memory parser input.
+        text = re.sub(r"(?m)^\s*//.*$", "", text)
+        text = re.sub(r"(?m)\s+//[^\n\r]*$", "", text)
+        text = re.sub(r",(\s*[}\]])", r"\1", text)
+        return json.loads(text)
 
 
 def _tokens(text: str, limit: int = 16) -> list[str]:
@@ -183,6 +203,18 @@ class CaliUnifiedSubstrate:
             or os.getenv("CALI_LEGACY_SOURCE_DIR", "").strip()
             or DEFAULT_LEGACY_SOURCE
         )
+        self.seed_vault_path = Path(
+            os.getenv("CALI_SEED_VAULT_SOURCE_DIR", "").strip()
+            or DEFAULT_SEED_VAULT_SOURCE
+        )
+        self.domain_knowledge_path = Path(
+            os.getenv("CALI_DOMAIN_KNOWLEDGE_SOURCE_DIR", "").strip()
+            or DEFAULT_DOMAIN_KNOWLEDGE_SOURCE
+        )
+        self.philosophical_vault_path = Path(
+            os.getenv("CALI_PHILOSOPHICAL_VAULT_SOURCE_DIR", "").strip()
+            or DEFAULT_PHILOSOPHICAL_VAULT_SOURCE
+        )
         self.db_path = self.memory_path / "cali_substrate_index.db"
         self.substrate_path.mkdir(parents=True, exist_ok=True)
         self.memory_path.mkdir(parents=True, exist_ok=True)
@@ -191,7 +223,85 @@ class CaliUnifiedSubstrate:
 
     @property
     def assets(self) -> list[AssetSpec]:
-        return _default_assets()
+        assets = _default_assets()
+        assets.extend(self._external_assets(self.seed_vault_path, "seed_vault"))
+        assets.extend(self._external_assets(self.domain_knowledge_path, "domain_knowledge"))
+        assets.extend(self._external_assets(self.philosophical_vault_path, "philosophical_vaults"))
+        return assets
+
+    @staticmethod
+    def _external_assets(root: Path, source_root: str) -> list[AssetSpec]:
+        if not root.exists():
+            return []
+        if source_root == "seed_vault":
+            paths = sorted(
+                path for path in root.iterdir()
+                if path.is_file() and path.suffix.lower() in {".json", ".svbin"}
+            )
+            assets: list[AssetSpec] = []
+            for path in paths:
+                ingest = "preserve"
+                if path.suffix.lower() == ".json":
+                    try:
+                        _json_load(path)
+                        ingest = "seed_vault"
+                    except Exception:
+                        # Preserve legacy files even when their extension is
+                        # JSON but their contents are source code or schemas
+                        # for another runtime. They remain referenceable via
+                        # asset_registry without poisoning the seed index.
+                        ingest = "preserve"
+                assets.append(
+                    AssetSpec(
+                        f"seed_vault/{path.name}",
+                        f"substrate/apriori/external_seed_vault/{path.name}",
+                        "seed_vault_external",
+                        ingest,
+                        True,
+                        source_root,
+                    )
+                )
+            return assets
+
+        if source_root == "philosophical_vaults":
+            return [
+                AssetSpec(
+                    f"philosophical_vaults/{path.name}",
+                    f"memory/legacy_conversations/philosophical/{path.name}",
+                    "philosophical_conversation_vault",
+                    "conversation_vault",
+                    True,
+                    source_root,
+                )
+                for path in sorted(root.glob("*.json"))
+                if path.is_file()
+            ]
+
+        assets = []
+        for path in sorted(root.rglob("*")):
+            if not path.is_file() or path.suffix.lower() not in {".json", ".csv", ".md", ".txt"}:
+                continue
+            relative = path.relative_to(root).as_posix()
+            assets.append(
+                AssetSpec(
+                    f"domain_knowledge/{relative}",
+                    f"substrate/domain_knowledge/external/{relative}",
+                    "domain_knowledge_external",
+                    "domain_knowledge",
+                    True,
+                    source_root,
+                )
+            )
+        return assets
+
+    def _source_for(self, spec: AssetSpec) -> Path:
+        if spec.source_root == "seed_vault":
+            return self.seed_vault_path / spec.source_name.removeprefix("seed_vault/")
+        if spec.source_root == "domain_knowledge":
+            return self.domain_knowledge_path / spec.source_name.removeprefix("domain_knowledge/")
+        if spec.source_root == "philosophical_vaults":
+            return self.philosophical_vault_path / spec.source_name.removeprefix("philosophical_vaults/")
+        return self.source_path / spec.source_name
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path, timeout=30)
@@ -234,6 +344,15 @@ class CaliUnifiedSubstrate:
                     ingested_at TEXT NOT NULL
                 );
                 CREATE INDEX IF NOT EXISTS idx_seed_category ON seed_entries(category);
+                CREATE TABLE IF NOT EXISTS domain_documents (
+                    id TEXT PRIMARY KEY,
+                    source_file TEXT NOT NULL,
+                    document_type TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    metadata_json TEXT NOT NULL,
+                    ingested_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_domain_document_type ON domain_documents(document_type);
                 CREATE TABLE IF NOT EXISTS asset_registry (
                     source_name TEXT PRIMARY KEY,
                     target TEXT NOT NULL,
@@ -254,6 +373,9 @@ class CaliUnifiedSubstrate:
                 conn.execute(
                     "CREATE VIRTUAL TABLE IF NOT EXISTS seed_entries_fts USING fts5(id UNINDEXED, term, category, definition)"
                 )
+                conn.execute(
+                    "CREATE VIRTUAL TABLE IF NOT EXISTS domain_documents_fts USING fts5(id UNINDEXED, source_file, content)"
+                )
                 self._fts_available = True
             except sqlite3.OperationalError:
                 self._fts_available = False
@@ -272,7 +394,7 @@ class CaliUnifiedSubstrate:
 
         with self._connect() as conn:
             for spec in self.assets:
-                src = self.source_path / spec.source_name
+                src = self._source_for(spec)
                 dst = self.base_path / spec.target
                 if not src.exists():
                     report["missing"].append(spec.source_name)
@@ -336,13 +458,15 @@ class CaliUnifiedSubstrate:
         )
 
     def rebuild_indexes(self) -> dict[str, int]:
-        counts = {"conversation_segments": 0, "seed_entries": 0}
+        counts = {"conversation_segments": 0, "seed_entries": 0, "domain_documents": 0}
         with self._connect() as conn:
             conn.execute("DELETE FROM conversation_memory")
             conn.execute("DELETE FROM seed_entries")
+            conn.execute("DELETE FROM domain_documents")
             if self._fts_available:
                 conn.execute("DELETE FROM conversation_memory_fts")
                 conn.execute("DELETE FROM seed_entries_fts")
+                conn.execute("DELETE FROM domain_documents_fts")
 
             for spec in self.assets:
                 path = self.base_path / spec.target
@@ -352,6 +476,8 @@ class CaliUnifiedSubstrate:
                     counts["conversation_segments"] += self._index_conversation_vault(conn, path)
                 elif spec.ingest == "seed_vault":
                     counts["seed_entries"] += self._index_seed_vault(conn, path)
+                elif spec.ingest == "domain_knowledge":
+                    counts["domain_documents"] += self._index_domain_document(conn, path)
             conn.execute(
                 "INSERT INTO substrate_meta(key,value) VALUES('last_rebuild',?) "
                 "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
@@ -367,6 +493,7 @@ class CaliUnifiedSubstrate:
             _LOG.warning("cannot index conversation vault %s: %s", path, exc)
             return 0
         theme = str(payload.get("theme") or path.stem.replace("_vault", ""))
+        source_file = str(path.relative_to(self.base_path)) if path.is_relative_to(self.base_path) else str(path)
         count = 0
         for conv in payload.get("conversations") or []:
             conv_id = str(conv.get("conversation_id") or "")
@@ -390,7 +517,7 @@ class CaliUnifiedSubstrate:
                 context = segment.get("context")
                 content_hash = hashlib.sha256(content.encode("utf-8", errors="ignore")).hexdigest()
                 memory_id = hashlib.sha256(
-                    f"{path.name}|{conv_id}|{message_index_value}|{ordinal}|{content_hash}".encode("utf-8")
+                    f"{source_file}|{conv_id}|{message_index_value}|{ordinal}|{content_hash}".encode("utf-8")
                 ).hexdigest()
                 conn.execute(
                     """INSERT OR REPLACE INTO conversation_memory
@@ -404,7 +531,7 @@ class CaliUnifiedSubstrate:
                         title,
                         timestamp_value,
                         message_index_value,
-                        path.name,
+                        source_file,
                         content,
                         json.dumps(context, ensure_ascii=False) if context is not None else None,
                         content_hash,
@@ -430,9 +557,8 @@ class CaliUnifiedSubstrate:
         vault_id = str(payload.get("vault_id") or payload.get("vault_name") or path.stem)
         category = str(payload.get("category") or "")
         reasoning_type = str(payload.get("reasoning_type") or "")
-        entries = payload.get("entries")
-        if entries is None and isinstance(payload.get("core_concepts"), list):
-            entries = payload.get("core_concepts")
+        source_file = str(path.relative_to(self.base_path)) if path.is_relative_to(self.base_path) else str(path)
+        entries = self._extract_seed_entries(payload)
         if not isinstance(entries, list):
             return 0
         count = 0
@@ -440,16 +566,16 @@ class CaliUnifiedSubstrate:
             if not isinstance(entry, dict):
                 continue
             entry_id = str(entry.get("id") or f"{vault_id}:{ordinal}")
-            term = str(entry.get("term") or entry.get("name") or "")
-            definition = str(entry.get("definition") or entry.get("description") or "")
-            stable_id = hashlib.sha256(f"{path.name}|{entry_id}".encode("utf-8")).hexdigest()
+            term = str(entry.get("term") or entry.get("name") or entry.get("phrase") or entry.get("statement") or f"{vault_id}:{ordinal}")
+            definition = str(entry.get("definition") or entry.get("description") or entry.get("explanation") or entry.get("value") or "")
+            stable_id = hashlib.sha256(f"{source_file}|{entry_id}".encode("utf-8")).hexdigest()
             conn.execute(
                 """INSERT OR REPLACE INTO seed_entries
                    (id,source_file,vault_id,category,reasoning_type,term,definition,metadata_json,ingested_at)
                    VALUES (?,?,?,?,?,?,?,?,?)""",
                 (
                     stable_id,
-                    path.name,
+                    source_file,
                     vault_id,
                     category,
                     reasoning_type,
@@ -466,6 +592,88 @@ class CaliUnifiedSubstrate:
                 )
             count += 1
         return count
+
+    @classmethod
+    def _extract_seed_entries(cls, payload: dict[str, Any]) -> list[dict[str, Any]]:
+        direct = payload.get("entries")
+        if direct is None:
+            direct = payload.get("core_concepts")
+        if direct is None:
+            direct = payload.get("e")
+        if isinstance(direct, list):
+            normalized: list[dict[str, Any]] = []
+            for item in direct:
+                if not isinstance(item, dict):
+                    continue
+                if "i" in item or "t" in item:
+                    normalized.append(
+                        {
+                            **item,
+                            "id": item.get("id") or item.get("i"),
+                            "term": item.get("term") or item.get("t"),
+                            "definition": item.get("definition") or item.get("d") or item.get("v") or item.get("value"),
+                        }
+                    )
+                else:
+                    normalized.append(item)
+            if normalized:
+                return normalized
+
+        extracted: list[dict[str, Any]] = []
+
+        def visit(value: Any, path: str = "") -> None:
+            if isinstance(value, dict):
+                has_text = any(key in value for key in ("term", "name", "phrase", "statement"))
+                has_definition = any(key in value for key in ("definition", "description", "explanation", "value"))
+                if has_text and has_definition:
+                    extracted.append(value)
+                    return
+                for key, child in value.items():
+                    visit(child, f"{path}.{key}" if path else str(key))
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    visit(child, f"{path}[{index}]")
+
+        for key, value in payload.items():
+            if key not in {"index", "$schema", "metadata", "access_control"}:
+                visit(value, key)
+        if not extracted and payload.get("description"):
+            extracted.append(
+                {
+                    "id": payload.get("vault_id") or payload.get("vault_name") or "seed",
+                    "term": payload.get("vault_name") or payload.get("vault_id") or "SeedVault",
+                    "definition": payload.get("description"),
+                }
+            )
+        return extracted
+
+    def _index_domain_document(self, conn: sqlite3.Connection, path: Path) -> int:
+        try:
+            if path.suffix.lower() == ".json":
+                payload = _json_load(path)
+                content = json.dumps(payload, ensure_ascii=False, indent=2)
+            else:
+                content = path.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:
+            _LOG.warning("cannot index domain document %s: %s", path, exc)
+            return 0
+        content = content.strip()
+        if not content:
+            return 0
+        source_file = str(path.relative_to(self.base_path)) if path.is_relative_to(self.base_path) else str(path)
+        document_id = hashlib.sha256(source_file.encode("utf-8")).hexdigest()
+        conn.execute(
+            """INSERT OR REPLACE INTO domain_documents
+               (id,source_file,document_type,content,metadata_json,ingested_at)
+               VALUES (?,?,?,?,?,?)""",
+            (document_id, source_file, path.suffix.lower().lstrip("."), content, "{}", _utc_now()),
+        )
+        if self._fts_available:
+            conn.execute(
+                "INSERT INTO domain_documents_fts(id,source_file,content) VALUES (?,?,?)",
+                (document_id, source_file, content),
+            )
+        return 1
 
     def bootstrap(self, *, overwrite: bool = False) -> dict[str, Any]:
         sync = self.sync_from_archive(overwrite=overwrite)
@@ -545,6 +753,13 @@ class CaliUnifiedSubstrate:
                        LIMIT ?""",
                     (like, like, like, max(1, min(12, limit))),
                 ).fetchall()
+        rows = sorted(
+            rows,
+            key=lambda row: (
+                0 if any(term in str(row["reasoning_type"] or "").lower() for term in terms) else 1,
+                0 if any(term in str(row["term"] or "").lower() for term in terms) else 1,
+            ),
+        )
         return [
             {
                 "vault_id": row["vault_id"],
@@ -553,6 +768,41 @@ class CaliUnifiedSubstrate:
                 "term": row["term"],
                 "definition": row["definition"],
                 "source_file": row["source_file"],
+            }
+            for row in rows
+        ]
+
+    def retrieve_domain_knowledge(self, query: str, *, limit: int = 4) -> list[dict[str, Any]]:
+        terms = _tokens(query)
+        if not terms:
+            return []
+        with self._connect() as conn:
+            rows: Iterable[sqlite3.Row]
+            if self._fts_available:
+                try:
+                    rows = conn.execute(
+                        """SELECT dd.* FROM domain_documents_fts f
+                           JOIN domain_documents dd ON dd.id=f.id
+                           WHERE domain_documents_fts MATCH ?
+                           ORDER BY bm25(domain_documents_fts) LIMIT ?""",
+                        (self._fts_expression(query), max(1, min(8, limit))),
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    rows = []
+            else:
+                like = f"%{terms[0]}%"
+                rows = conn.execute(
+                    """SELECT * FROM domain_documents
+                       WHERE lower(source_file) LIKE ? OR lower(content) LIKE ?
+                       LIMIT ?""",
+                    (like, like, max(1, min(8, limit))),
+                ).fetchall()
+        return [
+            {
+                "source_file": row["source_file"],
+                "document_type": row["document_type"],
+                "content": row["content"][:4000],
+                "truth_status": "canonical_domain_source",
             }
             for row in rows
         ]
@@ -566,12 +816,14 @@ class CaliUnifiedSubstrate:
             ),
             "prior_conversations": self.recall_prior_conversations(query, limit=memory_limit),
             "reasoning_options": self.retrieve_reasoning_seeds(query, limit=seed_limit),
+            "domain_knowledge": self.retrieve_domain_knowledge(query, limit=memory_limit),
         }
 
     def status(self) -> dict[str, Any]:
         with self._connect() as conn:
             conversation_count = int(conn.execute("SELECT COUNT(*) FROM conversation_memory").fetchone()[0])
             seed_count = int(conn.execute("SELECT COUNT(*) FROM seed_entries").fetchone()[0])
+            domain_count = int(conn.execute("SELECT COUNT(*) FROM domain_documents").fetchone()[0])
             asset_rows = conn.execute("SELECT status,COUNT(*) n FROM asset_registry GROUP BY status").fetchall()
         return {
             "source_path": str(self.source_path),
@@ -580,6 +832,7 @@ class CaliUnifiedSubstrate:
             "fts5": self._fts_available,
             "conversation_segments": conversation_count,
             "seed_entries": seed_count,
+            "domain_documents": domain_count,
             "assets": {row["status"]: int(row["n"]) for row in asset_rows},
         }
 

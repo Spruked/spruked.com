@@ -1,0 +1,128 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "n": "Measurement Units",
+  "c": "Units",
+  "v": "1.1.0",
+  "l": "CC0-1.0",
+  "g": "2025-10-21T11:39:00Z",
+  "k": "backward-compatible",
+  "idx": {
+    "meter": "units:meter",
+    "kilogram": "units:kilogram",
+    "second": "units:second",
+    "ampere": "units:ampere",
+    "kelvin": "units:kelvin",
+    "mole": "units:mole",
+    "candela": "units:candela",
+    "centimeter": "units:centimeter",
+    "gram": "units:gram",
+    "hour": "units:hour"
+  },
+  "e": [
+    {
+      "i": "units:meter",
+      "t": "Meter",
+      "y": "unit",
+      "s": "m",
+      "v": 1.0,
+      "u": "m",
+      "r": "WD:Q11570",
+      "l": ["physics:speed_of_light", "units:centimeter"]
+    },
+    {
+      "i": "units:kilogram",
+      "t": "Kilogram",
+      "y": "unit",
+      "s": "kg",
+      "v": 1.0,
+      "u": "kg",
+      "r": "WD:Q11574",
+      "l": ["physics:gravitational_constant", "units:gram"]
+    },
+    {
+      "i": "units:second",
+      "t": "Second",
+      "y": "unit",
+      "s": "s",
+      "v": 1.0,
+      "u": "s",
+      "r": "WD:Q11579",
+      "l": ["physics:speed_of_light", "units:hour"]
+    },
+    {
+      "i": "units:ampere",
+      "t": "Ampere",
+      "y": "unit",
+      "s": "A",
+      "v": 1.0,
+      "u": "A",
+      "r": "WD:Q25272",
+      "l": ["physics:elementary_charge"]
+    },
+    {
+      "i": "units:kelvin",
+      "t": "Kelvin",
+      "y": "unit",
+      "s": "K",
+      "v": 1.0,
+      "u": "K",
+      "r": "WD:Q11582",
+      "l": ["physics:boltzmann_constant"]
+    },
+    {
+      "i": "units:mole",
+      "t": "Mole",
+      "y": "unit",
+      "s": "mol",
+      "v": 1.0,
+      "u": "mol",
+      "r": "WD:Q912226",
+      "l": ["physics:avogadro_constant"]
+    },
+    {
+      "i": "units:candela",
+      "t": "Candela",
+      "y": "unit",
+      "s": "cd",
+      "v": 1.0,
+      "u": "cd",
+      "r": "WD:Q44589",
+      "l": []
+    },
+    {
+      "i": "units:centimeter",
+      "t": "Centimeter",
+      "y": "unit",
+      "s": "cm",
+      "v": 0.01,
+      "u": "m",
+      "r": "WD:Q174728",
+      "l": ["units:meter"]
+    },
+    {
+      "i": "units:gram",
+      "t": "Gram",
+      "y": "unit",
+      "s": "g",
+      "v": 0.001,
+      "u": "kg",
+      "r": "WD:Q41803",
+      "l": ["units:kilogram"]
+    },
+    {
+      "i": "units:hour",
+      "t": "Hour",
+      "y": "unit",
+      "s": "h",
+      "v": 3600.0,
+      "u": "s",
+      "r": "WD:Q25235",
+      "l": ["units:second"]
+    }
+  ],
+  "a": {
+    "m": false,
+    "c": "Bryan A. Spruk",
+  "h": "sha256:1f1b80b0a41ccffc01093c275822d94040f5f82bf8b283af0de70435d7f8f321"
+  }
+}

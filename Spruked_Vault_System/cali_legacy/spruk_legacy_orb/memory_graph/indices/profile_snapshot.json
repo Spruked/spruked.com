@@ -1,0 +1,26 @@
+{
+  "profile_version": 1,
+  "updated_at": "2026-09-20T04:03:38.085Z",
+  "interaction_count": 0,
+  "observation_count": 6,
+  "voice_observation_count": 0,
+  "top_topics": [
+    {
+      "topic": "truth",
+      "count": 6
+    },
+    {
+      "topic": "work",
+      "count": 6
+    },
+    {
+      "topic": "legacy",
+      "count": 6
+    }
+  ],
+  "behavior_patterns": [],
+  "voice_markers": {
+    "common_phrases": [],
+    "observed_tones": []
+  }
+}

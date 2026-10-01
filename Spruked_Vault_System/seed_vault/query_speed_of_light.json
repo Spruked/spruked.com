@@ -1,0 +1,50 @@
+// C snippet to query physics:speed_of_light from .svbin
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define ENTRY_SIZE 32
+#define MAGIC "SV01"
+
+// Helper: read 8 bytes as little-endian uint64
+uint64_t read_u64(const uint8_t *buf) {
+    return ((uint64_t)buf[0]) | ((uint64_t)buf[1] << 8) | ((uint64_t)buf[2] << 16) |
+           ((uint64_t)buf[3] << 24) | ((uint64_t)buf[4] << 32) | ((uint64_t)buf[5] << 40) |
+           ((uint64_t)buf[6] << 48) | ((uint64_t)buf[7] << 56);
+}
+
+// Helper: compute first 8 bytes of SHA256 hash (for demo, use precomputed value)
+void get_speed_of_light_id(uint8_t *out) {
+    // Precomputed SHA256("physics:speed_of_light") first 8 bytes
+    uint8_t id[8] = {0x86, 0x03, 0x7f, 0x37, 0x7a, 0xcc, 0xbe, 0xfc};
+    memcpy(out, id, 8);
+}
+
+int main() {
+    FILE *f = fopen("SeedVault-Physics-Constants-1.1.0.svbin", "rb");
+    if (!f) { perror("open"); return 1; }
+    char magic[5] = {0};
+    fread(magic, 1, 4, f);
+    if (strncmp(magic, MAGIC, 4) != 0) { printf("Bad magic\n"); return 1; }
+    fseek(f, 8, SEEK_SET); // skip version
+    uint32_t entry_count;
+    fread(&entry_count, 4, 1, f);
+    fseek(f, 16, SEEK_SET); // skip to entries
+    uint8_t target_id[8];
+    get_speed_of_light_id(target_id);
+    for (uint32_t i = 0; i < entry_count; ++i) {
+        uint8_t entry[ENTRY_SIZE];
+        fread(entry, 1, ENTRY_SIZE, f);
+        if (memcmp(entry, target_id, 8) == 0) {
+            double value;
+            memcpy(&value, entry+9, 8); // float64 at offset 9
+            printf("speed_of_light = %.0f\n", value);
+            fclose(f);
+            return 0;
+        }
+    }
+    printf("Not found\n");
+    fclose(f);
+    return 1;
+}

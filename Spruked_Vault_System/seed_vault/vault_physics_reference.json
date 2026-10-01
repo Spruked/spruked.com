@@ -1,0 +1,211 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "Physics Reference Vault",
+  "vault_id": "vault_physics_reference",
+  "version": "1.1.0",
+  "category": "Physics",
+  "type": "reference",
+  "license": "CC0-1.0",
+  "generated": "2025-10-27T00:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental physics concepts including laws of motion, energy, thermodynamics, and basic calculations",
+  "author": "Bryan A. Spruk",
+  "immutable": false,
+  "index": {
+    "newton_laws": "phys:newton_laws",
+    "energy_concepts": "phys:energy_concepts",
+    "thermodynamics": "phys:thermodynamics",
+    "electricity_basics": "phys:electricity_basics",
+    "waves_light": "phys:waves_light",
+    "nuclear_physics": "phys:nuclear_physics"
+  },
+  "entries": [
+    {
+      "id": "phys:newton_laws",
+      "term": "Newton's Laws of Motion",
+      "type": "law",
+      "definition": "Three fundamental laws describing the relationship between forces and motion",
+      "value": {
+        "first_law": {
+          "statement": "An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction unless acted upon by an unbalanced force",
+          "also_known_as": "Law of Inertia",
+          "equation": "F_net = 0 → a = 0"
+        },
+        "second_law": {
+          "statement": "Force equals mass times acceleration",
+          "equation": "F = ma",
+          "units": "Force in Newtons (N), mass in kg, acceleration in m/s²"
+        },
+        "third_law": {
+          "statement": "For every action, there is an equal and opposite reaction",
+          "equation": "F_action = -F_reaction",
+          "examples": ["rocket propulsion", "walking"]
+        }
+      },
+      "examples": [
+        "Car accelerating: F = ma, more force = more acceleration",
+        "Book on table: normal force balances gravity",
+        "Rocket launch: exhaust pushes down, rocket pushes up"
+      ],
+      "related_ids": ["phys:energy_concepts"]
+    },
+    {
+      "id": "phys:energy_concepts",
+      "term": "Energy Concepts",
+      "type": "concept",
+      "definition": "Forms of energy and the principle of conservation of energy",
+      "value": {
+        "forms_of_energy": {
+          "kinetic": "energy of motion, KE = ½mv²",
+          "potential": "stored energy, gravitational PE = mgh",
+          "thermal": "heat energy, related to temperature",
+          "electrical": "energy from electric charges",
+          "chemical": "energy stored in chemical bonds",
+          "nuclear": "energy from atomic nucleus"
+        },
+        "conservation_law": "Energy cannot be created or destroyed, only transformed",
+        "work_energy_theorem": "Work done = change in kinetic energy, W = ΔKE",
+        "power": "rate of doing work, P = W/t, units: Watts (W)"
+      },
+      "examples": [
+        "Falling object: gravitational PE converts to KE",
+        "Car engine: chemical energy → thermal → kinetic",
+        "Light bulb: electrical energy → thermal + light"
+      ],
+      "related_ids": ["phys:newton_laws", "phys:thermodynamics"]
+    },
+    {
+      "id": "phys:thermodynamics",
+      "term": "Thermodynamics",
+      "type": "field",
+      "definition": "Study of heat, temperature, and energy transfer",
+      "value": {
+        "laws": {
+          "zeroth": "thermal equilibrium - two systems in contact reach same temperature",
+          "first": "energy conservation - ΔU = Q - W",
+          "second": "entropy increases in isolated systems",
+          "third": "absolute zero is unattainable"
+        },
+        "key_concepts": {
+          "temperature": "measure of average kinetic energy",
+          "heat": "energy transfer due to temperature difference",
+          "entropy": "measure of disorder",
+          "specific_heat": "energy needed to raise temperature of 1kg by 1°C"
+        },
+        "processes": {
+          "isothermal": "constant temperature",
+          "isobaric": "constant pressure",
+          "isochoric": "constant volume",
+          "adiabatic": "no heat exchange"
+        }
+      },
+      "examples": [
+        "Ice melting: absorbs heat, temperature stays constant",
+        "Engine: converts thermal energy to mechanical work",
+        "Refrigerator: moves heat from cold to hot region"
+      ],
+      "related_ids": ["phys:energy_concepts"]
+    },
+    {
+      "id": "phys:electricity_basics",
+      "term": "Electricity Basics",
+      "type": "concept",
+      "definition": "Fundamental concepts of electric charge, current, voltage, and circuits",
+      "value": {
+        "basic_quantities": {
+          "charge": "q, measured in Coulombs (C)",
+          "current": "I = dq/dt, measured in Amperes (A)",
+          "voltage": "V, measured in Volts (V)",
+          "resistance": "R, measured in Ohms (Ω)"
+        },
+        "ohms_law": "V = IR",
+        "power": "P = VI = I²R = V²/R, measured in Watts (W)",
+        "circuit_elements": {
+          "resistor": "opposes current flow",
+          "capacitor": "stores charge",
+          "inductor": "opposes change in current",
+          "battery": "provides voltage"
+        }
+      },
+      "examples": [
+        "Light bulb: converts electrical energy to light and heat",
+        "Battery: chemical energy → electrical energy",
+        "Resistor in series: total R = R1 + R2",
+        "Resistor in parallel: 1/R_total = 1/R1 + 1/R2"
+      ],
+      "related_ids": ["phys:energy_concepts"]
+    },
+    {
+      "id": "phys:waves_light",
+      "term": "Waves and Light",
+      "type": "concept",
+      "definition": "Properties of waves and electromagnetic radiation",
+      "value": {
+        "wave_properties": {
+          "wavelength": "λ, distance between crests",
+          "frequency": "f, waves per second (Hz)",
+          "amplitude": "maximum displacement",
+          "speed": "v = fλ"
+        },
+        "light_properties": {
+          "speed_in_vacuum": "c = 3.00 × 10⁸ m/s",
+          "dual_nature": "particle (photon) and wave",
+          "reflection": "angle of incidence = angle of reflection",
+          "refraction": "light bends when entering different medium"
+        },
+        "electromagnetic_spectrum": {
+          "radio": "longest wavelength",
+          "microwave": "used in cooking",
+          "infrared": "heat radiation",
+          "visible": "400-700nm, what humans see",
+          "ultraviolet": "causes sunburn",
+          "x-ray": "medical imaging",
+          "gamma": "highest energy"
+        }
+      },
+      "examples": [
+        "Sound waves: mechanical waves requiring medium",
+        "Light waves: electromagnetic, travel through vacuum",
+        "Rainbow: refraction and dispersion of sunlight",
+        "Mirrors: reflection of light"
+      ],
+      "related_ids": ["phys:electricity_basics"]
+    },
+    {
+      "id": "phys:nuclear_physics",
+      "term": "Nuclear Physics",
+      "type": "field",
+      "definition": "Study of atomic nuclei, radioactivity, and nuclear reactions",
+      "value": {
+        "atomic_structure": {
+          "proton": "positive charge, mass ~1 u",
+          "neutron": "neutral, mass ~1 u",
+          "electron": "negative charge, mass ~1/1836 u"
+        },
+        "radioactivity": {
+          "alpha": "helium nucleus emission",
+          "beta": "electron emission",
+          "gamma": "electromagnetic radiation"
+        },
+        "nuclear_reactions": {
+          "fission": "heavy nucleus splits into lighter nuclei",
+          "fusion": "light nuclei combine into heavier nucleus",
+          "binding_energy": "energy holding nucleus together"
+        },
+        "nuclear_equations": "mass and charge must balance"
+      },
+      "examples": [
+        "Uranium-235 fission: used in nuclear power plants",
+        "Hydrogen fusion: powers the sun",
+        "Carbon dating: uses radioactive decay of C-14",
+        "Medical imaging: uses radioactive tracers"
+      ],
+      "related_ids": ["phys:energy_concepts", "phys:thermodynamics"]
+    }
+  ],
+  "access_control": {
+    "mutable": true,
+    "curator": "Bryan A. Spruk",
+    "hash": "sha256:phys_reference_2025"
+  }
+}

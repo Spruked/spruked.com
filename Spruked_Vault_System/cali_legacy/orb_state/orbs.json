@@ -1,0 +1,62 @@
+{
+  "schema_version": "orb-state.v1",
+  "generated_at": "2026-10-01T10:08:07.418Z",
+  "count": 2,
+  "orbs": [
+    {
+      "schema_version": "orb-state.v1",
+      "site_id": "spruked.com",
+      "orb_id": "spruked-global-orb",
+      "display_name": "Spruked Global ORB",
+      "frontend_component": "/home/bryan/spruked.com/components/ui/GlobalOrb.tsx",
+      "endpoint": "/api/orb",
+      "handler": "/home/bryan/spruked.com/app/api/orb/route.ts:queryByProvider",
+      "reasoning_profile": "llama.cpp-core + cali-skg-articulation",
+      "context_source": "Spruked public website context + Orb_Assistant web runtime + /mnt/r/orb_mesh",
+      "reasoning_mode": "hybrid",
+      "fallback_state": "none",
+      "voice_engine": "kokoro_local",
+      "voice_profile": "af_bella via Kokoro local voice pack",
+      "tts_ready": true,
+      "last_error": null,
+      "service_health": "online",
+      "orb_health": "ready",
+      "reasoning_state": "kaygee_hybrid",
+      "voice_state": "server-tts-ready",
+      "classification": "hybrid reasoning",
+      "updated_at": "2026-10-01T10:08:07.397Z",
+      "last_reasoning_timestamp": "2026-10-01T10:08:07.314Z",
+      "last_synthesis_timestamp": "2026-10-01T10:08:07.314Z"
+    },
+    {
+      "schema": 1,
+      "operator_id": "bryan_spruk",
+      "override_authorities": [
+        "bryan_spruk"
+      ],
+      "override_policy": "operator_only",
+      "external_override_allowed": false,
+      "persistent": true,
+      "permissions": {
+        "voice": true,
+        "listening": true,
+        "auto_listen": true,
+        "presence": true,
+        "research": true,
+        "desktop": true,
+        "multi_monitor_travel": true,
+        "operator_override": true
+      },
+      "active_permissions": [
+        "voice",
+        "listening",
+        "auto_listen",
+        "presence",
+        "research",
+        "desktop",
+        "multi_monitor_travel"
+      ],
+      "updated_at": "2026-09-19T23:00:23.278867"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Proverbs",
+  "vault_id": "seed_proverbs",
+  "version": "1.1.0",
+  "category": "Ethics",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-10-23T12:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Wisdom teachings from the Book of Proverbs providing moral guidance, practical wisdom, and ethical principles for living",
+  "author": "Bryan A. Spruk",
+  "source": "Book of Proverbs (Biblical)",
+  "reasoning_type": "moral_wisdom",
+  "immutable": true,
+  "index": {
+    "wisdom": "eth:wisdom",
+    "integrity": "eth:integrity",
+    "diligence": "eth:diligence",
+    "speech": "eth:speech",
+    "justice": "eth:justice"
+  },
+  "entries": [
+    {
+      "id": "eth:wisdom",
+      "term": "Wisdom",
+      "type": "virtue",
+      "definition": "The beginning of wisdom is the fear of the Lord; fools despise wisdom and instruction. Practical knowledge applied with understanding.",
+      "source_id": "WD:Q1138249",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Book_of_Proverbs"],
+      "examples": ["Seeking counsel from the wise", "Learning from correction"],
+      "related_ids": ["eth:understanding", "eth:instruction"]
+    },
+    {
+      "id": "eth:integrity",
+      "term": "Integrity",
+      "type": "virtue",
+      "definition": "Better is the poor who walks in integrity than one who is crooked in speech and is a fool. Moral wholeness and honesty in character.",
+      "source_id": "WD:Q1138249",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Integrity"],
+      "examples": ["Keeping promises", "Honest dealings", "Consistent character"],
+      "related_ids": ["eth:honesty", "eth:character"]
+    },
+    {
+      "id": "eth:diligence",
+      "term": "Diligence",
+      "type": "virtue",
+      "definition": "The hand of the diligent will rule, while the slothful will be put to forced labor. Persistent, hardworking effort toward goals.",
+      "source_id": "WD:Q1138249",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Diligence"],
+      "examples": ["Consistent effort", "Completing tasks", "Stewardship of time"],
+      "related_ids": ["eth:persistence", "eth:work_ethic"]
+    },
+    {
+      "id": "eth:speech",
+      "term": "Speech",
+      "type": "practice",
+      "definition": "A gentle answer turns away wrath, but a harsh word stirs up anger. The power and responsibility of spoken words.",
+      "source_id": "WD:Q1138249",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Book_of_Proverbs"],
+      "examples": ["Gentle responses", "Truthful speech", "Avoiding gossip"],
+      "related_ids": ["eth:communication", "eth:self_control"]
+    },
+    {
+      "id": "eth:justice",
+      "term": "Justice",
+      "type": "principle",
+      "definition": "Unequal weights and measures are an abomination to the Lord. Fairness, equity, and righteous judgment in dealings.",
+      "source_id": "WD:Q1138249",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Justice"],
+      "examples": ["Fair measurements", "Equal treatment", "Righteous judgment"],
+      "related_ids": ["eth:fairness", "eth:righteousness"]
+    }
+  ],
+  "learning_principles": [
+    "Wisdom begins with humility and reverence for truth.",
+    "Integrity is worth more than wealth.",
+    "Hard work and persistence lead to influence.",
+    "Measured words preserve peace.",
+    "Justice requires both fairness and righteousness."
+  ],
+  "parameters": {
+    "ethical_framework": "biblical_wisdom",
+    "teaching_method": "proverbial_instruction",
+    "application_scope": "practical_living",
+    "moral_authority": "divine_wisdom"
+  },
+  "operations": {
+    "wisdom_application": {
+      "description": "Apply proverbial wisdom to specific situations",
+      "input": {"situation": "object", "context": "string"},
+      "output": {"relevant_proverbs": "array", "application_guidance": "string"}
+    },
+    "character_assessment": {
+      "description": "Evaluate character traits against wisdom principles",
+      "input": {"actions": "array", "principles": "array"},
+      "output": {"assessment": "object", "improvement_suggestions": "array"}
+    },
+    "moral_guidance": {
+      "description": "Provide ethical guidance based on proverbial teachings",
+      "input": {"dilemma": "string", "stakeholders": "array"},
+      "output": {"guidance": "string", "supporting_proverbs": "array"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["ethical_processor", "wisdom_engine", "character_development"],
+    "input_sources": ["life_situations", "moral_dilemmas", "behavior_patterns"],
+    "output_destinations": ["decision_guidance", "character_formation", "moral_education"]
+  },
+  "performance_metrics": {
+    "wisdom_depth": "practical",
+    "moral_clarity": "clear",
+    "application_breadth": "comprehensive",
+    "transformative_power": "life_changing"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1"
+  }
+}

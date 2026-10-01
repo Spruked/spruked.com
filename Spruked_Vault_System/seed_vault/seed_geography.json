@@ -1,0 +1,131 @@
+{
+  "$schema": "https://schemas.seedvault.org/core/v1.1.0",
+  "vault_name": "SeedVault_Geography",
+  "vault_id": "seed_geography",
+  "version": "1.1.0",
+  "category": "Geography",
+  "type": "seed",
+  "license": "CC0-1.0",
+  "generated": "2025-10-23T12:00:00Z",
+  "compatibility": "backward-compatible",
+  "description": "Fundamental geographical concepts including spatial relationships, physical features, human geography, and cartographic principles",
+  "author": "Bryan A. Spruk",
+  "immutable": true,
+  "index": {
+    "france": "geo:country_fra",
+    "spatial_relations": "geo:spatial_relations",
+    "physical_geography": "geo:physical_geography",
+    "human_geography": "geo:human_geography",
+    "cartography": "geo:cartography"
+  },
+  "entries": [
+    {
+      "id": "geo:country_fra",
+      "term": "France",
+      "type": "entity",
+      "definition": "A country in Western Europe known for its cultural heritage, diverse landscapes, and political influence.",
+      "value": {
+        "iso_alpha_2": "FR",
+        "iso_alpha_3": "FRA",
+        "capital": "Paris",
+        "coordinates": [2.3522, 48.8566],
+        "area_km2": 551695,
+        "population": 67800000,
+        "continent": "Europe",
+        "region": "Western Europe"
+      },
+      "source_id": "WD:Q142",
+      "reference_urls": [
+        "https://www.wikidata.org/wiki/Q142",
+        "https://en.wikipedia.org/wiki/France"
+      ],
+      "related_ids": ["geo:continent_europe", "geo:paris"]
+    },
+    {
+      "id": "geo:spatial_relations",
+      "term": "Spatial Relations",
+      "type": "concept",
+      "definition": "Relationships between geographical features including distance, direction, proximity, and connectivity.",
+      "source_id": "WD:Q1771264",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Spatial_relation"],
+      "examples": ["Paris is north of Marseille", "Rivers connect mountains to oceans"],
+      "related_ids": ["geo:topology", "geo:distance"]
+    },
+    {
+      "id": "geo:physical_geography",
+      "term": "Physical Geography",
+      "type": "field",
+      "definition": "Study of natural features and processes of the Earth's surface including landforms, climate, soils, and vegetation.",
+      "source_id": "WD:Q52107",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Physical_geography"],
+      "examples": ["Mountain formation", "River systems", "Climate patterns"],
+      "related_ids": ["geo:landforms", "geo:climate_systems"]
+    },
+    {
+      "id": "geo:human_geography",
+      "term": "Human Geography",
+      "type": "field",
+      "definition": "Study of human activity and its relationship with the Earth's surface including population, culture, economy, and politics.",
+      "source_id": "WD:Q1283111",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Human_geography"],
+      "examples": ["Urban development", "Cultural landscapes", "Economic regions"],
+      "related_ids": ["geo:population_distribution", "geo:cultural_geography"]
+    },
+    {
+      "id": "geo:cartography",
+      "term": "Cartography",
+      "type": "discipline",
+      "definition": "Science and art of creating maps, including map projection, symbolization, and spatial data representation.",
+      "source_id": "WD:Q42515",
+      "reference_urls": ["https://en.wikipedia.org/wiki/Cartography"],
+      "examples": ["Mercator projection", "Topographic maps", "Thematic mapping"],
+      "related_ids": ["geo:map_projection", "geo:gis"]
+    }
+  ],
+  "learning_principles": [
+    "Geography integrates physical and human systems.",
+    "Spatial relationships shape human activity and natural processes.",
+    "Scale affects how we understand geographical phenomena.",
+    "Maps are models of reality, not reality itself.",
+    "Location and place create unique geographical contexts."
+  ],
+  "parameters": {
+    "spatial_scale": "multi_scale",
+    "analysis_methods": ["spatial_analysis", "regional_studies", "mapping"],
+    "integration_level": "physical_human_systems"
+  },
+  "operations": {
+    "spatial_analysis": {
+      "description": "Analyze spatial relationships and patterns",
+      "input": {"features": "array", "relationship_type": "string"},
+      "output": {"patterns": "object", "relationships": "array"}
+    },
+    "location_query": {
+      "description": "Find geographical entities by location criteria",
+      "input": {"criteria": "object", "search_area": "object"},
+      "output": {"matches": "array", "relevance_scores": "object"}
+    },
+    "map_generation": {
+      "description": "Create maps from geographical data",
+      "input": {"data": "object", "projection": "string", "theme": "string"},
+      "output": {"map_specification": "object", "visualization_data": "object"}
+    }
+  },
+  "integration": {
+    "compatible_modules": ["spatial_analyzer", "map_renderer", "location_service"],
+    "input_sources": ["geospatial_data", "satellite_imagery", "census_data"],
+    "output_destinations": ["navigation_system", "urban_planner", "environmental_monitor"]
+  },
+  "performance_metrics": {
+    "spatial_accuracy": "high",
+    "coverage_completeness": "comprehensive",
+    "temporal_relevance": "current",
+    "integration_depth": "deep"
+  },
+  "access_control": {
+    "mutable": false,
+    "curator": "Bryan A. Spruk",
+    "authorized_editors": ["Bryan A. Spruk"],
+    "hash": "sha256:b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0"
+  }
+}
