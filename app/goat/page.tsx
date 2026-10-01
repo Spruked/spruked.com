@@ -26,14 +26,12 @@ export default async function GoatPage() {
             <span className="block text-3xl font-semibold text-truth sm:text-4xl">{hero.highlight}</span>
           </h1>
           <p className="mx-auto max-w-3xl text-lg text-gray-300">{hero.description}</p>
+          <p className="mx-auto max-w-3xl text-sm text-gray-500">The phrase &quot;truth with teeth&quot; represents the Spruked philosophy.</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href={hero.primaryCta.href as any}>
-            <p>
-               The phrase &quot;truth with teeth&quot; represents the Spruked philosophy.
-            </p>
+              href={hero.primaryCta.href as any}
               className="rounded-full bg-light px-8 py-3 text-sm font-semibold uppercase tracking-[0.4em] text-dark hover:bg-truth hover:text-light"
-              {'>'}
+            >
               {hero.primaryCta.label}
             </Link>
             {hero.secondaryCta && (

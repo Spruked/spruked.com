@@ -18,6 +18,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from .cali_cognition import CaliCognitionMixin
+
 
 @dataclass
 class CaliMemory:
@@ -29,7 +31,7 @@ class CaliMemory:
     source: str
 
 
-class CaliPersonalSKG:
+class CaliPersonalSKG(CaliCognitionMixin):
     def __init__(self, base_path: str = "/home/bryan/spruked.com/cali_skg"):
         self.base_path = Path(base_path)
         self.vault_path = self.base_path / "vault"
@@ -41,6 +43,7 @@ class CaliPersonalSKG:
 
         self.db_path = self.memory_path / "cali_personal.db"
         self._init_database()
+        self._init_cognition()
         self.identity = self._load_identity()
         self.kaygee_config = {
             "endpoint": "http://127.0.0.1:8011",

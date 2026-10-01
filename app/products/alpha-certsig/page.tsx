@@ -11,7 +11,7 @@ export default function AlphaCertSigPage() {
   return (
     <div className="pb-24">
       {/* Hero */}
-      <Section className="mx-auto max-w-4xl pt-24 pb-12">
+      <Section id="overview" className="mx-auto max-w-4xl pt-24 pb-12">
         <div className="mb-0">
           <h1 className="mt-4 text-5xl font-black leading-tight sm:text-7xl">
             Alpha CertSig <span className="text-truth">Elite Mint Engine</span>
@@ -44,7 +44,7 @@ export default function AlphaCertSigPage() {
       </Section>
 
       {/* The Market Has Changed */}
-      <Section className="mx-auto max-w-4xl py-12">
+      <Section id="examples" className="mx-auto max-w-4xl py-12">
         <div className="border-t border-gray-900 pt-12">
           <h2 className="mb-8 text-3xl font-bold text-light">The Market Has Changed</h2>
           <div className="space-y-6 text-xl text-gray-300">
@@ -389,7 +389,7 @@ export default function AlphaCertSigPage() {
       </Section>
 
       {/* Divider & CTA */}
-      <Section className="mx-auto max-w-4xl pt-8 pb-12 text-center">
+      <Section id="quote" className="mx-auto max-w-4xl pt-8 pb-12 text-center">
         <div className="mx-auto w-16 h-1 bg-gray-800 mb-12 rounded-full"></div>
         <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-widest text-light mb-6">
           Spruked

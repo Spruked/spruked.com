@@ -1,0 +1,14 @@
+{
+  "name": "wikipedia",
+  "kind": "api",
+  "description": "Wikipedia page summaries for quick background research. No key required.",
+  "base_url": "https://en.wikipedia.org",
+  "tier": "research",
+  "enabled": true,
+  "auth": {"type": "none"},
+  "timeout": 15,
+  "max_bytes": 100000,
+  "endpoints": {
+    "summary": {"method": "GET", "path": "/api/rest_v1/page/summary/{title}", "description": "Summary of a Wikipedia article by title."}
+  }
+}

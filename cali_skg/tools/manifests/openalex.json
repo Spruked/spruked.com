@@ -1,0 +1,15 @@
+{
+  "name": "openalex",
+  "kind": "api",
+  "description": "OpenAlex open scholarly index (works, authors, concepts). No key required.",
+  "base_url": "https://api.openalex.org",
+  "tier": "research",
+  "enabled": true,
+  "auth": {"type": "none"},
+  "timeout": 15,
+  "max_bytes": 200000,
+  "endpoints": {
+    "search_works": {"method": "GET", "path": "/works", "params": ["search", "per-page", "filter"],
+                     "description": "Search works by keyword."}
+  }
+}

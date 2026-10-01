@@ -1,0 +1,17 @@
+{
+  "name": "crossref",
+  "kind": "api",
+  "description": "Crossref scholarly metadata (papers, DOIs, citations). No key required.",
+  "base_url": "https://api.crossref.org",
+  "tier": "research",
+  "enabled": true,
+  "auth": {"type": "none"},
+  "timeout": 15,
+  "max_bytes": 200000,
+  "user_agent": "CALI-research/1.0 (mailto:bryan@spruked.com)",
+  "endpoints": {
+    "search_works": {"method": "GET", "path": "/works", "params": ["query", "rows", "select"],
+                     "description": "Search scholarly works by keyword."},
+    "get_work": {"method": "GET", "path": "/works/{doi}", "description": "Fetch one work by DOI."}
+  }
+}

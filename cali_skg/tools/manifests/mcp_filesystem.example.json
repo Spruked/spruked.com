@@ -1,0 +1,11 @@
+{
+  "name": "filesystem",
+  "kind": "mcp",
+  "description": "EXAMPLE - copy to mcp_filesystem.json, set enabled true and point the root at a folder you approve.",
+  "enabled": false,
+  "tier": "read",
+  "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/bryan/projects/spruked.com/cali_skg/temp"],
+  "tools_allowlist": ["read_file", "list_directory"],
+  "env_passthrough": [],
+  "timeout": 30
+}

@@ -1,0 +1,1868 @@
+diff --git a/cali_skg/api/cali_routes.py b/cali_skg/api/cali_routes.py
+index 39838bc..eef9e57 100644
+--- a/cali_skg/api/cali_routes.py
++++ b/cali_skg/api/cali_routes.py
+@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
+ from urllib.parse import urlsplit, urlunsplit
+ 
+ import httpx
+-from fastapi import APIRouter, Depends, FastAPI, HTTPException
++from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
+ from fastapi.middleware.cors import CORSMiddleware
+ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+ from pydantic import BaseModel
+@@ -40,6 +40,13 @@ def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security))
+     return token
+ 
+ 
++def _is_admin_token(credentials: Optional[HTTPAuthorizationCredentials]) -> bool:
++    """Non-raising admin check. Used to decide whose memory a public ORB turn may touch."""
++    token = credentials.credentials if credentials else ""
++    allowed = os.getenv("CALI_ADMIN_TOKEN") or os.getenv("ADMIN_ACCESS_TOKEN") or "spruked-admin-local"
++    return bool(token) and token == allowed
++
++
+ def _strict_mode() -> bool:
+     return str(os.getenv("CALI_HYBRID_STRICT", "0")).strip() == "1"
+ 
+@@ -677,6 +684,23 @@ class OrbRespondRequest(BaseModel):
+     session_id: Optional[str] = None
+ 
+ 
++class MemoryCandidateIn(BaseModel):
++    content: str
++    memory_type: str = "long_term_candidate"
++    reason: str = ""
++    confidence: float = 0.5
++    importance: float = 0.5
++    source: str = "conversation"
++    expected_duration: Optional[str] = None
++    subject: Optional[str] = None
++    kind: str = "context"
++
++
++class ToolCallRequest(BaseModel):
++    name: str
++    args: Optional[Dict[str, Any]] = None
++
++
+ class OrbTtsRequest(BaseModel):
+     text: str
+     voice: Optional[str] = None
+@@ -906,16 +930,24 @@ def crm_email_poll(payload: EmailPollRequest, _: str = Depends(verify_admin)) ->
+ 
+ 
+ @router.post("/query")
+-def cali_query(payload: CaliQuery, _: str = Depends(verify_admin)) -> Dict[str, Any]:
++def cali_query(payload: CaliQuery, background_tasks: BackgroundTasks, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+     cali = get_cali_skg()
+     context: Dict[str, Any] = {"current_path": payload.current_path or "/admin"}
+     if payload.context:
+         context.update(payload.context)
+-    return cali.process_query(query=payload.query, context=context)
++    result = cali.process_query(query=payload.query, context=context)
++    background_tasks.add_task(
++        cali.run_memory_loop, payload.query, str(result.get("response") or ""), result.get("intent") or {}, context, "admin"
++    )
++    return result
+ 
+ 
+ @router.post("/orb/respond")
+-async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
++async def cali_orb_respond(
++    payload: OrbRespondRequest,
++    background_tasks: BackgroundTasks,
++    credentials: HTTPAuthorizationCredentials = Depends(security),
++) -> Dict[str, Any]:
+     prompt = str(payload.prompt or "").strip()
+     if not prompt:
+         raise HTTPException(status_code=400, detail="Prompt is required.")
+@@ -974,6 +1006,13 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
+         require_decision_envelope=_doctrine_require_decision_envelope(),
+     )
+ 
++    # Memory loop runs after the response is sent, so it adds no voice latency.
++    # Public visitors only ever produce short-term context; durable memory is admin-only.
++    background_tasks.add_task(
++        cali.run_memory_loop, prompt, governed, {"type": intent_type or "unknown"}, skg_context,
++        "admin" if _is_admin_token(credentials) else "visitor",
++    )
++
+     voice_payload = {"audio_url": audio_url, "audio_engine": audio_engine}
+     if not voice_payload.get("audio_url"):
+         voice_payload = await _synthesize_voice(governed)
+@@ -1049,6 +1088,62 @@ def prune(retention_days: int = 90, _: str = Depends(verify_admin)) -> Dict[str,
+     return {"success": True, "message": "Knowledge graph pruned."}
+ 
+ 
++@router.get("/cognition/status")
++def cognition_status(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().cognition_status()
++
++
++@router.post("/memory/candidates")
++def submit_memory_candidate(payload: MemoryCandidateIn, _: str = Depends(verify_admin)) -> Dict[str, Any]:
++    """KayGee/CALI proposes a memory. Short-term writes through; long-term is graded before AIMS."""
++    return get_cali_skg().submit_memory_candidate(payload.model_dump(), speaker="admin")
++
++
++@router.get("/memory/working")
++def working_memory(limit: int = 20, _: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return {"items": get_cali_skg().get_working_memory(limit=limit)}
++
++
++@router.get("/memory/deferred")
++def deferred_candidates(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return {"items": get_cali_skg().get_deferred_candidates()}
++
++
++@router.post("/memory/deferred/{candidate_id}/resolve")
++def resolve_deferred(candidate_id: str, approve: bool, _: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().resolve_deferred_candidate(candidate_id, approve)
++
++
++@router.get("/memory/calibration")
++def memory_calibration(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().get_grader_calibration()
++
++
++@router.post("/maintenance/self")
++def self_maintenance(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().run_self_maintenance()
++
++
++@router.post("/maintenance/repair")
++def self_repair(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().run_self_repair()
++
++
++@router.get("/improvements")
++def improvements(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return {"items": get_cali_skg().list_improvement_proposals()}
++
++
++@router.get("/tools")
++def list_tools(_: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return {"items": get_cali_skg().list_tools()}
++
++
++@router.post("/tools/call")
++def call_tool(payload: ToolCallRequest, _: str = Depends(verify_admin)) -> Dict[str, Any]:
++    return get_cali_skg().use_tool(payload.name, payload.args, caller="admin")
++
++
+ app = FastAPI(title="Cali Personal Assistant API", version="1.0.0")
+ app.add_middleware(
+     CORSMiddleware,
+@@ -1060,6 +1155,15 @@ app.add_middleware(
+ app.include_router(router)
+ 
+ 
++@app.on_event("startup")
++def _start_cali_self_care() -> None:
++    if str(os.getenv("CALI_AUTO_MAINTENANCE", "1")).strip() != "0":
++        get_cali_skg().schedule_maintenance(
++            interval_hours=float(os.getenv("CALI_MAINTENANCE_INTERVAL_HOURS", "6")),
++            first_delay_seconds=float(os.getenv("CALI_MAINTENANCE_FIRST_DELAY_SECONDS", "600")),
++        )
++
++
+ @app.get("/health")
+ def health() -> Dict[str, str]:
+     return {"status": "ok", "service": "cali-personal-api"}
+diff --git a/cali_skg/core/cali_cognition.py b/cali_skg/core/cali_cognition.py
+new file mode 100644
+index 0000000..a922611
+--- /dev/null
++++ b/cali_skg/core/cali_cognition.py
+@@ -0,0 +1,19 @@
++"""
++CaliCognitionMixin - the single base class that gives CaliPersonalSKG her memory loop,
++self-care (pruning, repair) and tool registry. Add it as a base and call _init_cognition().
++"""
++
++from __future__ import annotations
++
++from .cali_memory_loop import MEMORY_AGENCY_PROMPT, AimsClient, CaliMemoryLoopMixin
++from .cali_self_care import CaliSelfCareMixin
++from .cali_tools import CaliToolsMixin
++
++__all__ = ["CaliCognitionMixin", "MEMORY_AGENCY_PROMPT"]
++
++
++class CaliCognitionMixin(CaliMemoryLoopMixin, CaliSelfCareMixin, CaliToolsMixin):
++    def _init_cognition(self) -> None:
++        self._init_memory_loop_tables()
++        self.aims_client = AimsClient()
++        self._init_tools()
+diff --git a/cali_skg/core/cali_memory_loop.py b/cali_skg/core/cali_memory_loop.py
+new file mode 100644
+index 0000000..e305803
+--- /dev/null
++++ b/cali_skg/core/cali_memory_loop.py
+@@ -0,0 +1,782 @@
++"""
++CALI memory loop - candidate generation, grader, and promotion into AIMS.
++
++    interaction -> CALI reasons -> final answer -> memory candidates
++        |- short-term candidate  -> local working memory (expires on its own)
++        '- long-term candidate   -> grader -> accept / reject / revise / defer
++                                       accept -> AIMS: /ltm/commit then /vault/aposteriori
++
++CALI proposes what matters. The grader decides what persists.
++AIMS is the authority for durable memory. The Vault is never deleted from here;
++CALI only prunes its own local clutter (see cali_self_care.py).
++
++Speaker rule: only the admin (Bryan) can create durable memory. Website visitors can
++only leave short-term context, so the public ORB can never write into Bryan's vault.
++
++This is a mixin for CaliPersonalSKG. It relies only on members the class already has:
++_connect(), _rows(), _generate_hash(), _next_id(), _log_memory(), vault_path, kaygee_config.
++"""
++
++from __future__ import annotations
++
++import json
++import os
++import re
++import threading
++from datetime import datetime, timedelta
++from typing import Any, Dict, List, Optional
++
++try:  # httpx is already a cali_skg dependency
++    import httpx
++except Exception:  # pragma: no cover
++    httpx = None  # type: ignore
++
++MEMORY_AGENCY_PROMPT = (
++    "You may decide that information from an interaction is worth remembering. "
++    "You may write freely to short-term working memory. For durable memory, create a "
++    "memory candidate with the fact, why it matters, confidence, source, and expected "
++    "durability. Durable memories are evaluated before promotion into long-term AIMS storage."
++)
++
++SHORT_TERM = "short_term"
++LONG_TERM_CANDIDATE = "long_term_candidate"
++LONG_TERM_TARGET = "a_posteriori"
++
++DURABILITY_SCORES = {"persistent": 1.0, "session": 0.4, "turn": 0.1}
++SOURCE_QUALITY = {
++    "explicit_user": 1.0,
++    "user_correction": 1.0,
++    "conversation": 0.8,
++    "system": 0.7,
++    "inferred": 0.5,
++    "web": 0.4,
++}
++CORRECTION_SOURCES = {"user_correction", "explicit_user"}
++
++WEIGHTS = {
++    "importance": 0.25,
++    "durability": 0.20,
++    "confidence": 0.20,
++    "novelty": 0.15,
++    "source_quality": 0.10,
++    "relevance": 0.10,
++}
++DEFAULT_ACCEPT_THRESHOLD = 0.75
++DEFAULT_DEFER_THRESHOLD = 0.55
++ACCEPT_BOUNDS = (0.70, 0.85)  # self_tune can never move the accept threshold outside this
++DUPLICATE_SIMILARITY = 0.85
++
++RELEVANCE_TERMS = {
++    "bryan", "cali", "orb", "orbs", "aims", "tpc", "kaygee", "spruked", "truemark",
++    "goat", "weaver", "vault", "skg", "doctrine", "dandy", "prefer", "decision",
++}
++
++_HARD_PRIVACY = [
++    ("ssn", re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
++    ("card_number", re.compile(r"\b(?:\d[ -]?){13,16}\b")),
++    ("credential", re.compile(r"(?i)\b(password|passcode|api[_ -]?key|secret|token)\b\s*(is|=|:)\s*\S+")),
++    ("payment_detail", re.compile(r"(?i)\b(cvv|cvc|routing number|account number)\b\D{0,12}\d{3,}")),
++]
++_SOFT_PRIVACY = re.compile(
++    r"(?i)\b(diagnos\w*|medical|medication|prescription|therapy|salary|immigration|social security)\b"
++)
++
++_PREFERENCE_MARKERS = (
++    "i prefer", "i like it when", "i want you to", "from now on", "going forward",
++    "always ", "never ", "i don't want", "i do not want",
++)
++_DECISION_MARKERS = ("we decided", "i decided", "the plan is", "let's go with", "lets go with", "we're going with")
++_CORRECTION_MARKERS = ("that's wrong", "that is wrong", "correction", "actually,", "no, it's", "not correct")
++_REMEMBER_MARKERS = ("remember this", "remember that", "note that", "don't forget")
++
++_INTENT_LABELS = {
++    "crm_pipeline": "the CRM pipeline",
++    "financial_summary": "financial summaries",
++    "daily_briefing": "the daily briefing",
++    "contact_query": "contacts",
++    "verification_queue": "the call verification queue",
++    "email_poll": "the mailbox",
++    "email_status": "the mailbox",
++    "site_nav": "site navigation",
++    "add_task": "adding tasks",
++}
++
++
++def _tokens(text: str) -> set:
++    return set(re.findall(r"[a-z0-9']+", str(text or "").lower()))
++
++
++def _similarity(a: str, b: str) -> float:
++    ta, tb = _tokens(a), _tokens(b)
++    if not ta or not tb:
++        return 0.0
++    return len(ta & tb) / len(ta | tb)
++
++
++def _clamp(value: Any, default: float = 0.5) -> float:
++    try:
++        return max(0.0, min(1.0, float(value)))
++    except (TypeError, ValueError):
++        return default
++
++
++# ---------------------------------------------------------------- AIMS client
++class AimsUnavailable(Exception):
++    """AIMS unreachable or erroring - safe to retry later."""
++
++
++class AimsRejected(Exception):
++    """AIMS refused the request (4xx) - retrying the same payload will not help."""
++
++
++class AimsClient:
++    """Thin HTTP client for the A.I.M.S. service (service.py). No AIMS code is imported."""
++
++    def __init__(self, base_url: Optional[str] = None, token: Optional[str] = None, timeout: float = 4.0):
++        self.base_url = str(base_url or os.getenv("AIMS_API_BASE") or "http://127.0.0.1:8000").rstrip("/")
++        self.token = token if token is not None else os.getenv("AIMS_API_TOKEN")
++        self.timeout = timeout
++
++    def _request(self, method: str, path: str, payload: Optional[Dict[str, Any]] = None) -> Any:
++        if httpx is None:
++            raise AimsUnavailable("httpx not installed")
++        headers = {"X-AIMS-Token": self.token} if self.token else {}
++        try:
++            response = httpx.request(method, f"{self.base_url}{path}", json=payload, headers=headers, timeout=self.timeout)
++        except Exception as exc:
++            raise AimsUnavailable(str(exc)) from exc
++        if response.status_code >= 500:
++            raise AimsUnavailable(f"AIMS {response.status_code}")
++        if response.status_code >= 400:
++            raise AimsRejected(f"AIMS {response.status_code}: {response.text[:300]}")
++        return response.json()
++
++    def health(self) -> Dict[str, Any]:
++        return self._request("GET", "/health")
++
++    def integrity(self) -> Dict[str, Any]:
++        return self._request("GET", "/api/v1/vault/integrity")
++
++    def maintenance(self, passes: int = 3) -> Dict[str, Any]:
++        return self._request("POST", f"/maintenance/run?self_eval_passes={int(passes)}")
++
++    def commit(self, entry_type: str, content: Dict[str, Any], metadata: Dict[str, Any], writer_id: str = "cali") -> Dict[str, Any]:
++        return self._request("POST", "/ltm/commit", {
++            "entry_type": entry_type, "content": content, "metadata": metadata, "writer_id": writer_id,
++        })
++
++    def derive_aposteriori(self, statement: str, source_entry_ids: List[str], metadata: Dict[str, Any],
++                           initial_confidence: float) -> Dict[str, Any]:
++        return self._request("POST", "/vault/aposteriori", {
++            "statement": statement, "source_entry_ids": source_entry_ids,
++            "metadata": metadata, "initial_confidence": initial_confidence,
++        })
++
++    def link(self, source_atom_id: str, target_atom_id: str, relation: str, weight: float = 1.0) -> Dict[str, Any]:
++        return self._request("POST", "/skg/link", {
++            "source_atom_id": source_atom_id, "target_atom_id": target_atom_id,
++            "relation": relation, "weight": weight,
++        })
++
++
++_ENTRY_TYPE_BY_KIND = {
++    "decision": "decision", "correction": "learning", "preference": "learning",
++    "pattern": "reflection", "insight": "reflection",
++}
++
++
++class CaliMemoryLoopMixin:
++    aims_client: Optional[AimsClient] = None
++    _aims_write_blocked: bool = False
++    _memory_lock = threading.RLock()
++
++    # ------------------------------------------------------------------ schema
++    def _init_memory_loop_tables(self) -> None:
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute(
++                """
++                CREATE TABLE IF NOT EXISTS working_memory (
++                    id TEXT PRIMARY KEY, kind TEXT, content TEXT NOT NULL, source TEXT,
++                    speaker TEXT DEFAULT 'admin', created_at TEXT, expires_at TEXT
++                )
++                """
++            )
++            cur.execute(
++                """
++                CREATE TABLE IF NOT EXISTS memory_candidates (
++                    id TEXT PRIMARY KEY, memory_type TEXT, content TEXT, reason TEXT,
++                    confidence REAL, importance REAL, source TEXT, expected_duration TEXT,
++                    subject TEXT, speaker TEXT DEFAULT 'admin', decision TEXT, target TEXT,
++                    score REAL, grade_detail TEXT, resolved_by_owner INTEGER DEFAULT 0,
++                    created_at TEXT, graded_at TEXT
++                )
++                """
++            )
++            cur.execute(
++                """
++                CREATE TABLE IF NOT EXISTS long_term_index (
++                    id TEXT PRIMARY KEY, content_hash TEXT, content TEXT, subject TEXT,
++                    target TEXT, score REAL, status TEXT DEFAULT 'active', superseded_by TEXT,
++                    candidate_id TEXT, aims_entry_id TEXT, aims_atom_id TEXT, created_at TEXT
++                )
++                """
++            )
++            cur.execute(
++                """
++                CREATE TABLE IF NOT EXISTS aims_outbox (
++                    id TEXT PRIMARY KEY, payload TEXT NOT NULL, status TEXT DEFAULT 'pending',
++                    attempts INTEGER DEFAULT 0, last_error TEXT, index_id TEXT,
++                    created_at TEXT, updated_at TEXT
++                )
++                """
++            )
++            cur.execute(
++                """
++                CREATE TABLE IF NOT EXISTS calibration_rollup (
++                    day TEXT, memory_type TEXT, decision TEXT, n INTEGER,
++                    sum_importance REAL, sum_score REAL,
++                    PRIMARY KEY (day, memory_type, decision)
++                )
++                """
++            )
++            cur.execute("CREATE TABLE IF NOT EXISTS cali_state (key TEXT PRIMARY KEY, value TEXT, updated_at TEXT)")
++            conn.commit()
++
++    def _get_state(self, key: str, default: Optional[str] = None) -> Optional[str]:
++        with self._connect() as conn:
++            row = conn.execute("SELECT value FROM cali_state WHERE key = ?", (key,)).fetchone()
++        return row[0] if row else default
++
++    def _set_state(self, key: str, value: str) -> None:
++        with self._connect() as conn:
++            conn.execute(
++                "INSERT INTO cali_state (key, value, updated_at) VALUES (?, ?, ?) "
++                "ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
++                (key, value, datetime.utcnow().isoformat()),
++            )
++            conn.commit()
++
++    # ---------------------------------------------------------- short-term memory
++    def write_working_memory(self, kind: str, content: str, source: str = "conversation",
++                             ttl_hours: float = 24.0, speaker: str = "admin") -> Dict[str, Any]:
++        text = str(content or "").strip()
++        if not text:
++            return {"success": False, "message": "Empty working memory."}
++        if self._privacy_check(text)[0] == "hard":
++            return {"success": False, "message": "Rejected: sensitive pattern."}
++        now = datetime.utcnow()
++        item_id = self._next_id("wm", {"kind": kind, "content": text})
++        with self._connect() as conn:
++            conn.execute(
++                "INSERT INTO working_memory (id, kind, content, source, speaker, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
++                (item_id, kind, text, source, speaker, now.isoformat(), (now + timedelta(hours=ttl_hours)).isoformat()),
++            )
++            conn.commit()
++        return {"success": True, "id": item_id, "kind": kind}
++
++    def get_working_memory(self, limit: int = 20, kind: Optional[str] = None,
++                           speaker: Optional[str] = None) -> List[Dict[str, Any]]:
++        now = datetime.utcnow().isoformat()
++        clauses, params = ["expires_at > ?"], [now]
++        if kind:
++            clauses.append("kind = ?")
++            params.append(kind)
++        if speaker:
++            clauses.append("speaker = ?")
++            params.append(speaker)
++        params.append(min(200, max(1, int(limit or 20))))
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute(f"SELECT * FROM working_memory WHERE {' AND '.join(clauses)} ORDER BY created_at DESC LIMIT ?", params)
++            return self._rows(cur)
++
++    def prune_working_memory(self) -> int:
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute("DELETE FROM working_memory WHERE expires_at <= ?", (datetime.utcnow().isoformat(),))
++            conn.commit()
++            return cur.rowcount
++
++    # --------------------------------------------------------- candidate intake
++    def _normalize_candidate(self, candidate: Dict[str, Any]) -> Optional[Dict[str, Any]]:
++        if not isinstance(candidate, dict):
++            return None
++        content = str(candidate.get("content") or "").strip()
++        if not content:
++            return None
++        memory_type = str(candidate.get("memory_type") or LONG_TERM_CANDIDATE).strip().lower()
++        if memory_type not in (SHORT_TERM, LONG_TERM_CANDIDATE):
++            memory_type = LONG_TERM_CANDIDATE
++        duration = str(candidate.get("expected_duration") or "").strip().lower()
++        if duration not in DURABILITY_SCORES:
++            duration = "session" if memory_type == SHORT_TERM else "persistent"
++        return {
++            "memory_type": memory_type,
++            "content": content[:2000],
++            "reason": str(candidate.get("reason") or "").strip()[:500],
++            "confidence": _clamp(candidate.get("confidence"), 0.5),
++            "importance": _clamp(candidate.get("importance"), 0.5),
++            "source": str(candidate.get("source") or "conversation").strip().lower(),
++            "expected_duration": duration,
++            "subject": (str(candidate.get("subject")).strip().lower() if candidate.get("subject") else None),
++            "kind": str(candidate.get("kind") or "context").strip().lower(),
++        }
++
++    def submit_memory_candidate(self, candidate: Dict[str, Any], speaker: str = "admin") -> Dict[str, Any]:
++        """Anything CALI/KayGee proposes lands here. Short-term writes through; long-term is graded."""
++        cand = self._normalize_candidate(candidate)
++        if cand is None:
++            return {"decision": "reject", "target": None, "score": 0.0, "reason": "Invalid or empty candidate."}
++        speaker = "admin" if speaker == "admin" else "visitor"
++        cand_id = self._next_id("mc", {"content": cand["content"], "type": cand["memory_type"]})
++
++        if cand["memory_type"] == SHORT_TERM:
++            ttl = 1.0 if cand["expected_duration"] == "turn" else (6.0 if speaker == "visitor" else 24.0)
++            written = self.write_working_memory(cand["kind"], cand["content"], cand["source"], ttl_hours=ttl, speaker=speaker)
++            ok = bool(written.get("success"))
++            result = {
++                "decision": "accept" if ok else "reject",
++                "target": SHORT_TERM if ok else None,
++                "score": 1.0 if ok else 0.0,
++                "reason": "Short-term working memory." if ok else written.get("message", "Rejected."),
++                "dimensions": {},
++            }
++            self._record_candidate(cand_id, cand, result, speaker)
++            return {**result, "candidate_id": cand_id}
++
++        if speaker != "admin":
++            result = {"decision": "reject", "target": None, "score": 0.0, "dimensions": {},
++                      "reason": "Only the admin can create durable memory."}
++            self._record_candidate(cand_id, cand, result, speaker)
++            return {**result, "candidate_id": cand_id}
++
++        with self._memory_lock:
++            result = self.grade_memory_candidate(cand)
++            self._record_candidate(cand_id, cand, result, speaker)
++            result = self._apply_decision(cand_id, cand, result)
++        return {**result, "candidate_id": cand_id}
++
++    def _record_candidate(self, cand_id: str, cand: Dict[str, Any], result: Dict[str, Any], speaker: str = "admin") -> None:
++        content = "[redacted: sensitive pattern]" if result.get("hard_privacy") else cand["content"]
++        now = datetime.utcnow().isoformat()
++        with self._connect() as conn:
++            conn.execute(
++                """
++                INSERT INTO memory_candidates
++                (id, memory_type, content, reason, confidence, importance, source, expected_duration,
++                 subject, speaker, decision, target, score, grade_detail, created_at, graded_at)
++                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
++                """,
++                (
++                    cand_id, cand["memory_type"], content, cand["reason"], cand["confidence"],
++                    cand["importance"], cand["source"], cand["expected_duration"], cand["subject"], speaker,
++                    result.get("decision"), result.get("target"), result.get("score"),
++                    json.dumps(result.get("dimensions", {})), now, now,
++                ),
++            )
++            conn.commit()
++
++    # ------------------------------------------------------------------- grader
++    def _tuning(self) -> Dict[str, Any]:
++        path = self.vault_path / "grader_tuning.json"
++        tuning = {"accept_threshold": DEFAULT_ACCEPT_THRESHOLD, "defer_threshold": DEFAULT_DEFER_THRESHOLD,
++                  "last_tuned_at": None, "history": []}
++        try:
++            if path.exists():
++                stored = json.loads(path.read_text(encoding="utf-8"))
++                lo, hi = ACCEPT_BOUNDS
++                tuning["accept_threshold"] = max(lo, min(hi, float(stored.get("accept_threshold", tuning["accept_threshold"]))))
++                tuning["defer_threshold"] = max(0.45, min(tuning["accept_threshold"] - 0.1,
++                                                          float(stored.get("defer_threshold", tuning["defer_threshold"]))))
++                tuning["last_tuned_at"] = stored.get("last_tuned_at")
++                tuning["history"] = list(stored.get("history", []))[-50:]
++        except (OSError, ValueError):
++            pass  # a damaged tuning file falls back to defaults; self-repair rewrites it
++        return tuning
++
++    def _privacy_check(self, text: str):
++        for label, pattern in _HARD_PRIVACY:
++            if pattern.search(text):
++                return "hard", label
++        if _SOFT_PRIVACY.search(text):
++            return "soft", "sensitive_topic"
++        return None, None
++
++    def _active_long_term(self) -> List[Dict[str, Any]]:
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute("SELECT * FROM long_term_index WHERE status = 'active'")
++            return self._rows(cur)
++
++    def grade_memory_candidate(self, cand: Dict[str, Any]) -> Dict[str, Any]:
++        content = cand["content"]
++        tuning = self._tuning()
++        accept_at, defer_at = tuning["accept_threshold"], tuning["defer_threshold"]
++        dims: Dict[str, Any] = {}
++
++        privacy_level, privacy_label = self._privacy_check(content)
++        dims["privacy"] = privacy_label or "clear"
++        if privacy_level == "hard":
++            return {"decision": "reject", "target": None, "score": 0.0, "hard_privacy": True,
++                    "reason": f"Blocked by privacy gate ({privacy_label}).", "dimensions": dims}
++
++        best_sim, best_match, contradiction_with = 0.0, None, None
++        for row in self._active_long_term():
++            sim = _similarity(content, row.get("content", ""))
++            if sim > best_sim:
++                best_sim, best_match = sim, row
++            if cand["subject"] and row.get("subject") == cand["subject"] and sim < DUPLICATE_SIMILARITY:
++                contradiction_with = row
++
++        dims["novelty"] = round(1.0 - best_sim, 3)
++        dims["duplication"] = round(best_sim, 3)
++        dims["contradiction"] = bool(contradiction_with)
++
++        if best_match is not None and best_sim >= DUPLICATE_SIMILARITY:
++            return {"decision": "reject", "target": None, "score": round(1.0 - best_sim, 3),
++                    "reason": "Duplicate of an existing long-term memory.", "dimensions": dims}
++
++        dims["importance"] = cand["importance"]
++        dims["confidence"] = cand["confidence"]
++        dims["durability"] = DURABILITY_SCORES.get(cand["expected_duration"], 0.4)
++        dims["source_quality"] = SOURCE_QUALITY.get(cand["source"], 0.5)
++        dims["relevance"] = 1.0 if (cand["subject"] or (_tokens(content) & RELEVANCE_TERMS)) else 0.6
++        score = round(sum(dims[name] * weight for name, weight in WEIGHTS.items()), 3)
++        base = {"score": score, "dimensions": dims}
++
++        if privacy_level == "soft":
++            return {**base, "decision": "defer", "target": None, "reason": "Sensitive topic - held for owner review."}
++
++        if contradiction_with is not None:
++            if cand["source"] in CORRECTION_SOURCES and cand["confidence"] >= 0.8:
++                return {**base, "decision": "accept", "target": LONG_TERM_TARGET,
++                        "supersedes": contradiction_with["id"],
++                        "reason": "Explicit correction of an existing memory on the same subject."}
++            return {**base, "decision": "defer", "target": None,
++                    "reason": "Contradicts an existing memory on the same subject - needs review."}
++
++        if cand["confidence"] < float(self.kaygee_config.get("confidence_threshold", 0.75)):
++            if score >= defer_at:
++                return {**base, "decision": "defer", "target": None, "reason": "Confidence below threshold - held for review."}
++            return {**base, "decision": "reject", "target": None, "reason": "Low confidence and low score."}
++
++        if dims["durability"] < 0.7:
++            if score >= defer_at:
++                return {**base, "decision": "revise", "target": SHORT_TERM,
++                        "reason": "Useful but not durable - demoted to short-term working memory."}
++            return {**base, "decision": "reject", "target": None, "reason": "Not durable enough to keep."}
++
++        if score >= accept_at:
++            return {**base, "decision": "accept", "target": LONG_TERM_TARGET,
++                    "reason": "Durable, confident, relevant, and not already known."}
++        if score >= defer_at:
++            return {**base, "decision": "defer", "target": None, "reason": "Borderline score - held for review."}
++        return {**base, "decision": "reject", "target": None, "reason": "Score below keep threshold."}
++
++    # ----------------------------------------------------------- applying result
++    def _apply_decision(self, cand_id: str, cand: Dict[str, Any], result: Dict[str, Any]) -> Dict[str, Any]:
++        decision = result.get("decision")
++        if decision == "accept":
++            self._promote_to_long_term(cand_id, cand, result)
++        elif decision == "revise":
++            self.write_working_memory(cand["kind"], cand["content"], cand["source"], ttl_hours=72.0)
++        return result
++
++    def _promote_to_long_term(self, cand_id: str, cand: Dict[str, Any], result: Dict[str, Any]) -> None:
++        """Index locally (so dedupe works instantly), queue for AIMS, then try delivery right away."""
++        now = datetime.utcnow().isoformat()
++        index_id = self._next_id("ltm", {"content": cand["content"]})
++        superseded = result.get("supersedes")
++        superseded_atom = None
++        with self._connect() as conn:
++            conn.execute(
++                """
++                INSERT INTO long_term_index
++                (id, content_hash, content, subject, target, score, status, candidate_id, created_at)
++                VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?)
++                """,
++                (index_id, self._generate_hash({"c": cand["content"]}), cand["content"], cand["subject"],
++                 LONG_TERM_TARGET, result.get("score"), cand_id, now),
++            )
++            if superseded:
++                row = conn.execute("SELECT aims_atom_id FROM long_term_index WHERE id = ?", (superseded,)).fetchone()
++                superseded_atom = row[0] if row else None
++                conn.execute("UPDATE long_term_index SET status = 'superseded', superseded_by = ? WHERE id = ?",
++                             (index_id, superseded))
++            conn.commit()
++
++        payload = {
++            "candidate_id": cand_id,
++            "statement": cand["content"],
++            "entry_type": _ENTRY_TYPE_BY_KIND.get(cand["kind"], "observation"),
++            "reason": cand["reason"],
++            "metadata": {
++                "candidate_id": cand_id, "subject": cand["subject"], "source": cand["source"],
++                "grader_score": result.get("score"), "importance": cand["importance"],
++                "confidence": cand["confidence"], "speaker": "admin", "origin": "cali_memory_loop",
++            },
++            "initial_confidence": 0.6 if cand["source"] in CORRECTION_SOURCES else 0.5,
++            "supersedes_atom_id": superseded_atom,
++        }
++        outbox_id = self._next_id("ob", {"c": cand_id})
++        with self._connect() as conn:
++            conn.execute(
++                "INSERT INTO aims_outbox (id, payload, status, attempts, index_id, created_at, updated_at) VALUES (?, ?, 'pending', 0, ?, ?, ?)",
++                (outbox_id, json.dumps(payload), index_id, now, now),
++            )
++            conn.commit()
++        self._log_memory("long_term_promotion", {"candidate_id": cand_id, "outbox_id": outbox_id}, source="memory_grader")
++        self._deliver_outbox_item(outbox_id)
++
++    # ------------------------------------------------------------- AIMS delivery
++    def _aims(self) -> AimsClient:
++        if self.aims_client is None:
++            self.aims_client = AimsClient()
++        return self.aims_client
++
++    def _deliver_outbox_item(self, outbox_id: str) -> Dict[str, Any]:
++        """commit -> derive a posteriori -> optional supersede link. Resumable: progress is saved in the payload."""
++        if self._aims_write_blocked:
++            return {"delivered": False, "reason": "AIMS writes blocked pending integrity review."}
++        with self._connect() as conn:
++            row = conn.execute("SELECT * FROM aims_outbox WHERE id = ? AND status = 'pending'", (outbox_id,)).fetchone()
++        if not row:
++            return {"delivered": False, "reason": "not pending"}
++        payload = json.loads(row["payload"])
++        index_id = row["index_id"]
++        client = self._aims()
++        status, error = "pending", None
++        try:
++            if not payload.get("entry_id"):
++                entry = client.commit(payload["entry_type"],
++                                      {"statement": payload["statement"], "reason": payload.get("reason", "")},
++                                      payload["metadata"], writer_id="cali")
++                payload["entry_id"] = entry["entry_id"]
++            if not payload.get("atom_id"):
++                atom = client.derive_aposteriori(payload["statement"], [payload["entry_id"]],
++                                                 payload["metadata"], payload["initial_confidence"])
++                payload["atom_id"] = atom["atom_id"]
++            if payload.get("supersedes_atom_id") and not payload.get("link_done"):
++                client.link(payload["atom_id"], payload["supersedes_atom_id"], "supersedes")
++                payload["link_done"] = True
++            status = "done"
++        except AimsRejected as exc:
++            status, error = "failed", str(exc)
++        except (AimsUnavailable, KeyError) as exc:
++            error = str(exc)
++
++        now = datetime.utcnow().isoformat()
++        with self._connect() as conn:
++            conn.execute(
++                "UPDATE aims_outbox SET payload = ?, status = ?, attempts = attempts + 1, last_error = ?, updated_at = ? WHERE id = ?",
++                (json.dumps(payload), status, error, now, outbox_id),
++            )
++            if payload.get("atom_id") and index_id:
++                conn.execute("UPDATE long_term_index SET aims_entry_id = ?, aims_atom_id = ? WHERE id = ?",
++                             (payload.get("entry_id"), payload.get("atom_id"), index_id))
++            conn.commit()
++        return {"delivered": status == "done", "status": status, "error": error}
++
++    def flush_aims_outbox(self, limit: int = 25) -> Dict[str, Any]:
++        with self._connect() as conn:
++            ids = [r[0] for r in conn.execute(
++                "SELECT id FROM aims_outbox WHERE status = 'pending' ORDER BY created_at ASC LIMIT ?", (limit,))]
++        delivered = failed = 0
++        for outbox_id in ids:
++            outcome = self._deliver_outbox_item(outbox_id)
++            if outcome.get("delivered"):
++                delivered += 1
++            else:
++                failed += 1
++                if outcome.get("reason") or (outcome.get("error") and "Unavailable" in str(outcome.get("error"))):
++                    break  # AIMS is down or blocked - stop hammering it
++        return {"attempted": len(ids), "delivered": delivered, "still_pending": failed}
++
++    # ---------------------------------------------------------- deferred review
++    def get_deferred_candidates(self, limit: int = 25) -> List[Dict[str, Any]]:
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute("SELECT * FROM memory_candidates WHERE decision = 'defer' ORDER BY created_at DESC LIMIT ?",
++                        (min(200, max(1, int(limit or 25))),))
++            return self._rows(cur)
++
++    def resolve_deferred_candidate(self, candidate_id: str, approve: bool) -> Dict[str, Any]:
++        with self._connect() as conn:
++            row = conn.execute("SELECT * FROM memory_candidates WHERE id = ? AND decision = 'defer'", (candidate_id,)).fetchone()
++        if not row:
++            return {"success": False, "message": "No deferred candidate with that id."}
++        row = dict(row)
++        now = datetime.utcnow().isoformat()
++        if approve:
++            cand = {"memory_type": LONG_TERM_CANDIDATE, "content": row["content"], "reason": row["reason"] or "",
++                    "confidence": row["confidence"], "importance": row["importance"], "source": row["source"],
++                    "expected_duration": row["expected_duration"], "subject": row["subject"], "kind": "context"}
++            detail = json.loads(row.get("grade_detail") or "{}")
++            result: Dict[str, Any] = {"target": LONG_TERM_TARGET, "score": row["score"], "dimensions": detail}
++            if detail.get("contradiction") and row.get("subject"):
++                for old in self._active_long_term():
++                    if old.get("subject") == row["subject"]:
++                        result["supersedes"] = old["id"]
++                        break
++            with self._memory_lock:
++                self._promote_to_long_term(candidate_id, cand, result)
++            new_decision, new_target = "accept", LONG_TERM_TARGET
++        else:
++            new_decision, new_target = "reject", None
++        with self._connect() as conn:
++            conn.execute(
++                "UPDATE memory_candidates SET decision = ?, target = ?, graded_at = ?, resolved_by_owner = 1 WHERE id = ?",
++                (new_decision, new_target, now, candidate_id),
++            )
++            conn.commit()
++        return {"success": True, "candidate_id": candidate_id, "decision": new_decision}
++
++    # ------------------------------------------------------------ learning signal
++    def get_grader_calibration(self) -> Dict[str, Any]:
++        with self._connect() as conn:
++            cur = conn.cursor()
++            cur.execute(
++                """
++                SELECT decision, COUNT(*) AS n, AVG(importance) AS avg_importance, AVG(score) AS avg_score
++                FROM memory_candidates WHERE memory_type = ? GROUP BY decision
++                """, (LONG_TERM_CANDIDATE,))
++            live = {r["decision"]: {"count": r["n"], "avg_importance": r["avg_importance"], "avg_score": r["avg_score"]}
++                    for r in cur.fetchall()}
++            cur.execute("SELECT decision, SUM(n) AS n, SUM(sum_importance) AS si, SUM(sum_score) AS ss "
++                        "FROM calibration_rollup WHERE memory_type = ? GROUP BY decision", (LONG_TERM_CANDIDATE,))
++            rolled = {r["decision"]: (r["n"], r["si"], r["ss"]) for r in cur.fetchall()}
++            cur.execute("SELECT COUNT(*), SUM(decision='accept') FROM memory_candidates "
++                        "WHERE resolved_by_owner = 1")
++            owner_n, owner_accept = cur.fetchone()
++
++        by_decision: Dict[str, Dict[str, Any]] = {}
++        for decision in set(live) | set(rolled):
++            ln = live.get(decision, {}).get("count", 0)
++            rn, rsi, rss = rolled.get(decision, (0, 0.0, 0.0))
++            total = ln + (rn or 0)
++            si = live.get(decision, {}).get("avg_importance", 0.0) * ln + (rsi or 0.0) if ln else (rsi or 0.0)
++            ss = (live.get(decision, {}).get("avg_score") or 0.0) * ln + (rss or 0.0) if ln else (rss or 0.0)
++            by_decision[decision] = {"count": total, "avg_importance": round(si / total, 3) if total else None,
++                                     "avg_score": round(ss / total, 3) if total else None}
++        total_all = sum(v["count"] for v in by_decision.values())
++        accepted = by_decision.get("accept", {}).get("count", 0)
++        return {
++            "total_long_term_candidates": total_all,
++            "accept_rate": round(accepted / total_all, 3) if total_all else None,
++            "owner_resolved": owner_n or 0,
++            "owner_approval_rate": round((owner_accept or 0) / owner_n, 3) if owner_n else None,
++            "thresholds": {k: v for k, v in self._tuning().items() if k in ("accept_threshold", "defer_threshold")},
++            "by_decision": by_decision,
++        }
++
++    def self_tune(self, min_samples: int = 10) -> Dict[str, Any]:
++        """Bounded, logged threshold adjustment driven only by Bryan's own approve/reject calls."""
++        tuning = self._tuning()
++        since = tuning.get("last_tuned_at") or "1970-01-01T00:00:00"
++        with self._connect() as conn:
++            rows = conn.execute("SELECT decision FROM memory_candidates WHERE resolved_by_owner = 1 AND graded_at > ?",
++                                (since,)).fetchall()
++        n = len(rows)
++        if n < min_samples:
++            return {"changed": False, "reason": f"need {min_samples} owner decisions, have {n}"}
++        rate = sum(1 for r in rows if r[0] == "accept") / n
++        current = tuning["accept_threshold"]
++        lo, hi = ACCEPT_BOUNDS
++        new = current
++        if rate >= 0.8:
++            new = max(lo, round(current - 0.02, 3))
++        elif rate <= 0.2:
++            new = min(hi, round(current + 0.02, 3))
++        now = datetime.utcnow().isoformat()
++        entry = {"at": now, "samples": n, "owner_approval_rate": round(rate, 3), "from": current, "to": new}
++        stored = {"accept_threshold": new, "defer_threshold": max(0.45, round(new - 0.2, 3)),
++                  "last_tuned_at": now, "history": (tuning["history"] + [entry])[-50:]}
++        (self.vault_path / "grader_tuning.json").write_text(json.dumps(stored, indent=2) + "\n", encoding="utf-8")
++        self._log_memory("grader_tuning", entry, source="self_tune")
++        return {"changed": new != current, **entry}
++
++    # ------------------------------------------------------------ reflection
++    def consolidate(self, window_days: int = 14, min_occurrences: int = 4) -> Dict[str, Any]:
++        """Thinking pass: turn repeated admin behavior into pattern candidates. The grader still decides."""
++        cutoff = (datetime.utcnow() - timedelta(days=window_days)).isoformat()
++        with self._connect() as conn:
++            rows = conn.execute(
++                "SELECT content FROM memory_candidates WHERE memory_type = 'short_term' AND speaker = 'admin' "
++                "AND decision = 'accept' AND created_at > ? AND content LIKE '[%'", (cutoff,)).fetchall()
++        counts: Dict[str, int] = {}
++        for (content,) in rows:
++            match = re.match(r"^\[(\w+)\]", content)
++            if match and match.group(1) not in ("unknown", ""):
++                counts[match.group(1)] = counts.get(match.group(1), 0) + 1
++
++        outcomes = []
++        for intent_type, n in sorted(counts.items(), key=lambda kv: -kv[1]):
++            if n < min_occurrences:
++                continue
++            label = _INTENT_LABELS.get(intent_type, intent_type.replace("_", " "))
++            outcome = self.submit_memory_candidate({
++                "memory_type": LONG_TERM_CANDIDATE, "kind": "pattern",
++                "content": f"Bryan regularly asks CALI about {label}.",
++                "reason": f"Recurring behavior: {n} requests in {window_days} days.",
++                "confidence": 0.85, "importance": 0.6, "source": "inferred",
++                "expected_duration": "persistent", "subject": f"pattern:{intent_type}",
++            }, speaker="admin")
++            outcomes.append({"intent": intent_type, "occurrences": n, "decision": outcome["decision"]})
++        return {"patterns_found": len(outcomes), "outcomes": outcomes}
++
++    # ------------------------------------------------------- candidate generation
++    def generate_memory_candidates(self, query: str, response_text: str, intent: Dict[str, Any],
++                                   context: Optional[Dict[str, Any]] = None,
++                                   speaker: str = "admin") -> List[Dict[str, Any]]:
++        q = str(query or "").strip()
++        ql = q.lower()
++        intent_type = str((intent or {}).get("type") or "unknown")
++        candidates: List[Dict[str, Any]] = [{
++            "memory_type": SHORT_TERM, "kind": "current_topic" if speaker == "admin" else "visitor_goal",
++            "content": f"[{intent_type}] {q[:200]}", "reason": "Current topic for the next few turns.",
++            "confidence": 0.9, "importance": 0.4, "source": "conversation", "expected_duration": "session",
++        }]
++        path = (context or {}).get("current_path")
++        if path:
++            candidates.append({"memory_type": SHORT_TERM, "kind": "page_context", "content": f"Speaker is on {path}",
++                               "reason": "Page context.", "confidence": 0.95, "importance": 0.3,
++                               "source": "system", "expected_duration": "turn"})
++        if intent_type == "unknown":
++            candidates.append({"memory_type": SHORT_TERM, "kind": "unresolved_question", "content": q[:300],
++                               "reason": "No deterministic handler matched.", "confidence": 0.8, "importance": 0.5,
++                               "source": "conversation", "expected_duration": "session"})
++        if speaker != "admin":
++            return candidates  # visitors never propose durable memory
++
++        def long_term(kind: str, reason: str, source: str, importance: float, confidence: float) -> Dict[str, Any]:
++            return {"memory_type": LONG_TERM_CANDIDATE, "kind": kind, "content": q[:600], "reason": reason,
++                    "confidence": confidence, "importance": importance, "source": source,
++                    "expected_duration": "persistent"}
++
++        if any(m in ql for m in _CORRECTION_MARKERS):
++            candidates.append(long_term("correction", "Explicit correction from Bryan.", "user_correction", 0.85, 0.85))
++        elif any(m in ql for m in _DECISION_MARKERS):
++            candidates.append(long_term("decision", "Explicit project decision.", "explicit_user", 0.85, 0.9))
++        elif any(m in ql for m in _PREFERENCE_MARKERS):
++            candidates.append(long_term("preference", "Explicitly stated preference.", "explicit_user", 0.8, 0.9))
++        elif any(m in ql for m in _REMEMBER_MARKERS):
++            candidates.append(long_term("preference", "Bryan asked CALI to remember this.", "explicit_user", 0.85, 0.95))
++        return candidates
++
++    def run_memory_loop(self, query: str, response_text: str, intent: Dict[str, Any],
++                        context: Optional[Dict[str, Any]] = None, speaker: str = "admin") -> Dict[str, Any]:
++        """Post-answer step. Must never break the answer path."""
++        summary: Dict[str, Any] = {"short_term": 0, "accepted": 0, "revised": 0, "deferred": 0, "rejected": 0}
++        try:
++            for cand in self.generate_memory_candidates(query, response_text, intent, context, speaker):
++                outcome = self.submit_memory_candidate(cand, speaker=speaker)
++                if cand["memory_type"] == SHORT_TERM:
++                    if outcome["decision"] == "accept":
++                        summary["short_term"] += 1
++                    continue
++                key = {"accept": "accepted", "revise": "revised", "defer": "deferred"}.get(outcome["decision"], "rejected")
++                summary[key] += 1
++        except Exception as exc:  # memory is best-effort
++            summary["error"] = str(exc)
++        return summary
+diff --git a/cali_skg/core/cali_personal_skg.py b/cali_skg/core/cali_personal_skg.py
+index b6f4af2..1abfa16 100644
+--- a/cali_skg/core/cali_personal_skg.py
++++ b/cali_skg/core/cali_personal_skg.py
+@@ -18,6 +18,8 @@ from datetime import datetime, timedelta
+ from pathlib import Path
+ from typing import Any, Dict, List, Optional
+ 
++from .cali_cognition import CaliCognitionMixin
++
+ 
+ @dataclass
+ class CaliMemory:
+@@ -29,7 +31,7 @@ class CaliMemory:
+     source: str
+ 
+ 
+-class CaliPersonalSKG:
++class CaliPersonalSKG(CaliCognitionMixin):
+     def __init__(self, base_path: str = "/home/bryan/spruked.com/cali_skg"):
+         self.base_path = Path(base_path)
+         self.vault_path = self.base_path / "vault"
+@@ -41,6 +43,7 @@ class CaliPersonalSKG:
+ 
+         self.db_path = self.memory_path / "cali_personal.db"
+         self._init_database()
++        self._init_cognition()
+         self.identity = self._load_identity()
+         self.kaygee_config = {
+             "endpoint": "http://127.0.0.1:8011",
+diff --git a/cali_skg/core/cali_self_care.py b/cali_skg/core/cali_self_care.py
+new file mode 100644
+index 0000000..d8e181c
+--- /dev/null
++++ b/cali_skg/core/cali_self_care.py
+@@ -0,0 +1,389 @@
++"""
++CALI self-care - she tends her own state.
++
++  run_self_maintenance()  prune and compact local clutter, reflect, tune, ask AIMS to run its own cycle
++  run_self_repair()       verify and repair what can safely be repaired; escalate the rest
++  propose_improvement()   the only way CALI "changes" her own code: a written proposal for Bryan
++
++Hard lines (from CALI's identity principles and AIMS's design):
++  * The AIMS Vault is never deleted from or edited here. AIMS evaluates and retires its own atoms.
++  * Daily memory_*.jsonl records are archived (gzip, verified), never deleted.
++  * If the AIMS ledger reports corruption, CALI stops writing to it and tells Bryan. She does not "fix" it.
++  * CALI never edits source code. Improvements become proposals that wait for approval.
++"""
++
++from __future__ import annotations
++
++import gzip
++import hashlib
++import json
++import shutil
++import threading
++import time
++from datetime import datetime, timedelta
++from typing import Any, Dict, List, Optional
++
++from .cali_memory_loop import AimsRejected, AimsUnavailable
++
++
++class CaliSelfCareMixin:
++    _maintenance_thread: Optional[threading.Thread] = None
++    _maintenance_stop: Optional[threading.Event] = None
++
++    # ------------------------------------------------------------ proposals
++    def propose_improvement(self, title: str, rationale: str, evidence: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
++        digest = hashlib.sha256(title.encode("utf-8")).hexdigest()[:12]
++        ledger = self.vault_path / "improvement_proposals.jsonl"
++        if ledger.exists() and digest in ledger.read_text(encoding="utf-8"):
++            return {"created": False, "reason": "already proposed", "proposal_id": digest}
++        record = {"proposal_id": digest, "title": title, "rationale": rationale, "evidence": evidence or {},
++                  "status": "awaiting_owner_review", "proposed_at": datetime.utcnow().isoformat()}
++        with ledger.open("a", encoding="utf-8") as handle:
++            handle.write(json.dumps(record) + "\n")
++        self._add_task_once(f"CALI proposal: {title}", "cali_improvement", 3, rationale)
++        return {"created": True, "proposal_id": digest}
++
++    def list_improvement_proposals(self) -> List[Dict[str, Any]]:
++        ledger = self.vault_path / "improvement_proposals.jsonl"
++        if not ledger.exists():
++            return []
++        out = []
++        for line in ledger.read_text(encoding="utf-8").splitlines():
++            try:
++                out.append(json.loads(line))
++            except ValueError:
++                continue
++        return out
++
++    def _add_task_once(self, title: str, category: str, priority: int, description: str = "") -> None:
++        with self._connect() as conn:
++            exists = conn.execute("SELECT 1 FROM tasks WHERE title = ? AND status = 'active' LIMIT 1", (title,)).fetchone()
++        if not exists:
++            self.add_task(title=title, description=description[:500], priority=priority, category=category, cali_suggested=True)
++
++    # ---------------------------------------------------------- maintenance
++    def run_self_maintenance(self, retention_days: int = 90, candidate_retention_days: int = 30,
++                             deferred_expire_days: int = 60, archive_after_days: int = 30,
++                             temp_retention_days: int = 7) -> Dict[str, Any]:
++        report: Dict[str, Any] = {"started_at": datetime.utcnow().isoformat(), "steps": {}}
++
++        def step(name: str, fn):
++            try:
++                report["steps"][name] = fn()
++            except Exception as exc:
++                report["steps"][name] = {"error": f"{type(exc).__name__}: {exc}"}
++
++        step("knowledge_graph", lambda: (self.prune_knowledge_graph(retention_days=retention_days), "pruned")[1])
++        step("working_memory", lambda: {"expired_removed": self.prune_working_memory()})
++        step("candidates", lambda: self._compact_candidates(candidate_retention_days, deferred_expire_days))
++        step("tool_log", lambda: {"removed": self.tools.prune_log(retention_days) if self.tools else 0})
++        step("outbox", self._compact_outbox)
++        step("memory_archive", lambda: self._archive_old_memory_files(archive_after_days))
++        step("temp_dir", lambda: self._clean_temp(temp_retention_days))
++        step("reflection", self.consolidate)
++        step("self_tune", self.self_tune)
++        step("aims_cycle", self._run_aims_cycle)
++        step("database", self._optimize_database)
++
++        report["finished_at"] = datetime.utcnow().isoformat()
++        self._set_state("last_maintenance_at", report["finished_at"])
++        self._log_memory("maintenance", {"steps": {k: (v if isinstance(v, (int, str)) else "ok" if "error" not in v else "error")
++                                                   for k, v in report["steps"].items()}}, source="self_care")
++        return report
++
++    def _compact_candidates(self, retention_days: int, deferred_expire_days: int) -> Dict[str, Any]:
++        cutoff = (datetime.utcnow() - timedelta(days=retention_days)).isoformat()
++        expire_cutoff = (datetime.utcnow() - timedelta(days=deferred_expire_days)).isoformat()
++        owner_cutoff = (datetime.utcnow() - timedelta(days=365)).isoformat()
++        clause = ("created_at < ? AND resolved_by_owner = 0 AND "
++                  "(memory_type = 'short_term' OR decision IN ('reject', 'revise', 'expire'))")
++        with self._connect() as conn:
++            expired = conn.execute(
++                "UPDATE memory_candidates SET decision = 'expire', target = NULL WHERE decision = 'defer' AND created_at < ?",
++                (expire_cutoff,)).rowcount
++            conn.execute(
++                f"""
++                INSERT INTO calibration_rollup (day, memory_type, decision, n, sum_importance, sum_score)
++                SELECT substr(created_at, 1, 10), memory_type, decision, COUNT(*), SUM(importance), SUM(COALESCE(score, 0))
++                FROM memory_candidates WHERE {clause} GROUP BY 1, 2, 3
++                ON CONFLICT(day, memory_type, decision) DO UPDATE SET
++                    n = calibration_rollup.n + excluded.n,
++                    sum_importance = calibration_rollup.sum_importance + excluded.sum_importance,
++                    sum_score = calibration_rollup.sum_score + excluded.sum_score
++                """, (cutoff,))
++            removed = conn.execute(f"DELETE FROM memory_candidates WHERE {clause}", (cutoff,)).rowcount
++            old_owner = conn.execute("DELETE FROM memory_candidates WHERE resolved_by_owner = 1 AND created_at < ?",
++                                     (owner_cutoff,)).rowcount
++            conn.commit()
++        return {"deferred_expired": expired, "rolled_up_and_removed": removed, "old_owner_rows_removed": old_owner}
++
++    def _compact_outbox(self) -> Dict[str, Any]:
++        cutoff = (datetime.utcnow() - timedelta(days=14)).isoformat()
++        with self._connect() as conn:
++            removed = conn.execute("DELETE FROM aims_outbox WHERE status = 'done' AND updated_at < ?", (cutoff,)).rowcount
++            conn.commit()
++        return {"delivered_rows_removed": removed}
++
++    def _archive_old_memory_files(self, older_than_days: int) -> Dict[str, Any]:
++        archive_dir = self.memory_path / "archive"
++        archive_dir.mkdir(parents=True, exist_ok=True)
++        cutoff = datetime.utcnow().date() - timedelta(days=older_than_days)
++        archived = 0
++        for path in sorted(self.memory_path.glob("memory_*.jsonl")):
++            try:
++                day = datetime.strptime(path.stem.replace("memory_", ""), "%Y-%m-%d").date()
++            except ValueError:
++                continue
++            if day >= cutoff:
++                continue
++            target = archive_dir / f"{path.name}.gz"
++            original = path.read_bytes()
++            with gzip.open(target, "wb") as handle:
++                handle.write(original)
++            with gzip.open(target, "rb") as handle:  # verify before removing the original
++                if handle.read() != original:
++                    target.unlink(missing_ok=True)
++                    continue
++            path.unlink()
++            archived += 1
++        return {"archived": archived}
++
++    def _clean_temp(self, retention_days: int) -> Dict[str, Any]:
++        cutoff = time.time() - retention_days * 86400
++        removed = 0
++        for path in self.temp_path.iterdir():
++            try:
++                if path.is_file() and path.stat().st_mtime < cutoff:
++                    path.unlink()
++                    removed += 1
++            except OSError:
++                continue
++        return {"removed": removed}
++
++    def _run_aims_cycle(self, min_interval_hours: float = 6.0) -> Dict[str, Any]:
++        if self._aims_write_blocked:
++            return {"skipped": "AIMS writes blocked pending integrity review"}
++        last = self._get_state("aims_maintenance_at")
++        if last and datetime.utcnow() - datetime.fromisoformat(last) < timedelta(hours=min_interval_hours):
++            return {"skipped": "ran recently"}
++        try:
++            result = self._aims().maintenance()
++        except (AimsUnavailable, AimsRejected) as exc:
++            return {"skipped": f"AIMS not available: {str(exc)[:120]}"}
++        self._set_state("aims_maintenance_at", datetime.utcnow().isoformat())
++        return {"stm_evicted": result.get("stm_evicted"), "vault_stats": result.get("vault_stats")}
++
++    def _optimize_database(self) -> Dict[str, Any]:
++        with self._connect() as conn:
++            conn.execute("PRAGMA optimize")
++            pages = conn.execute("PRAGMA page_count").fetchone()[0]
++            free = conn.execute("PRAGMA freelist_count").fetchone()[0]
++            vacuumed = False
++            if pages and free / pages > 0.2:
++                conn.commit()
++                conn.execute("VACUUM")
++                vacuumed = True
++        return {"vacuumed": vacuumed, "free_pages": free}
++
++    # --------------------------------------------------------------- repair
++    def run_self_repair(self) -> Dict[str, Any]:
++        report: Dict[str, Any] = {"started_at": datetime.utcnow().isoformat(), "steps": {}, "issues": [], "repaired": []}
++
++        def step(name: str, fn):
++            try:
++                report["steps"][name] = fn(report)
++            except Exception as exc:
++                report["steps"][name] = {"error": f"{type(exc).__name__}: {exc}"}
++                report["issues"].append(f"{name} check crashed: {type(exc).__name__}")
++
++        step("database", self._repair_database)
++        step("identity", self._repair_identity)
++        step("tuning_file", self._repair_tuning_file)
++        step("long_term_index", self._repair_index)
++        step("aims", self._repair_aims)
++        step("tools", self._check_tools)
++        step("grader", self._check_grader_health)
++
++        report["finished_at"] = datetime.utcnow().isoformat()
++        self._set_state("last_repair_at", report["finished_at"])
++        self._log_memory("self_repair", {"issues": report["issues"], "repaired": report["repaired"]}, source="self_care")
++        return report
++
++    def _repair_database(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        with self._connect() as conn:
++            verdict = conn.execute("PRAGMA integrity_check").fetchone()[0]
++        if verdict != "ok":
++            backup_dir = self.memory_path / "backup"
++            backup_dir.mkdir(parents=True, exist_ok=True)
++            backup = backup_dir / f"cali_personal.{datetime.utcnow().strftime('%Y%m%dT%H%M%S')}.db"
++            shutil.copy2(self.db_path, backup)
++            report["issues"].append("SQLite integrity check failed - backup written, manual review needed")
++            self._add_task_once("CALI: SQLite integrity check failed", "cali_repair", 5,
++                                f"PRAGMA integrity_check returned: {verdict[:200]}. Backup: {backup.name}")
++        self._init_database()  # CREATE IF NOT EXISTS + column migrations restore any missing structure
++        self._init_memory_loop_tables()
++        if self.tools:
++            self.tools._init_table()
++        return {"integrity": verdict}
++
++    def _repair_identity(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        path = self.vault_path / "cali_identity.json"
++        problem = None
++        try:
++            data = json.loads(path.read_text(encoding="utf-8"))
++            if not isinstance(data, dict) or not data.get("name") or not data.get("principles"):
++                problem = "identity file missing required fields"
++        except FileNotFoundError:
++            problem = "identity file missing"
++        except (OSError, ValueError):
++            problem = "identity file unreadable"
++        if not problem:
++            return {"status": "ok"}
++        if path.exists():
++            path.rename(path.with_name(f"cali_identity.corrupt-{datetime.utcnow().strftime('%Y%m%dT%H%M%S')}.json"))
++        self.identity = self._load_identity()  # regenerates the default identity file
++        report["repaired"].append(f"identity: {problem} - regenerated from defaults")
++        return {"status": "regenerated", "problem": problem}
++
++    def _repair_tuning_file(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        path = self.vault_path / "grader_tuning.json"
++        if not path.exists():
++            return {"status": "absent (defaults in use)"}
++        try:
++            json.loads(path.read_text(encoding="utf-8"))
++            return {"status": "ok"}
++        except (OSError, ValueError):
++            path.rename(path.with_name(f"grader_tuning.corrupt-{datetime.utcnow().strftime('%Y%m%dT%H%M%S')}.json"))
++            report["repaired"].append("grader_tuning.json was unreadable - moved aside, defaults in use")
++            return {"status": "reset"}
++
++    def _repair_index(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        """Rebuild local index rows for accepted long-term candidates that lost theirs (derived state)."""
++        with self._connect() as conn:
++            missing = conn.execute(
++                """
++                SELECT c.* FROM memory_candidates c
++                WHERE c.memory_type = 'long_term_candidate' AND c.decision = 'accept' AND c.target = 'a_posteriori'
++                  AND NOT EXISTS (SELECT 1 FROM long_term_index i WHERE i.candidate_id = c.id)
++                """).fetchall()
++            for row in missing:
++                conn.execute(
++                    "INSERT INTO long_term_index (id, content_hash, content, subject, target, score, status, candidate_id, created_at) "
++                    "VALUES (?, ?, ?, ?, 'a_posteriori', ?, 'active', ?, ?)",
++                    (self._next_id("ltm", {"c": row["content"]}), self._generate_hash({"c": row["content"]}),
++                     row["content"], row["subject"], row["score"], row["id"], datetime.utcnow().isoformat()))
++            conn.commit()
++        if missing:
++            report["repaired"].append(f"long_term_index: rebuilt {len(missing)} row(s) from accepted candidates")
++        return {"rebuilt": len(missing)}
++
++    def _repair_aims(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        client = self._aims()
++        try:
++            health = client.health()
++        except (AimsUnavailable, AimsRejected) as exc:
++            with self._connect() as conn:
++                pending = conn.execute("SELECT COUNT(*) FROM aims_outbox WHERE status = 'pending'").fetchone()[0]
++            if pending:
++                report["issues"].append(f"AIMS unreachable - {pending} promotion(s) queued in outbox")
++            return {"reachable": False, "pending_in_outbox": pending, "error": str(exc)[:120]}
++
++        integrity = client.integrity()
++        if integrity.get("vault_status") != "verified":
++            self._aims_write_blocked = True
++            report["issues"].append("AIMS reports ledger corruption - CALI writes to AIMS are paused")
++            self._add_task_once("CALI: AIMS vault integrity failure - writes paused", "cali_repair", 5,
++                                f"AIMS /api/v1/vault/integrity: {json.dumps(integrity)[:400]}")
++            self._log_memory("aims_integrity_failure", {"integrity": integrity}, confidence=1.0, source="self_care")
++            return {"reachable": True, "integrity": "corrupted", "writes_paused": True}
++
++        if self._aims_write_blocked:
++            report["repaired"].append("AIMS integrity verified - writes resumed")
++        self._aims_write_blocked = False
++        flushed = self.flush_aims_outbox()
++        with self._connect() as conn:
++            failed = conn.execute("SELECT COUNT(*) FROM aims_outbox WHERE status = 'failed'").fetchone()[0]
++        if failed:
++            report["issues"].append(f"{failed} promotion(s) were rejected by AIMS and need review")
++            self._add_task_once("CALI: AIMS rejected queued memories", "cali_repair", 4,
++                                f"{failed} outbox item(s) have status 'failed' - see aims_outbox.last_error.")
++        return {"reachable": True, "entries": health.get("entries"), "integrity": "verified", "outbox": flushed}
++
++    def _check_tools(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        if not self.tools:
++            return {"status": "no registry"}
++        self.tools.reload_manifests()
++        health = self.tools.health()
++        for bad in health["manifest_errors"]:
++            report["issues"].append(f"tool manifest invalid: {bad}")
++        for name in health["mcp_commands_missing"]:
++            report["issues"].append(f"MCP server '{name}' command not found on PATH")
++        for bad in health["degraded_tools"]:
++            report["issues"].append(f"tool degraded: {bad['tool']} ({bad['ok_rate']:.0%} ok over {bad['calls']} calls)")
++            self.propose_improvement(
++                f"Investigate unreliable tool {bad['tool']}",
++                f"{bad['tool']} succeeded {bad['ok_rate']:.0%} of {bad['calls']} calls in the last 30 days.",
++                {"tool": bad["tool"], **bad})
++        return health
++
++    def _check_grader_health(self, report: Dict[str, Any]) -> Dict[str, Any]:
++        calibration = self.get_grader_calibration()
++        rate, owner_n = calibration.get("owner_approval_rate"), calibration.get("owner_resolved", 0)
++        if owner_n >= 20 and rate is not None and (rate < 0.1 or rate > 0.9):
++            self.propose_improvement(
++                "Revisit memory grader weights",
++                f"Over {owner_n} deferred decisions you approved {rate:.0%}. Threshold tuning is bounded, "
++                "so the weights themselves may need a human-reviewed change.",
++                {"owner_resolved": owner_n, "owner_approval_rate": rate})
++            report["issues"].append("grader approval rate is extreme - improvement proposal filed")
++        return {"owner_resolved": owner_n, "owner_approval_rate": rate}
++
++    # ------------------------------------------------------------ scheduler
++    def schedule_maintenance(self, interval_hours: float = 6.0, first_delay_seconds: float = 600.0) -> bool:
++        if self._maintenance_thread and self._maintenance_thread.is_alive():
++            return False
++        stop = threading.Event()
++        self._maintenance_stop = stop
++
++        def loop() -> None:
++            if stop.wait(first_delay_seconds):
++                return
++            while not stop.is_set():
++                try:
++                    self.run_self_repair()
++                    self.run_self_maintenance()
++                except Exception as exc:  # the scheduler must never die
++                    try:
++                        self._log_memory("maintenance_error", {"error": str(exc)[:300]}, source="self_care")
++                    except Exception:
++                        pass
++                if stop.wait(interval_hours * 3600):
++                    return
++
++        self._maintenance_thread = threading.Thread(target=loop, name="cali-self-care", daemon=True)
++        self._maintenance_thread.start()
++        return True
++
++    def stop_maintenance(self) -> None:
++        if self._maintenance_stop:
++            self._maintenance_stop.set()
++
++    def cognition_status(self) -> Dict[str, Any]:
++        with self._connect() as conn:
++            outbox = {r[0]: r[1] for r in conn.execute("SELECT status, COUNT(*) FROM aims_outbox GROUP BY status")}
++            candidates = {r[0] or "none": r[1] for r in conn.execute(
++                "SELECT decision, COUNT(*) FROM memory_candidates GROUP BY decision")}
++            working = conn.execute("SELECT COUNT(*) FROM working_memory WHERE expires_at > ?",
++                                   (datetime.utcnow().isoformat(),)).fetchone()[0]
++        return {
++            "working_memory_items": working,
++            "candidates_by_decision": candidates,
++            "aims_outbox": outbox,
++            "aims_writes_blocked": self._aims_write_blocked,
++            "grader": self.get_grader_calibration(),
++            "tools": self.tools.health() if self.tools else None,
++            "last_maintenance_at": self._get_state("last_maintenance_at"),
++            "last_repair_at": self._get_state("last_repair_at"),
++            "scheduler_running": bool(self._maintenance_thread and self._maintenance_thread.is_alive()),
++            "open_improvement_proposals": len(self.list_improvement_proposals()),
++        }
+diff --git a/cali_skg/core/cali_tools.py b/cali_skg/core/cali_tools.py
+new file mode 100644
+index 0000000..d6b371f
+--- /dev/null
++++ b/cali_skg/core/cali_tools.py
+@@ -0,0 +1,371 @@
++"""
++CALI tool registry - the actuator layer CALI's cognition can reach for.
++
++Tools:
++  tesseract_ocr           built-in, local, tier "read"
++  <manifest>.<endpoint>   HTTP research APIs declared in cali_skg/tools/manifests/*.json
++  mcp:<server>.<tool>     MCP servers (stdio) declared in the same manifests
++
++Rules (ORBS whitepaper section 19: least-privilege tools per deployment):
++  * Only the admin caller can use tools. Website visitors never reach this layer.
++  * A tool must be enabled in its manifest AND its tier must be granted (CALI_TOOL_TIERS,
++    default "read,research"). Tier "admin" is never granted by default.
++  * API calls stay on the manifest's host. No redirects, no shell, size-capped responses.
++  * MCP calls only reach tools on the manifest's explicit allowlist.
++  * Every call is logged (tool_calls) so reliability can be measured and degraded tools flagged.
++"""
++
++from __future__ import annotations
++
++import json
++import os
++import re
++import select
++import shutil
++import subprocess
++import time
++from datetime import datetime, timedelta
++from pathlib import Path
++from urllib.parse import quote
++from typing import Any, Callable, Dict, List, Optional
++
++try:
++    import httpx
++except Exception:  # pragma: no cover
++    httpx = None  # type: ignore
++
++TIERS = ("read", "research", "admin")
++IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".gif", ".webp"}
++LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
++_NAME_RE = re.compile(r"^[a-z0-9_\-]{1,40}$")
++
++
++class ToolError(Exception):
++    pass
++
++
++class CaliToolRegistry:
++    def __init__(self, base_path: Path, connect: Callable[[], Any],
++                 granted_tiers: Optional[List[str]] = None, file_roots: Optional[List[Path]] = None):
++        self.base_path = Path(base_path)
++        self._connect = connect
++        raw = os.getenv("CALI_TOOL_TIERS", "read,research") if granted_tiers is None else ",".join(granted_tiers)
++        self.granted_tiers = {t.strip() for t in raw.split(",") if t.strip() in TIERS}
++        env_roots = [Path(p) for p in os.getenv("CALI_TOOL_FILE_ROOTS", "").split(os.pathsep) if p.strip()]
++        self.file_roots = [p.resolve() for p in (file_roots or [self.base_path / "temp"]) + env_roots]
++        self.manifest_dir = self.base_path / "tools" / "manifests"
++        self.manifests: Dict[str, Dict[str, Any]] = {}
++        self.manifest_errors: List[str] = []
++        self._init_table()
++        self.reload_manifests()
++
++    # ------------------------------------------------------------------ setup
++    def _init_table(self) -> None:
++        with self._connect() as conn:
++            conn.execute(
++                "CREATE TABLE IF NOT EXISTS tool_calls (id INTEGER PRIMARY KEY AUTOINCREMENT, tool TEXT, ok INTEGER, "
++                "duration_ms INTEGER, error TEXT, created_at TEXT)"
++            )
++            conn.execute("CREATE INDEX IF NOT EXISTS idx_tool_calls_tool ON tool_calls(tool, created_at)")
++            conn.commit()
++
++    def reload_manifests(self) -> None:
++        self.manifests, self.manifest_errors = {}, []
++        if not self.manifest_dir.exists():
++            return
++        for path in sorted(self.manifest_dir.glob("*.json")):
++            if path.name.endswith(".example.json"):
++                continue
++            try:
++                data = json.loads(path.read_text(encoding="utf-8"))
++                self._validate_manifest(data)
++                self.manifests[data["name"]] = data
++            except Exception as exc:
++                self.manifest_errors.append(f"{path.name}: {exc}")
++
++    @staticmethod
++    def _validate_manifest(data: Dict[str, Any]) -> None:
++        if not isinstance(data, dict) or not _NAME_RE.match(str(data.get("name", ""))):
++            raise ValueError("invalid or missing name")
++        if data.get("kind") not in ("api", "mcp"):
++            raise ValueError("kind must be 'api' or 'mcp'")
++        if data.get("tier", "research") not in TIERS:
++            raise ValueError("invalid tier")
++        if data["kind"] == "api":
++            base = str(data.get("base_url", ""))
++            host = re.sub(r"^https?://", "", base).split("/")[0].split(":")[0]
++            if not (base.startswith("https://") or (base.startswith("http://") and host in LOCAL_HOSTS)):
++                raise ValueError("base_url must be https (http only for localhost)")
++            if not isinstance(data.get("endpoints"), dict) or not data["endpoints"]:
++                raise ValueError("endpoints required")
++        else:
++            if not isinstance(data.get("command"), list) or not data["command"]:
++                raise ValueError("command list required")
++            if not isinstance(data.get("tools_allowlist"), list) or not data["tools_allowlist"]:
++                raise ValueError("tools_allowlist required (least privilege)")
++
++    # ---------------------------------------------------------------- catalog
++    def _granted(self, tier: str) -> bool:
++        return tier in self.granted_tiers
++
++    def list_tools(self) -> List[Dict[str, Any]]:
++        tools = [{"name": "tesseract_ocr", "kind": "builtin", "tier": "read", "enabled": bool(shutil.which("tesseract")),
++                  "granted": self._granted("read"), "description": "Read text from an image file with local Tesseract OCR."}]
++        for m in self.manifests.values():
++            tier = m.get("tier", "research")
++            enabled = bool(m.get("enabled", True))
++            if m["kind"] == "api":
++                for ep, spec in m["endpoints"].items():
++                    tools.append({"name": f"{m['name']}.{ep}", "kind": "api", "tier": tier, "enabled": enabled,
++                                  "granted": self._granted(tier),
++                                  "description": spec.get("description") or m.get("description", "")})
++            else:
++                for tool in m["tools_allowlist"]:
++                    tools.append({"name": f"mcp:{m['name']}.{tool}", "kind": "mcp", "tier": tier, "enabled": enabled,
++                                  "granted": self._granted(tier), "description": m.get("description", "")})
++        stats = self.stats()
++        for t in tools:
++            t["stats"] = stats.get(t["name"], {"calls": 0, "ok_rate": None})
++        return tools
++
++    def describe_for_prompt(self) -> str:
++        """Compact tool list for KayGee/DeepSeek prompts: only tools actually callable right now."""
++        usable = [t for t in self.list_tools() if t["enabled"] and t["granted"]]
++        return "\n".join(f"- {t['name']}: {t['description']}" for t in usable) or "(no tools available)"
++
++    # ------------------------------------------------------------------- call
++    def call_tool(self, name: str, args: Optional[Dict[str, Any]] = None, caller: str = "admin") -> Dict[str, Any]:
++        args = dict(args or {})
++        started = time.monotonic()
++        try:
++            if caller != "admin":
++                raise ToolError("Tools are only available to the admin caller.")
++            result = self._dispatch(str(name or ""), args)
++            ok, error = True, None
++        except ToolError as exc:
++            result, ok, error = None, False, str(exc)
++        except Exception as exc:  # tool failures must not escape into the answer path
++            result, ok, error = None, False, f"{type(exc).__name__}: {exc}"
++        duration_ms = int((time.monotonic() - started) * 1000)
++        self._log_call(str(name)[:120], ok, duration_ms, error)
++        return {"ok": ok, "tool": name, "result": result, "error": error, "duration_ms": duration_ms}
++
++    def _dispatch(self, name: str, args: Dict[str, Any]) -> Any:
++        if name == "tesseract_ocr":
++            if not self._granted("read"):
++                raise ToolError("Tier 'read' not granted.")
++            return self._tesseract(args)
++        if name.startswith("mcp:"):
++            server, _, tool = name[4:].partition(".")
++            manifest = self._manifest(server, "mcp")
++            self._check_manifest(manifest)
++            if tool not in manifest["tools_allowlist"]:
++                raise ToolError(f"MCP tool '{tool}' is not on the allowlist for '{server}'.")
++            return self._mcp_call(manifest, tool, args)
++        api, _, endpoint = name.partition(".")
++        manifest = self._manifest(api, "api")
++        self._check_manifest(manifest)
++        if endpoint not in manifest["endpoints"]:
++            raise ToolError(f"Unknown endpoint '{endpoint}' for '{api}'.")
++        return self._api_call(manifest, manifest["endpoints"][endpoint], args)
++
++    def _manifest(self, name: str, kind: str) -> Dict[str, Any]:
++        m = self.manifests.get(name)
++        if not m or m["kind"] != kind:
++            raise ToolError(f"Unknown {kind} tool source '{name}'.")
++        return m
++
++    def _check_manifest(self, manifest: Dict[str, Any]) -> None:
++        if not manifest.get("enabled", True):
++            raise ToolError(f"'{manifest['name']}' is disabled in its manifest.")
++        tier = manifest.get("tier", "research")
++        if not self._granted(tier):
++            raise ToolError(f"Tier '{tier}' is not granted (CALI_TOOL_TIERS).")
++
++    # ------------------------------------------------------------- tesseract
++    def _tesseract(self, args: Dict[str, Any]) -> Dict[str, Any]:
++        binary = shutil.which("tesseract")
++        if not binary:
++            raise ToolError("tesseract is not installed.")
++        path = Path(str(args.get("path", ""))).expanduser()
++        try:
++            resolved = path.resolve(strict=True)
++        except (OSError, RuntimeError):
++            raise ToolError("Image file not found.")
++        if resolved.suffix.lower() not in IMAGE_SUFFIXES:
++            raise ToolError("Unsupported file type for OCR.")
++        if not any(root == resolved or root in resolved.parents for root in self.file_roots):
++            raise ToolError("Path is outside the allowed tool file roots.")
++        lang = str(args.get("lang") or "eng")
++        if not re.match(r"^[A-Za-z_+]{2,24}$", lang):
++            raise ToolError("Invalid language code.")
++        command = [binary, str(resolved), "stdout", "-l", lang]
++        if args.get("psm") is not None:
++            psm = int(args["psm"])
++            if not 0 <= psm <= 13:
++                raise ToolError("psm must be 0-13.")
++            command += ["--psm", str(psm)]
++        proc = subprocess.run(command, capture_output=True, text=True, timeout=60)
++        if proc.returncode != 0:
++            raise ToolError(f"tesseract failed: {proc.stderr.strip()[:200]}")
++        text = proc.stdout.strip()
++        return {"text": text[:20000], "truncated": len(text) > 20000, "file": resolved.name}
++
++    # ------------------------------------------------------------ API manifests
++    def _api_call(self, manifest: Dict[str, Any], spec: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
++        if httpx is None:
++            raise ToolError("httpx not installed.")
++        base = manifest["base_url"].rstrip("/")
++        path = str(spec.get("path", ""))
++        for field in re.findall(r"\{(\w+)\}", path):
++            if field not in args:
++                raise ToolError(f"Missing path parameter '{field}'.")
++            path = path.replace("{" + field + "}", quote(str(args[field]), safe=""))
++        allowed_query = set(spec.get("params", []))
++        allowed_body = set(spec.get("body_params", []))
++        query = {k: v for k, v in args.items() if k in allowed_query}
++        body = {k: v for k, v in args.items() if k in allowed_body}
++        headers = {"User-Agent": manifest.get("user_agent", "CALI-research/1.0 (spruked.com)")}
++        auth = manifest.get("auth") or {"type": "none"}
++        if auth.get("type") != "none":
++            secret = os.getenv(str(auth.get("env", "")), "")
++            if not secret:
++                raise ToolError(f"Auth env var {auth.get('env')} is not set.")
++            if auth["type"] == "bearer_env":
++                headers["Authorization"] = f"Bearer {secret}"
++            elif auth["type"] == "header_env":
++                headers[str(auth.get("header", "X-API-Key"))] = secret
++            elif auth["type"] == "query_env":
++                query[str(auth.get("param", "api_key"))] = secret
++        url = base + path
++        method = str(spec.get("method", "GET")).upper()
++        if method not in ("GET", "POST"):
++            raise ToolError("Only GET and POST are supported.")
++        response = httpx.request(method, url, params=query or None, json=body or None, headers=headers,
++                                 timeout=float(manifest.get("timeout", 15)), follow_redirects=False)
++        if response.is_redirect:
++            raise ToolError("Redirects are not followed.")
++        max_bytes = int(manifest.get("max_bytes", 200_000))
++        raw = response.content[:max_bytes]
++        truncated = len(response.content) > max_bytes
++        try:
++            data: Any = json.loads(raw) if not truncated else raw.decode("utf-8", "replace")
++        except ValueError:
++            data = raw.decode("utf-8", "replace")
++        if response.status_code >= 400:
++            raise ToolError(f"{manifest['name']} returned HTTP {response.status_code}")
++        return {"status": response.status_code, "data": data, "truncated": truncated, "source": manifest["name"]}
++
++    # -------------------------------------------------------------------- MCP
++    def _mcp_session(self, manifest: Dict[str, Any], method: str, params: Dict[str, Any]) -> Any:
++        """One short-lived stdio session: initialize, one request, shut down. POSIX/WSL only (uses select)."""
++        env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG") if k in os.environ}
++        for key in manifest.get("env_passthrough", []):
++            if key in os.environ:
++                env[key] = os.environ[key]
++        timeout = float(manifest.get("timeout", 30))
++        proc = subprocess.Popen(manifest["command"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
++                                stderr=subprocess.DEVNULL, env=env, text=True, bufsize=1)
++        deadline = time.monotonic() + timeout
++
++        def send(message: Dict[str, Any]) -> None:
++            proc.stdin.write(json.dumps(message) + "\n")  # type: ignore[union-attr]
++            proc.stdin.flush()  # type: ignore[union-attr]
++
++        def read_response(request_id: int) -> Dict[str, Any]:
++            while True:
++                remaining = deadline - time.monotonic()
++                if remaining <= 0:
++                    raise ToolError("MCP server timed out.")
++                ready, _, _ = select.select([proc.stdout], [], [], remaining)
++                if not ready:
++                    raise ToolError("MCP server timed out.")
++                line = proc.stdout.readline()  # type: ignore[union-attr]
++                if not line:
++                    raise ToolError("MCP server closed unexpectedly.")
++                try:
++                    message = json.loads(line)
++                except ValueError:
++                    continue
++                if message.get("id") == request_id:
++                    if "error" in message:
++                        raise ToolError(f"MCP error: {str(message['error'])[:300]}")
++                    return message.get("result", {})
++
++        try:
++            send({"jsonrpc": "2.0", "id": 1, "method": "initialize",
++                  "params": {"protocolVersion": "2024-11-05", "capabilities": {},
++                             "clientInfo": {"name": "cali", "version": "1.0"}}})
++            read_response(1)
++            send({"jsonrpc": "2.0", "method": "notifications/initialized"})
++            send({"jsonrpc": "2.0", "id": 2, "method": method, "params": params})
++            return read_response(2)
++        finally:
++            try:
++                proc.stdin.close()  # type: ignore[union-attr]
++            except Exception:
++                pass
++            proc.terminate()
++            try:
++                proc.wait(timeout=3)
++            except subprocess.TimeoutExpired:
++                proc.kill()
++
++    def _mcp_call(self, manifest: Dict[str, Any], tool: str, args: Dict[str, Any]) -> Dict[str, Any]:
++        result = self._mcp_session(manifest, "tools/call", {"name": tool, "arguments": args})
++        text = "\n".join(p.get("text", "") for p in result.get("content", []) if isinstance(p, dict) and p.get("type") == "text")
++        if result.get("isError"):
++            raise ToolError(f"MCP tool error: {text[:300]}")
++        return {"text": text[:50000], "raw_keys": sorted(result.keys()), "source": f"mcp:{manifest['name']}"}
++
++    # ------------------------------------------------------------- log / health
++    def _log_call(self, tool: str, ok: bool, duration_ms: int, error: Optional[str]) -> None:
++        try:
++            with self._connect() as conn:
++                conn.execute("INSERT INTO tool_calls (tool, ok, duration_ms, error, created_at) VALUES (?, ?, ?, ?, ?)",
++                             (tool, int(ok), duration_ms, (error or "")[:300], datetime.utcnow().isoformat()))
++                conn.commit()
++        except Exception:
++            pass
++
++    def stats(self, window_days: int = 30) -> Dict[str, Dict[str, Any]]:
++        cutoff = (datetime.utcnow() - timedelta(days=window_days)).isoformat()
++        with self._connect() as conn:
++            rows = conn.execute("SELECT tool, COUNT(*), SUM(ok) FROM tool_calls WHERE created_at > ? GROUP BY tool", (cutoff,)).fetchall()
++        return {r[0]: {"calls": r[1], "ok_rate": round((r[2] or 0) / r[1], 3)} for r in rows}
++
++    def health(self) -> Dict[str, Any]:
++        degraded = []
++        for tool, s in self.stats().items():
++            if s["calls"] >= 5 and s["ok_rate"] is not None and s["ok_rate"] < 0.5:
++                degraded.append({"tool": tool, **s})
++        mcp_missing = [m["name"] for m in self.manifests.values()
++                       if m["kind"] == "mcp" and m.get("enabled", True) and not shutil.which(m["command"][0])]
++        return {
++            "tesseract": bool(shutil.which("tesseract")),
++            "manifests_loaded": sorted(self.manifests),
++            "manifest_errors": list(self.manifest_errors),
++            "mcp_commands_missing": mcp_missing,
++            "degraded_tools": degraded,
++            "granted_tiers": sorted(self.granted_tiers),
++        }
++
++    def prune_log(self, retention_days: int = 90) -> int:
++        cutoff = (datetime.utcnow() - timedelta(days=retention_days)).isoformat()
++        with self._connect() as conn:
++            cur = conn.execute("DELETE FROM tool_calls WHERE created_at < ?", (cutoff,))
++            conn.commit()
++            return cur.rowcount
++
++
++class CaliToolsMixin:
++    tools: Optional[CaliToolRegistry] = None
++
++    def _init_tools(self) -> None:
++        self.tools = CaliToolRegistry(self.base_path, self._connect)
++
++    def use_tool(self, name: str, args: Optional[Dict[str, Any]] = None, caller: str = "admin") -> Dict[str, Any]:
++        return self.tools.call_tool(name, args, caller=caller)  # type: ignore[union-attr]
++
++    def list_tools(self) -> List[Dict[str, Any]]:
++        return self.tools.list_tools()  # type: ignore[union-attr]
+diff --git a/cali_skg/tools/manifests/crossref.json b/cali_skg/tools/manifests/crossref.json
+new file mode 100644
+index 0000000..79ceef0
+--- /dev/null
++++ b/cali_skg/tools/manifests/crossref.json
+@@ -0,0 +1,17 @@
++{
++  "name": "crossref",
++  "kind": "api",
++  "description": "Crossref scholarly metadata (papers, DOIs, citations). No key required.",
++  "base_url": "https://api.crossref.org",
++  "tier": "research",
++  "enabled": true,
++  "auth": {"type": "none"},
++  "timeout": 15,
++  "max_bytes": 200000,
++  "user_agent": "CALI-research/1.0 (mailto:bryan@spruked.com)",
++  "endpoints": {
++    "search_works": {"method": "GET", "path": "/works", "params": ["query", "rows", "select"],
++                     "description": "Search scholarly works by keyword."},
++    "get_work": {"method": "GET", "path": "/works/{doi}", "description": "Fetch one work by DOI."}
++  }
++}
+diff --git a/cali_skg/tools/manifests/mcp_filesystem.example.json b/cali_skg/tools/manifests/mcp_filesystem.example.json
+new file mode 100644
+index 0000000..3ad08ad
+--- /dev/null
++++ b/cali_skg/tools/manifests/mcp_filesystem.example.json
+@@ -0,0 +1,11 @@
++{
++  "name": "filesystem",
++  "kind": "mcp",
++  "description": "EXAMPLE - copy to mcp_filesystem.json, set enabled true and point the root at a folder you approve.",
++  "enabled": false,
++  "tier": "read",
++  "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/bryan/projects/spruked.com/cali_skg/temp"],
++  "tools_allowlist": ["read_file", "list_directory"],
++  "env_passthrough": [],
++  "timeout": 30
++}
+diff --git a/cali_skg/tools/manifests/openalex.json b/cali_skg/tools/manifests/openalex.json
+new file mode 100644
+index 0000000..f000741
+--- /dev/null
++++ b/cali_skg/tools/manifests/openalex.json
+@@ -0,0 +1,15 @@
++{
++  "name": "openalex",
++  "kind": "api",
++  "description": "OpenAlex open scholarly index (works, authors, concepts). No key required.",
++  "base_url": "https://api.openalex.org",
++  "tier": "research",
++  "enabled": true,
++  "auth": {"type": "none"},
++  "timeout": 15,
++  "max_bytes": 200000,
++  "endpoints": {
++    "search_works": {"method": "GET", "path": "/works", "params": ["search", "per-page", "filter"],
++                     "description": "Search works by keyword."}
++  }
++}
+diff --git a/cali_skg/tools/manifests/wikipedia.json b/cali_skg/tools/manifests/wikipedia.json
+new file mode 100644
+index 0000000..e7ff2ee
+--- /dev/null
++++ b/cali_skg/tools/manifests/wikipedia.json
+@@ -0,0 +1,14 @@
++{
++  "name": "wikipedia",
++  "kind": "api",
++  "description": "Wikipedia page summaries for quick background research. No key required.",
++  "base_url": "https://en.wikipedia.org",
++  "tier": "research",
++  "enabled": true,
++  "auth": {"type": "none"},
++  "timeout": 15,
++  "max_bytes": 100000,
++  "endpoints": {
++    "summary": {"method": "GET", "path": "/api/rest_v1/page/summary/{title}", "description": "Summary of a Wikipedia article by title."}
++  }
++}

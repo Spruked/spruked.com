@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
@@ -40,6 +40,13 @@ def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) 
     if token != allowed:
         raise HTTPException(status_code=403, detail="Admin access required")
     return token
+
+
+def _is_admin_token(credentials: Optional[HTTPAuthorizationCredentials]) -> bool:
+    """Non-raising admin check. Used to decide whose memory a public ORB turn may touch."""
+    token = credentials.credentials if credentials else ""
+    allowed = os.getenv("CALI_ADMIN_TOKEN") or os.getenv("ADMIN_ACCESS_TOKEN") or "spruked-admin-local"
+    return bool(token) and token == allowed
 
 
 def _strict_mode() -> bool:
@@ -992,6 +999,23 @@ class OrbRespondRequest(BaseModel):
     session_id: Optional[str] = None
 
 
+class MemoryCandidateIn(BaseModel):
+    content: str
+    memory_type: str = "long_term_candidate"
+    reason: str = ""
+    confidence: float = 0.5
+    importance: float = 0.5
+    source: str = "conversation"
+    expected_duration: Optional[str] = None
+    subject: Optional[str] = None
+    kind: str = "context"
+
+
+class ToolCallRequest(BaseModel):
+    name: str
+    args: Optional[Dict[str, Any]] = None
+
+
 class OrbTtsRequest(BaseModel):
     text: str
     voice: Optional[str] = None
@@ -1221,16 +1245,24 @@ def crm_email_poll(payload: EmailPollRequest, _: str = Depends(verify_admin)) ->
 
 
 @router.post("/query")
-def cali_query(payload: CaliQuery, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+def cali_query(payload: CaliQuery, background_tasks: BackgroundTasks, _: str = Depends(verify_admin)) -> Dict[str, Any]:
     cali = get_cali_skg()
     context: Dict[str, Any] = {"current_path": payload.current_path or "/admin"}
     if payload.context:
         context.update(payload.context)
-    return cali.process_query(query=payload.query, context=context)
+    result = cali.process_query(query=payload.query, context=context)
+    background_tasks.add_task(
+        cali.run_memory_loop, payload.query, str(result.get("response") or ""), result.get("intent") or {}, context, "admin"
+    )
+    return result
 
 
 @router.post("/orb/respond")
-async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
+async def cali_orb_respond(
+    payload: OrbRespondRequest,
+    background_tasks: BackgroundTasks,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> Dict[str, Any]:
     prompt = str(payload.prompt or "").strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt is required.")
@@ -1294,6 +1326,13 @@ async def cali_orb_respond(payload: OrbRespondRequest) -> Dict[str, Any]:
         strict_mode=_strict_mode(),
         enforce=_doctrine_enforce(),
         require_decision_envelope=_doctrine_require_decision_envelope(),
+    )
+
+    # Memory loop runs after the response is sent, so it adds no voice latency.
+    # Public visitors only ever produce short-term context; durable memory is admin-only.
+    background_tasks.add_task(
+        cali.run_memory_loop, prompt, governed, {"type": intent_type or "unknown"}, skg_context,
+        "admin" if _is_admin_token(credentials) else "visitor",
     )
 
     voice_payload = {"audio_url": audio_url, "audio_engine": audio_engine}
@@ -1371,6 +1410,62 @@ def prune(retention_days: int = 90, _: str = Depends(verify_admin)) -> Dict[str,
     return {"success": True, "message": "Knowledge graph pruned."}
 
 
+@router.get("/cognition/status")
+def cognition_status(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().cognition_status()
+
+
+@router.post("/memory/candidates")
+def submit_memory_candidate(payload: MemoryCandidateIn, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    """KayGee/CALI proposes a memory. Short-term writes through; long-term is graded before AIMS."""
+    return get_cali_skg().submit_memory_candidate(payload.model_dump(), speaker="admin")
+
+
+@router.get("/memory/working")
+def working_memory(limit: int = 20, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return {"items": get_cali_skg().get_working_memory(limit=limit)}
+
+
+@router.get("/memory/deferred")
+def deferred_candidates(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return {"items": get_cali_skg().get_deferred_candidates()}
+
+
+@router.post("/memory/deferred/{candidate_id}/resolve")
+def resolve_deferred(candidate_id: str, approve: bool, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().resolve_deferred_candidate(candidate_id, approve)
+
+
+@router.get("/memory/calibration")
+def memory_calibration(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().get_grader_calibration()
+
+
+@router.post("/maintenance/self")
+def self_maintenance(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().run_self_maintenance()
+
+
+@router.post("/maintenance/repair")
+def self_repair(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().run_self_repair()
+
+
+@router.get("/improvements")
+def improvements(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return {"items": get_cali_skg().list_improvement_proposals()}
+
+
+@router.get("/tools")
+def list_tools(_: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return {"items": get_cali_skg().list_tools()}
+
+
+@router.post("/tools/call")
+def call_tool(payload: ToolCallRequest, _: str = Depends(verify_admin)) -> Dict[str, Any]:
+    return get_cali_skg().use_tool(payload.name, payload.args, caller="admin")
+
+
 app = FastAPI(title="Cali Personal Assistant API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
@@ -1380,6 +1475,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+
+
+@app.on_event("startup")
+def _start_cali_self_care() -> None:
+    if str(os.getenv("CALI_AUTO_MAINTENANCE", "1")).strip() != "0":
+        get_cali_skg().schedule_maintenance(
+            interval_hours=float(os.getenv("CALI_MAINTENANCE_INTERVAL_HOURS", "6")),
+            first_delay_seconds=float(os.getenv("CALI_MAINTENANCE_FIRST_DELAY_SECONDS", "600")),
+        )
 
 
 @app.get("/health")

@@ -33,7 +33,7 @@ export default function AboutPage() {
       </Section>
 
       {/* The Philosophy */}
-      <Section className="mx-auto max-w-4xl py-12">
+      <Section id="mission" className="mx-auto max-w-4xl py-12">
         <h2 className="mb-6 text-3xl font-bold text-light">The Philosophy</h2>
         <div className="space-y-6 text-xl text-gray-300">
           <p>Spruked is built on a simple belief:</p>
@@ -192,7 +192,7 @@ export default function AboutPage() {
       </Section>
 
       {/* Divider & CTA */}
-      <Section className="mx-auto max-w-4xl pt-16 pb-12 text-center">
+      <Section id="contact" className="mx-auto max-w-4xl pt-16 pb-12 text-center">
         <div className="mx-auto w-16 h-1 bg-gray-800 mb-12 rounded-full"></div>
         <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-widest text-light mb-6">
           Spruked
@@ -201,6 +201,9 @@ export default function AboutPage() {
           Mint your mind.<br className="hidden sm:block"/>{' '}
           <span className="text-truth">It&rsquo;s worth more than you think.</span>
         </p>
+        <a href="mailto:bryan@spruked.com" className="mt-8 inline-flex rounded-full border border-gray-700 px-8 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-gray-200 transition hover:border-truth hover:text-truth">
+          Contact Spruked
+        </a>
       </Section>
     </div>
   );
