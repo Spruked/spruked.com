@@ -30,7 +30,7 @@ export default function ProductsPage() {
             </div>
             <p className="mb-6 text-xl text-gray-300 max-w-3xl">The human interface layer for the Spruked ecosystem and the Pro Prime AI architecture. A persistent interactive companion designed for research, organization, and system alignment.</p>
             <div className="flex gap-4">
-              <Link href="/products/orb" className="text-white hover:text-truth transition-colors uppercase tracking-wide text-sm font-semibold border-b border-transparent hover:border-truth pb-1">
+              <Link href="/orb" className="text-white hover:text-truth transition-colors uppercase tracking-wide text-sm font-semibold border-b border-transparent hover:border-truth pb-1">
                 Explore ORB System
               </Link>
             </div>

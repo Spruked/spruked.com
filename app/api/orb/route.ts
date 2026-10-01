@@ -372,6 +372,7 @@ async function reportSprukedOrbState(
 }
 
 async function queryByProvider(prompt: string, context: Record<string, unknown>, emotion: string) {
+  const startedAt = Date.now();
   const provider = cognitionProvider();
   const crawlContext = getSprukedCrawlContext();
   const websiteContext = {
@@ -384,13 +385,25 @@ async function queryByProvider(prompt: string, context: Record<string, unknown>,
     },
     ...context,
   };
-  return annotateProviderResponse(await queryKayGeeHybrid(prompt, websiteContext, emotion), {
+  const response = annotateProviderResponse(await queryKayGeeHybrid(prompt, websiteContext, emotion), {
     provider_selected: provider,
     provider_used: 'kaygee_hybrid',
     fallback_reason: null,
     bridge_used: `${caliApiBase()}${kayGeeHybridRespondPath()}`,
     cognition_mode: 'hybrid_provider',
   });
+  const returnedText = String(response.response || response.text || '').trim();
+  const returnedAudio = String(response.audio_url || '').trim();
+  console.info('[ORB response]', {
+    elapsed_ms: Date.now() - startedAt,
+    provider: response.metadata?.provider,
+    llm_core: response.metadata?.llm_core,
+    response: returnedText.slice(0, 400),
+    audio_present: Boolean(returnedAudio),
+    audio_engine: response.audio_engine || response.metadata?.audio_engine || null,
+    audio_length: returnedAudio.length,
+  });
+  return response;
 }
 
 export async function GET() {

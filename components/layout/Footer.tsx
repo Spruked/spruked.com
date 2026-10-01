@@ -15,7 +15,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6 uppercase tracking-widest text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 uppercase tracking-widest text-sm text-gray-500 md:justify-start">
             {/* <Link href="/brand" className="hover:text-light">
               Brand Bible
             </Link> */}

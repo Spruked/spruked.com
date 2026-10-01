@@ -1,0 +1,972 @@
+.
+├── .env.example
+├── .env.local
+├── .eslintrc.json
+├── .gitignore
+├── .next.stale-20260901052552
+│   ├── BUILD_ID
+│   ├── app-build-manifest.json
+│   ├── app-path-routes-manifest.json
+│   ├── build-manifest.json
+│   ├── cache
+│   │   ├── .tsbuildinfo
+│   │   ├── eslint
+│   │   │   └── .cache_vz8q4j
+│   │   ├── swc
+│   │   │   └── plugins
+│   │   │       └── v7_linux_x86_64_0.106.15
+│   │   └── webpack
+│   │       ├── client-development
+│   │       │   ├── 0.pack.gz
+│   │       │   ├── 1.pack.gz
+│   │       │   ├── 2.pack.gz
+│   │       │   ├── 3.pack.gz
+│   │       │   ├── 4.pack.gz
+│   │       │   ├── 5.pack.gz
+│   │       │   ├── 6.pack.gz
+│   │       │   ├── 7.pack.gz
+│   │       │   ├── 8.pack.gz
+│   │       │   ├── 9.pack.gz
+│   │       │   ├── index.pack.gz
+│   │       │   └── index.pack.gz.old
+│   │       ├── client-development-fallback
+│   │       │   ├── 0.pack.gz
+│   │       │   └── index.pack.gz
+│   │       ├── client-production
+│   │       │   ├── 0.pack
+│   │       │   ├── 1.pack
+│   │       │   ├── 2.pack
+│   │       │   ├── index.pack
+│   │       │   └── index.pack.old
+│   │       ├── edge-server-production
+│   │       │   ├── 0.pack
+│   │       │   └── index.pack
+│   │       ├── server-development
+│   │       │   ├── 0.pack.gz
+│   │       │   ├── 1.pack.gz
+│   │       │   ├── 10.pack.gz
+│   │       │   ├── 2.pack.gz
+│   │       │   ├── 3.pack.gz
+│   │       │   ├── 4.pack.gz
+│   │       │   ├── 5.pack.gz
+│   │       │   ├── 6.pack.gz
+│   │       │   ├── 7.pack.gz
+│   │       │   ├── 8.pack.gz
+│   │       │   ├── 9.pack.gz
+│   │       │   ├── index.pack.gz
+│   │       │   └── index.pack.gz.old
+│   │       └── server-production
+│   │           ├── 0.pack
+│   │           ├── 1.pack
+│   │           ├── 2.pack
+│   │           ├── index.pack
+│   │           └── index.pack.old
+│   ├── export-marker.json
+│   ├── fallback-build-manifest.json
+│   ├── images-manifest.json
+│   ├── next-minimal-server.js.nft.json
+│   ├── next-server.js.nft.json
+│   ├── package.json
+│   ├── prerender-manifest.json
+│   ├── react-loadable-manifest.json
+│   ├── required-server-files.json
+│   ├── routes-manifest.json
+│   ├── server
+│   │   ├── app
+│   │   │   ├── _not-found
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── about
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── admin
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── api
+│   │   │   │   ├── admin
+│   │   │   │   │   ├── orb-state
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   ├── simple-login
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   ├── system-scan
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   └── vault
+│   │   │   │   │       ├── route.js
+│   │   │   │   │       └── route.js.nft.json
+│   │   │   │   ├── cali
+│   │   │   │   │   └── [...path]
+│   │   │   │   │       ├── route.js
+│   │   │   │   │       └── route.js.nft.json
+│   │   │   │   ├── orb
+│   │   │   │   │   ├── route.js
+│   │   │   │   │   └── route.js.nft.json
+│   │   │   │   ├── page-content
+│   │   │   │   │   ├── route.js
+│   │   │   │   │   └── route.js.nft.json
+│   │   │   │   └── waitlist
+│   │   │   │       ├── route.js
+│   │   │   │       └── route.js.nft.json
+│   │   │   ├── artifacts
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── brand
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── cart
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── checkout
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── goat
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── orb
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── orb-skin-studio
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── page.js
+│   │   │   ├── page.js.nft.json
+│   │   │   ├── page_client-reference-manifest.js
+│   │   │   ├── products
+│   │   │   │   ├── alpha-certsig
+│   │   │   │   │   ├── page.js
+│   │   │   │   │   ├── page.js.nft.json
+│   │   │   │   │   └── page_client-reference-manifest.js
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   ├── page_client-reference-manifest.js
+│   │   │   │   └── truemark-mint
+│   │   │   │       ├── object-types
+│   │   │   │       │   ├── page.js
+│   │   │   │       │   ├── page.js.nft.json
+│   │   │   │       │   └── page_client-reference-manifest.js
+│   │   │   │       ├── objects
+│   │   │   │       │   ├── page.js
+│   │   │   │       │   ├── page.js.nft.json
+│   │   │   │       │   └── page_client-reference-manifest.js
+│   │   │   │       ├── page.js
+│   │   │   │       ├── page.js.nft.json
+│   │   │   │       └── page_client-reference-manifest.js
+│   │   │   └── truemark
+│   │   │       └── example-object
+│   │   │           ├── page.js
+│   │   │           ├── page.js.nft.json
+│   │   │           └── page_client-reference-manifest.js
+│   │   ├── app-paths-manifest.json
+│   │   ├── chunks
+│   │   │   ├── 276.js
+│   │   │   ├── 634.js
+│   │   │   ├── 682.js
+│   │   │   ├── 751.js
+│   │   │   ├── 857.js
+│   │   │   ├── 86.js
+│   │   │   ├── 9.js
+│   │   │   ├── 972.js
+│   │   │   └── font-manifest.json
+│   │   ├── font-manifest.json
+│   │   ├── functions-config-manifest.json
+│   │   ├── interception-route-rewrite-manifest.js
+│   │   ├── middleware-build-manifest.js
+│   │   ├── middleware-manifest.json
+│   │   ├── middleware-react-loadable-manifest.js
+│   │   ├── next-font-manifest.js
+│   │   ├── next-font-manifest.json
+│   │   ├── pages
+│   │   │   ├── 500.html
+│   │   │   ├── _app.js
+│   │   │   ├── _app.js.nft.json
+│   │   │   ├── _document.js
+│   │   │   ├── _document.js.nft.json
+│   │   │   ├── _error.js
+│   │   │   └── _error.js.nft.json
+│   │   ├── pages-manifest.json
+│   │   ├── server-reference-manifest.js
+│   │   ├── server-reference-manifest.json
+│   │   └── webpack-runtime.js
+│   ├── static
+│   │   ├── U5tRSeHfgC1LtgGDFvjAJ
+│   │   │   ├── _buildManifest.js
+│   │   │   └── _ssgManifest.js
+│   │   ├── chunks
+│   │   │   ├── 117-c0bf855d4a5ba977.js
+│   │   │   ├── 137-91324496e969a76d.js
+│   │   │   ├── 972-f6b7752d26ac2ed7.js
+│   │   │   ├── app
+│   │   │   │   ├── _not-found
+│   │   │   │   │   └── page-89c23b2bd0ad91ac.js
+│   │   │   │   ├── about
+│   │   │   │   │   └── page-da1401209b81c7c5.js
+│   │   │   │   ├── admin
+│   │   │   │   │   └── page-299449c5897ec635.js
+│   │   │   │   ├── artifacts
+│   │   │   │   │   └── page-2d2b639e2dd259d6.js
+│   │   │   │   ├── brand
+│   │   │   │   │   └── page-0fcf99f6e5ad30f9.js
+│   │   │   │   ├── cart
+│   │   │   │   │   └── page-7cc434e5faf2a530.js
+│   │   │   │   ├── checkout
+│   │   │   │   │   └── page-c2fea9d3b57ef774.js
+│   │   │   │   ├── goat
+│   │   │   │   │   └── page-0f8063ebef358105.js
+│   │   │   │   ├── layout-fb6c7fbe1f7bd76c.js
+│   │   │   │   ├── orb
+│   │   │   │   │   └── page-6240556b1ab60d74.js
+│   │   │   │   ├── orb-skin-studio
+│   │   │   │   │   └── page-fa0e072fde659ba1.js
+│   │   │   │   ├── page-795c3095d08a4ca8.js
+│   │   │   │   ├── products
+│   │   │   │   │   ├── alpha-certsig
+│   │   │   │   │   │   └── page-a930cc54557785ec.js
+│   │   │   │   │   ├── page-63599c8d265feeba.js
+│   │   │   │   │   └── truemark-mint
+│   │   │   │   │       ├── object-types
+│   │   │   │   │       │   └── page-f3ec9e7db20497ea.js
+│   │   │   │   │       ├── objects
+│   │   │   │   │       │   └── page-c5b272f4b3dba58d.js
+│   │   │   │   │       └── page-63d6475fd5a006da.js
+│   │   │   │   └── truemark
+│   │   │   │       └── example-object
+│   │   │   │           └── page-93774aeab920f886.js
+│   │   │   ├── fallback
+│   │   │   │   └── pages
+│   │   │   ├── fd9d1056-cb5caf61ec72dd0b.js
+│   │   │   ├── framework-f66176bb897dc684.js
+│   │   │   ├── main-5d4c065844d64d57.js
+│   │   │   ├── main-app-f7fcdad4ce800d47.js
+│   │   │   ├── pages
+│   │   │   │   ├── _app-72b849fbd24ac258.js
+│   │   │   │   └── _error-7ba65e1336b92748.js
+│   │   │   ├── polyfills-42372ed130431b0a.js
+│   │   │   └── webpack-971e6d9cbd654f80.js
+│   │   ├── css
+│   │   │   ├── 023fd3474c9d2bf1.css
+│   │   │   └── app
+│   │   └── development
+│   │       ├── _buildManifest.js
+│   │       └── _ssgManifest.js
+│   ├── trace
+│   └── types
+│       ├── app
+│       │   ├── about
+│       │   │   └── page.ts
+│       │   ├── admin
+│       │   │   └── page.ts
+│       │   ├── api
+│       │   │   ├── admin
+│       │   │   │   ├── orb-state
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── simple-login
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── system-scan
+│       │   │   │   │   └── route.ts
+│       │   │   │   └── vault
+│       │   │   │       └── route.ts
+│       │   │   ├── cali
+│       │   │   │   └── [...path]
+│       │   │   │       └── route.ts
+│       │   │   ├── orb
+│       │   │   │   └── route.ts
+│       │   │   ├── page-content
+│       │   │   │   └── route.ts
+│       │   │   └── waitlist
+│       │   │       └── route.ts
+│       │   ├── artifacts
+│       │   │   └── page.ts
+│       │   ├── brand
+│       │   │   └── page.ts
+│       │   ├── cart
+│       │   │   └── page.ts
+│       │   ├── checkout
+│       │   │   └── page.ts
+│       │   ├── goat
+│       │   │   └── page.ts
+│       │   ├── orb
+│       │   │   └── page.ts
+│       │   ├── orb-skin-studio
+│       │   │   └── page.ts
+│       │   ├── page.ts
+│       │   ├── products
+│       │   │   ├── alpha-certsig
+│       │   │   │   └── page.ts
+│       │   │   ├── page.ts
+│       │   │   └── truemark-mint
+│       │   │       ├── object-types
+│       │   │       │   └── page.ts
+│       │   │       ├── objects
+│       │   │       │   └── page.ts
+│       │   │       └── page.ts
+│       │   └── truemark
+│       │       └── example-object
+│       │           └── page.ts
+│       └── package.json
+├── .next.stale-20260901054001
+│   ├── app-build-manifest.json
+│   ├── build-manifest.json
+│   ├── cache
+│   │   ├── eslint
+│   │   │   └── .cache_vz8q4j
+│   │   ├── swc
+│   │   │   └── plugins
+│   │   │       └── v7_linux_x86_64_0.106.15
+│   │   └── webpack
+│   │       ├── client-development
+│   │       │   ├── 0.pack.gz
+│   │       │   ├── 1.pack.gz
+│   │       │   ├── 2.pack.gz
+│   │       │   ├── 3.pack.gz
+│   │       │   ├── 4.pack.gz
+│   │       │   ├── 5.pack.gz
+│   │       │   ├── 6.pack.gz
+│   │       │   ├── 7.pack.gz
+│   │       │   ├── index.pack.gz
+│   │       │   └── index.pack.gz.old
+│   │       ├── edge-server-production
+│   │       │   ├── 0.pack
+│   │       │   └── index.pack
+│   │       ├── server-development
+│   │       │   ├── 0.pack.gz
+│   │       │   ├── 1.pack.gz
+│   │       │   ├── 2.pack.gz
+│   │       │   ├── 3.pack.gz
+│   │       │   ├── 4.pack.gz
+│   │       │   ├── 5.pack.gz
+│   │       │   ├── 6.pack.gz
+│   │       │   ├── index.pack.gz
+│   │       │   └── index.pack.gz.old
+│   │       └── server-production
+│   │           ├── 0.pack
+│   │           ├── 1.pack
+│   │           └── index.pack
+│   ├── package.json
+│   ├── react-loadable-manifest.json
+│   ├── routes-manifest.json
+│   ├── server
+│   │   ├── _error.js
+│   │   ├── app
+│   │   │   ├── _not-found
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── about
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── admin
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── api
+│   │   │   │   ├── admin
+│   │   │   │   │   ├── orb-state
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   ├── simple-login
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   ├── system-scan
+│   │   │   │   │   │   ├── route.js
+│   │   │   │   │   │   └── route.js.nft.json
+│   │   │   │   │   └── vault
+│   │   │   │   │       ├── route.js
+│   │   │   │   │       └── route.js.nft.json
+│   │   │   │   ├── cali
+│   │   │   │   │   └── [...path]
+│   │   │   │   │       ├── route.js
+│   │   │   │   │       └── route.js.nft.json
+│   │   │   │   ├── orb
+│   │   │   │   │   ├── route.js
+│   │   │   │   │   └── route.js.nft.json
+│   │   │   │   ├── page-content
+│   │   │   │   │   ├── route.js
+│   │   │   │   │   └── route.js.nft.json
+│   │   │   │   └── waitlist
+│   │   │   │       ├── route.js
+│   │   │   │       └── route.js.nft.json
+│   │   │   ├── artifacts
+│   │   │   │   ├── page.js
+│   │   │   │   └── page.js.nft.json
+│   │   │   ├── brand
+│   │   │   │   ├── page.js
+│   │   │   │   └── page.js.nft.json
+│   │   │   ├── cart
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── checkout
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── goat
+│   │   │   │   ├── page.js
+│   │   │   │   └── page.js.nft.json
+│   │   │   ├── orb
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── orb-skin-studio
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   └── page_client-reference-manifest.js
+│   │   │   ├── page.js
+│   │   │   ├── page.js.nft.json
+│   │   │   ├── page_client-reference-manifest.js
+│   │   │   ├── products
+│   │   │   │   ├── alpha-certsig
+│   │   │   │   │   ├── page.js
+│   │   │   │   │   └── page.js.nft.json
+│   │   │   │   ├── page.js
+│   │   │   │   ├── page.js.nft.json
+│   │   │   │   ├── page_client-reference-manifest.js
+│   │   │   │   └── truemark-mint
+│   │   │   │       ├── object-types
+│   │   │   │       │   ├── page.js
+│   │   │   │       │   └── page.js.nft.json
+│   │   │   │       ├── objects
+│   │   │   │       │   ├── page.js
+│   │   │   │       │   └── page.js.nft.json
+│   │   │   │       ├── page.js
+│   │   │   │       └── page.js.nft.json
+│   │   │   └── truemark
+│   │   │       └── example-object
+│   │   │           ├── page.js
+│   │   │           └── page.js.nft.json
+│   │   ├── app-paths-manifest.json
+│   │   ├── chunks
+│   │   │   ├── 276.js
+│   │   │   ├── 634.js
+│   │   │   ├── 682.js
+│   │   │   ├── 751.js
+│   │   │   ├── 857.js
+│   │   │   ├── 86.js
+│   │   │   ├── 9.js
+│   │   │   ├── 972.js
+│   │   │   └── font-manifest.json
+│   │   ├── font-manifest.json
+│   │   ├── interception-route-rewrite-manifest.js
+│   │   ├── middleware-build-manifest.js
+│   │   ├── middleware-manifest.json
+│   │   ├── middleware-react-loadable-manifest.js
+│   │   ├── next-font-manifest.js
+│   │   ├── next-font-manifest.json
+│   │   ├── pages
+│   │   │   ├── _app.js
+│   │   │   ├── _app.js.nft.json
+│   │   │   ├── _document.js
+│   │   │   ├── _document.js.nft.json
+│   │   │   ├── _error.js
+│   │   │   └── _error.js.nft.json
+│   │   ├── pages-manifest.json
+│   │   ├── server-reference-manifest.js
+│   │   ├── server-reference-manifest.json
+│   │   ├── vendor-chunks
+│   │   │   ├── @radix-ui.js
+│   │   │   ├── @swc.js
+│   │   │   ├── next.js
+│   │   │   └── tailwind-merge.js
+│   │   └── webpack-runtime.js
+│   ├── static
+│   │   ├── chunks
+│   │   │   ├── _error.js
+│   │   │   ├── app
+│   │   │   │   ├── _not-found
+│   │   │   │   │   └── page.js
+│   │   │   │   ├── about
+│   │   │   │   ├── admin
+│   │   │   │   ├── cart
+│   │   │   │   ├── checkout
+│   │   │   │   ├── orb
+│   │   │   │   ├── orb-skin-studio
+│   │   │   │   └── products
+│   │   │   ├── main.js
+│   │   │   ├── pages
+│   │   │   │   ├── _app.js
+│   │   │   │   └── _error.js
+│   │   │   ├── react-refresh.js
+│   │   │   └── webpack.js
+│   │   ├── css
+│   │   │   └── app
+│   │   ├── development
+│   │   │   ├── _buildManifest.js
+│   │   │   └── _ssgManifest.js
+│   │   └── webpack
+│   │       ├── 142e8d9b0a52fab1.webpack.hot-update.json
+│   │       ├── a84226e8ce1e3983.webpack.hot-update.json
+│   │       ├── webpack.142e8d9b0a52fab1.hot-update.js
+│   │       └── webpack.a84226e8ce1e3983.hot-update.js
+│   ├── trace
+│   └── types
+│       ├── app
+│       │   ├── about
+│       │   │   └── page.ts
+│       │   ├── admin
+│       │   │   └── page.ts
+│       │   ├── api
+│       │   │   ├── admin
+│       │   │   │   ├── orb-state
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── simple-login
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── system-scan
+│       │   │   │   │   └── route.ts
+│       │   │   │   └── vault
+│       │   │   │       └── route.ts
+│       │   │   ├── cali
+│       │   │   │   └── [...path]
+│       │   │   │       └── route.ts
+│       │   │   ├── orb
+│       │   │   │   └── route.ts
+│       │   │   ├── page-content
+│       │   │   │   └── route.ts
+│       │   │   └── waitlist
+│       │   │       └── route.ts
+│       │   ├── artifacts
+│       │   │   └── page.ts
+│       │   ├── brand
+│       │   │   └── page.ts
+│       │   ├── cart
+│       │   │   └── page.ts
+│       │   ├── checkout
+│       │   │   └── page.ts
+│       │   ├── goat
+│       │   │   └── page.ts
+│       │   ├── layout.ts
+│       │   ├── orb
+│       │   │   └── page.ts
+│       │   ├── orb-skin-studio
+│       │   │   └── page.ts
+│       │   ├── page.ts
+│       │   ├── products
+│       │   │   ├── alpha-certsig
+│       │   │   │   └── page.ts
+│       │   │   ├── page.ts
+│       │   │   └── truemark-mint
+│       │   │       ├── object-types
+│       │   │       │   └── page.ts
+│       │   │       ├── objects
+│       │   │       │   └── page.ts
+│       │   │       └── page.ts
+│       │   └── truemark
+│       │       └── example-object
+│       │           └── page.ts
+│       └── package.json
+├── .orb-web-runtime
+├── Affiliate_Sites
+│   ├── TrueMarkMint.html
+│   └── TrueMarkMint.jsx
+├── LICENSE
+├── Orb_Assistant
+│   └── api
+│       ├── OrbService.ts
+│       └── web_orb_bridge.py
+├── README.md
+├── Spruked_Vault_System
+│   ├── AIMS
+│   │   ├── .github
+│   │   │   └── workflows
+│   │   │       └── tests.yml
+│   │   ├── .gitignore
+│   │   ├── DEV_LOG.md
+│   │   ├── HARDENING_CONTRACT.md
+│   │   ├── LICENSE
+│   │   ├── README.md
+│   │   ├── memory_core
+│   │   │   ├── __init__.py
+│   │   │   ├── glyph_trace.py
+│   │   │   ├── indexes.py
+│   │   │   ├── long_term.py
+│   │   │   ├── memory_layer.py
+│   │   │   ├── retrieval_ledger.py
+│   │   │   ├── short_term.py
+│   │   │   ├── skg
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── backend.py
+│   │   │   │   ├── domain.py
+│   │   │   │   ├── trio.py
+│   │   │   │   └── types.py
+│   │   │   ├── temporal.py
+│   │   │   ├── vault.py
+│   │   │   └── writer_lock.py
+│   │   ├── pyproject.toml
+│   │   ├── requirements.txt
+│   │   ├── service.py
+│   │   ├── system_outline.md
+│   │   └── tests
+│   │       ├── test_complete_cognitive_memory_cycle.py
+│   │       ├── test_core_integrity.py
+│   │       ├── test_graphqlite_backend.py
+│   │       ├── test_service_security.py
+│   │       └── test_three_skgs.py
+│   ├── README.md
+│   ├── config
+│   │   ├── environments
+│   │   │   ├── dev.yaml
+│   │   │   ├── prod.yaml
+│   │   │   └── test.yaml
+│   │   ├── telemetry.yaml
+│   │   └── vault_config.yaml
+│   ├── docs
+│   │   ├── architecture.md
+│   │   ├── glyph_guide.md
+│   │   ├── memory_matrix.md
+│   │   ├── migration_guide.md
+│   │   ├── telemetry_best_practices.md
+│   │   └── vault_types.md
+│   ├── engine
+│   │   ├── evaluator.py
+│   │   ├── integration_hooks
+│   │   │   ├── on_vault_apply.py
+│   │   │   └── post_resolution.yaml
+│   │   ├── resolver.js
+│   │   └── signal_map.json
+│   ├── examples
+│   │   ├── input_career_change.json
+│   │   ├── input_game_quest.json
+│   │   └── input_medical_triage.json
+│   ├── glyphs
+│   │   ├── _template
+│   │   │   └── custom_glyph.json
+│   │   ├── glyph_map.json
+│   │   └── trace_engine.js
+│   ├── interfaces
+│   │   ├── api
+│   │   │   └── openapi.yaml
+│   │   └── cli
+│   │       └── commands.md
+│   ├── memory
+│   │   ├── _template
+│   │   │   └── custom_matrix.json
+│   │   ├── consolidation.py
+│   │   ├── domains
+│   │   │   ├── long_term.json
+│   │   │   ├── sensory.json
+│   │   │   └── short_term.json
+│   │   └── matrix_store.yaml
+│   ├── scripts
+│   │   ├── consolidate_memory.py
+│   │   ├── export_telemetry.js
+│   │   ├── export_to_json.lua
+│   │   ├── generate_glyph_report.py
+│   │   └── validate_vaults.sh
+│   ├── telemetry
+│   │   ├── alerts.yaml
+│   │   ├── collector.py
+│   │   ├── dashboard
+│   │   │   ├── anomaly_detector.js
+│   │   │   └── metrics_dashboard.md
+│   │   ├── telemetry.yaml
+│   │   └── traces
+│   │       ├── agent_decisions.json
+│   │       └── latency_buckets.json
+│   ├── tests
+│   │   ├── integration
+│   │   │   ├── test_ethical_dilemma.json
+│   │   │   ├── test_glyph_drift.json
+│   │   │   ├── test_memory_consolidation.json
+│   │   │   └── test_pricing_edge_case.json
+│   │   └── unit
+│   │       ├── test_telemetry_alerts.json
+│   │       └── vault_template_test.json
+│   ├── tree.txt
+│   └── vaults
+│       └── _template
+│           ├── logic.md
+│           ├── rules
+│           │   └── condition.js
+│           └── vault.json
+├── app
+│   ├── about
+│   │   └── page.tsx
+│   ├── admin
+│   │   └── page.tsx
+│   ├── api
+│   │   ├── admin
+│   │   │   ├── orb-state
+│   │   │   │   └── route.ts
+│   │   │   ├── simple-login
+│   │   │   │   └── route.ts
+│   │   │   ├── system-scan
+│   │   │   │   └── route.ts
+│   │   │   └── vault
+│   │   │       └── route.ts
+│   │   ├── cali
+│   │   │   └── [...path]
+│   │   │       └── route.ts
+│   │   ├── orb
+│   │   │   ├── route.ts
+│   │   │   └── stt
+│   │   │       └── route.ts
+│   │   ├── page-content
+│   │   │   └── route.ts
+│   │   └── waitlist
+│   │       └── route.ts
+│   ├── artifacts
+│   │   └── page.tsx
+│   ├── brand
+│   │   └── page.tsx
+│   ├── cart
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── checkout
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── favicon.svg
+│   ├── globals.css
+│   ├── goat
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── orb
+│   │   └── page.tsx
+│   ├── orb-skin-studio
+│   │   └── page.tsx
+│   ├── page.tsx
+│   ├── products
+│   │   ├── alpha-certsig
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── truemark-mint
+│   │       ├── object-types
+│   │       │   └── page.tsx
+│   │       ├── objects
+│   │       │   └── page.tsx
+│   │       └── page.tsx
+│   └── truemark
+│       └── example-object
+│           └── page.tsx
+├── cali_skg
+│   ├── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── cali_routes.py
+│   │   └── main.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── cali_personal_skg.py
+│   │   └── doctrine_governance.py
+│   ├── memory
+│   │   └── memory_2026-03-28.jsonl
+│   ├── requirements.txt
+│   ├── run.sh
+│   └── vault
+│       └── cali_identity.json
+├── components
+│   ├── admin
+│   │   ├── AdminLoginBridge.tsx
+│   │   └── CaliOperationsHub.tsx
+│   ├── brand
+│   │   ├── CircularStamp.tsx
+│   │   ├── ColorSwatch.tsx
+│   │   ├── FaviconGrid.tsx
+│   │   ├── PrimaryLogo.tsx
+│   │   └── WordmarkLogo.tsx
+│   ├── commerce
+│   │   └── useCart.ts
+│   ├── layout
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   └── Navigation.tsx
+│   └── ui
+│       ├── Button.tsx
+│       ├── GlobalOrb.motion.snapshot.2026-03-27.tsx
+│       ├── GlobalOrb.tsx
+│       ├── Input.tsx
+│       └── Section.tsx
+├── data
+│   └── page-content.ts
+├── doc
+│   ├── DEV_LOG.md
+│   ├── ORBS_OS_WHITEPAPER_v1.0_2026-09.md
+│   ├── admin-crm.md
+│   ├── cms.md
+│   └── orb-motion-snapshot-2026-03-27.md
+├── lib
+│   ├── admin-vault.ts
+│   ├── commerce.ts
+│   ├── constants.ts
+│   ├── orb-introspection.ts
+│   ├── orb-server.ts
+│   ├── orbital_behavior_skg
+│   │   ├── bridges
+│   │   │   ├── BrowserContext.ts
+│   │   │   ├── KayGeeHybridAdapter.ts
+│   │   │   └── QwenIntentPlugin.ts
+│   │   ├── core
+│   │   │   ├── DesireEngine.ts
+│   │   │   ├── IntentPredictor.ts
+│   │   │   ├── MotionGovernor.ts
+│   │   │   ├── OrbitalDynamics.ts
+│   │   │   ├── PresenceVisuals.ts
+│   │   │   ├── SelfPruner.ts
+│   │   │   └── types.ts
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   │   └── SprukedOrb.ts
+│   │   │   └── truemark
+│   │   │       └── TrueMarkOrb.ts
+│   │   ├── index.ts
+│   │   └── vaults
+│   │       ├── behavior_patterns.yaml
+│   │       └── motion_memory.jsonl
+│   ├── page-content.ts
+│   ├── supabase
+│   │   └── server.ts
+│   └── website-orb
+│       └── pointer-runtime.ts
+├── next
+├── next-env.d.ts
+├── next.config.js
+├── next.config.mjs
+├── node_modules.root-owned-broken-20260901004401
+│   ├── .bin
+│   │   ├── acorn
+│   │   ├── acorn.cmd
+│   │   ├── acorn.ps1
+│   │   ├── autoprefixer
+│   │   ├── autoprefixer.cmd
+│   │   ├── autoprefixer.ps1
+│   │   ├── baseline-browser-mapping
+│   │   ├── baseline-browser-mapping.cmd
+│   │   ├── baseline-browser-mapping.ps1
+│   │   ├── browserslist
+│   │   ├── browserslist.cmd
+│   │   ├── browserslist.ps1
+│   │   ├── cssesc
+│   │   ├── cssesc.cmd
+│   │   ├── cssesc.ps1
+│   │   ├── eslint
+│   │   ├── eslint.cmd
+│   │   ├── eslint.ps1
+│   │   ├── glob
+│   │   ├── glob.cmd
+│   │   ├── glob.ps1
+│   │   ├── jiti
+│   │   ├── jiti.cmd
+│   │   ├── jiti.ps1
+│   │   ├── js-yaml
+│   │   ├── js-yaml.cmd
+│   │   ├── js-yaml.ps1
+│   │   ├── json5
+│   │   ├── json5.cmd
+│   │   ├── json5.ps1
+│   │   ├── loose-envify
+│   │   ├── loose-envify.cmd
+│   │   ├── loose-envify.ps1
+│   │   ├── nanoid
+│   │   ├── nanoid.cmd
+│   │   ├── nanoid.ps1
+│   │   ├── napi-postinstall
+│   │   ├── napi-postinstall.cmd
+│   │   ├── napi-postinstall.ps1
+│   │   ├── next
+│   │   ├── next.cmd
+│   │   ├── next.ps1
+│   │   ├── node-which
+│   │   ├── node-which.cmd
+│   │   ├── node-which.ps1
+│   │   ├── resolve
+│   │   ├── resolve.cmd
+│   │   ├── resolve.ps1
+│   │   ├── rimraf
+│   │   ├── rimraf.cmd
+│   │   ├── rimraf.ps1
+│   │   ├── semver
+│   │   ├── semver.cmd
+│   │   ├── semver.ps1
+│   │   ├── sucrase
+│   │   ├── sucrase-node
+│   │   ├── sucrase-node.cmd
+│   │   ├── sucrase-node.ps1
+│   │   ├── sucrase.cmd
+│   │   ├── sucrase.ps1
+│   │   ├── tailwind
+│   │   ├── tailwind.cmd
+│   │   ├── tailwind.ps1
+│   │   ├── tailwindcss
+│   │   ├── tailwindcss.cmd
+│   │   ├── tailwindcss.ps1
+│   │   ├── tsc
+│   │   ├── tsc.cmd
+│   │   ├── tsc.ps1
+│   │   ├── tsserver
+│   │   ├── tsserver.cmd
+│   │   ├── tsserver.ps1
+│   │   ├── update-browserslist-db
+│   │   ├── update-browserslist-db.cmd
+│   │   └── update-browserslist-db.ps1
+│   └── next
+│       └── dist
+│           └── esm
+├── orb_core_standard
+│   ├── primitive_normalization_aliases.json
+│   └── primitive_response_cache.json
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── assets
+│   │   ├── CertificateKNFTsample.png
+│   │   ├── Founder Background, Faith & Professional Statement.pdf
+│   │   ├── Professional Résumé Summary (1).pdf
+│   │   ├── Ulogo1024blk.png
+│   │   ├── Ulogo1024wht.png
+│   │   ├── Ulogo1600blk.png
+│   │   ├── Ulogo1600wht.png
+│   │   ├── Ulogo256blk.png
+│   │   ├── Ulogo256wht.png
+│   │   ├── Ulogo512blk.png
+│   │   ├── Ulogo512wht.png
+│   │   ├── Ulogo96blk.ico
+│   │   ├── Ulogo96wht.ico
+│   │   ├── Untitled.mp4
+│   │   ├── goatlog512.png
+│   │   ├── goatlogo512oval.png
+│   │   └── redorbbluecenter1600.png
+│   ├── favicon.ico
+│   ├── logos
+│   │   ├── spruked-stamp-white.svg
+│   │   ├── spruked-symbol-black.svg
+│   │   ├── spruked-symbol-white.svg
+│   │   └── spruked-wordmark-white.svg
+│   └── orb-skin-studio
+│       ├── account.html
+│       ├── admin.html
+│       ├── assets
+│       │   ├── HLSForb512sample.png
+│       │   ├── bluehlsf512.png
+│       │   ├── blueswirlorb512.png.png
+│       │   ├── gravityfield512.png
+│       │   └── robotfire512.png
+│       ├── cart.html
+│       ├── checkout.html
+│       ├── contact.html
+│       ├── gallery.html
+│       ├── login.html
+│       ├── orb_skin_gen.html
+│       ├── pricing.html
+│       └── upload.html
+├── scripts
+│   └── start-cp3.sh
+├── spruked_repo_tree.txt
+├── styles
+│   └── globals.css
+├── tailwind.config.ts
+├── tree.txt
+├── tsconfig.json
+└── tsconfig.tsbuildinfo
+
+291 directories, 679 files

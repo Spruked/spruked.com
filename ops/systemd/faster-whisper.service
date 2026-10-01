@@ -1,0 +1,26 @@
+[Unit]
+Description=Faster Whisper STT Substrate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bryan
+Group=bryan
+WorkingDirectory=/home/bryan/substrate/stt/faster_whisper
+Environment=HOME=/home/bryan
+Environment=PYTHONUNBUFFERED=1
+Environment=STT_HOST=127.0.0.1
+Environment=STT_PORT=13000
+Environment=STT_WHISPER_MODEL=base.en
+Environment=STT_WHISPER_DEVICE=cuda
+Environment=STT_WHISPER_COMPUTE_TYPE=float16
+Environment=LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/lib/wsl/lib
+ExecStart=/home/bryan/substrate/stt/faster_whisper/start_faster_whisper_substrate.sh
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target

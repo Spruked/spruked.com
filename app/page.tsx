@@ -3,10 +3,18 @@ import { PrimaryLogo } from '@/components/brand/PrimaryLogo';
 import {Button}  from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Section } from '@/components/ui/Section';
+import LandingSplash from '@/components/ui/LandingSplash';
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams?: { waitlist?: string; detail?: string };
+}) {
+  const waitlistStatus = searchParams?.waitlist;
+
   return (
     <>
+      <LandingSplash />
       <Section bleed className="relative flex min-h-[90vh] flex-col items-center justify-center text-center">
         <div className="absolute inset-0 opacity-5">
           <PrimaryLogo size={800} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -289,7 +297,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section id="waitlist" className="bg-gradient-to-b from-dark to-black">
+      <Section id="waitlist" className="scroll-mt-24 bg-gradient-to-b from-dark to-black">
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-5 text-lg text-gray-300 sm:text-xl">
             Become a Spruikster - someone who doesn&rsquo;t just talk things up, but sets things straight.
@@ -324,6 +332,15 @@ export default function Home() {
               Secure My Spot
             </Button>
           </form>
+          {waitlistStatus === 'success' ? (
+            <p className="mx-auto mt-5 max-w-xl rounded-full border border-emerald-400/30 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200" role="status">
+              You&rsquo;re on the list. We&rsquo;ll be in touch soon.
+            </p>
+          ) : waitlistStatus === 'error' ? (
+            <p className="mx-auto mt-5 max-w-xl rounded-full border border-red-400/30 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200" role="alert">
+              We couldn&rsquo;t save that request. Check the email and try again.
+            </p>
+          ) : null}
         </div>
       </Section>
     </>

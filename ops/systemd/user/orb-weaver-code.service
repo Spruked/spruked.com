@@ -1,0 +1,18 @@
+[Unit]
+Description=Spruked.com Website ORB - Next.js Application
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/bryan/projects/spruked.com
+Environment=NODE_ENV=production
+Environment=PORT=41000
+EnvironmentFile=-%h/.config/code-weaver/orb-weaver-code.env
+ExecStart=/home/bryan/projects/spruked.com/node_modules/.bin/next start -p 41000 --hostname 127.0.0.1
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

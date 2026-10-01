@@ -1,0 +1,330 @@
+.
+├── .env.example
+├── .env.local
+├── .eslintrc.json
+├── .gitignore
+├── .orb-web-runtime
+├── Affiliate_Sites
+│   ├── TrueMarkMint.html
+│   └── TrueMarkMint.jsx
+├── LICENSE
+├── Orb_Assistant
+│   └── api
+│       ├── OrbService.ts
+│       └── web_orb_bridge.py
+├── README.md
+├── Spruked_Vault_System
+│   ├── AIMS
+│   │   ├── .github
+│   │   │   └── workflows
+│   │   │       └── tests.yml
+│   │   ├── .gitignore
+│   │   ├── DEV_LOG.md
+│   │   ├── HARDENING_CONTRACT.md
+│   │   ├── LICENSE
+│   │   ├── README.md
+│   │   ├── memory_core
+│   │   │   ├── __init__.py
+│   │   │   ├── glyph_trace.py
+│   │   │   ├── indexes.py
+│   │   │   ├── long_term.py
+│   │   │   ├── memory_layer.py
+│   │   │   ├── retrieval_ledger.py
+│   │   │   ├── short_term.py
+│   │   │   ├── skg
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── backend.py
+│   │   │   │   ├── domain.py
+│   │   │   │   ├── trio.py
+│   │   │   │   └── types.py
+│   │   │   ├── temporal.py
+│   │   │   ├── vault.py
+│   │   │   └── writer_lock.py
+│   │   ├── pyproject.toml
+│   │   ├── requirements.txt
+│   │   ├── service.py
+│   │   ├── system_outline.md
+│   │   └── tests
+│   │       ├── test_complete_cognitive_memory_cycle.py
+│   │       ├── test_core_integrity.py
+│   │       ├── test_graphqlite_backend.py
+│   │       ├── test_service_security.py
+│   │       └── test_three_skgs.py
+│   ├── README.md
+│   ├── config
+│   │   ├── environments
+│   │   │   ├── dev.yaml
+│   │   │   ├── prod.yaml
+│   │   │   └── test.yaml
+│   │   ├── telemetry.yaml
+│   │   └── vault_config.yaml
+│   ├── docs
+│   │   ├── architecture.md
+│   │   ├── glyph_guide.md
+│   │   ├── memory_matrix.md
+│   │   ├── migration_guide.md
+│   │   ├── telemetry_best_practices.md
+│   │   └── vault_types.md
+│   ├── engine
+│   │   ├── evaluator.py
+│   │   ├── integration_hooks
+│   │   │   ├── on_vault_apply.py
+│   │   │   └── post_resolution.yaml
+│   │   ├── resolver.js
+│   │   └── signal_map.json
+│   ├── examples
+│   │   ├── input_career_change.json
+│   │   ├── input_game_quest.json
+│   │   └── input_medical_triage.json
+│   ├── glyphs
+│   │   ├── _template
+│   │   │   └── custom_glyph.json
+│   │   ├── glyph_map.json
+│   │   └── trace_engine.js
+│   ├── interfaces
+│   │   ├── api
+│   │   │   └── openapi.yaml
+│   │   └── cli
+│   │       └── commands.md
+│   ├── memory
+│   │   ├── _template
+│   │   │   └── custom_matrix.json
+│   │   ├── consolidation.py
+│   │   ├── domains
+│   │   │   ├── long_term.json
+│   │   │   ├── sensory.json
+│   │   │   └── short_term.json
+│   │   └── matrix_store.yaml
+│   ├── scripts
+│   │   ├── consolidate_memory.py
+│   │   ├── export_telemetry.js
+│   │   ├── export_to_json.lua
+│   │   ├── generate_glyph_report.py
+│   │   └── validate_vaults.sh
+│   ├── telemetry
+│   │   ├── alerts.yaml
+│   │   ├── collector.py
+│   │   ├── dashboard
+│   │   │   ├── anomaly_detector.js
+│   │   │   └── metrics_dashboard.md
+│   │   ├── telemetry.yaml
+│   │   └── traces
+│   │       ├── agent_decisions.json
+│   │       └── latency_buckets.json
+│   ├── tests
+│   │   ├── integration
+│   │   │   ├── test_ethical_dilemma.json
+│   │   │   ├── test_glyph_drift.json
+│   │   │   ├── test_memory_consolidation.json
+│   │   │   └── test_pricing_edge_case.json
+│   │   └── unit
+│   │       ├── test_telemetry_alerts.json
+│   │       └── vault_template_test.json
+│   ├── tree.txt
+│   └── vaults
+│       └── _template
+│           ├── logic.md
+│           ├── rules
+│           │   └── condition.js
+│           └── vault.json
+├── app
+│   ├── about
+│   │   └── page.tsx
+│   ├── admin
+│   │   └── page.tsx
+│   ├── api
+│   │   ├── admin
+│   │   │   ├── orb-state
+│   │   │   │   └── route.ts
+│   │   │   ├── simple-login
+│   │   │   │   └── route.ts
+│   │   │   ├── system-scan
+│   │   │   │   └── route.ts
+│   │   │   └── vault
+│   │   │       └── route.ts
+│   │   ├── cali
+│   │   │   └── [...path]
+│   │   │       └── route.ts
+│   │   ├── orb
+│   │   │   ├── route.ts
+│   │   │   └── stt
+│   │   │       └── route.ts
+│   │   ├── page-content
+│   │   │   └── route.ts
+│   │   └── waitlist
+│   │       └── route.ts
+│   ├── artifacts
+│   │   └── page.tsx
+│   ├── brand
+│   │   └── page.tsx
+│   ├── cart
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── checkout
+│   │   ├── page.client.tsx
+│   │   └── page.tsx
+│   ├── favicon.svg
+│   ├── globals.css
+│   ├── goat
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── orb
+│   │   └── page.tsx
+│   ├── orb-skin-studio
+│   │   └── page.tsx
+│   ├── page.tsx
+│   ├── products
+│   │   ├── alpha-certsig
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── truemark-mint
+│   │       ├── object-types
+│   │       │   └── page.tsx
+│   │       ├── objects
+│   │       │   └── page.tsx
+│   │       └── page.tsx
+│   └── truemark
+│       └── example-object
+│           └── page.tsx
+├── cali_skg
+│   ├── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── cali_routes.py
+│   │   └── main.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── cali_personal_skg.py
+│   │   └── doctrine_governance.py
+│   ├── memory
+│   │   └── memory_2026-03-28.jsonl
+│   ├── requirements.txt
+│   ├── run.sh
+│   └── vault
+│       └── cali_identity.json
+├── components
+│   ├── admin
+│   │   ├── AdminLoginBridge.tsx
+│   │   └── CaliOperationsHub.tsx
+│   ├── brand
+│   │   ├── CircularStamp.tsx
+│   │   ├── ColorSwatch.tsx
+│   │   ├── FaviconGrid.tsx
+│   │   ├── PrimaryLogo.tsx
+│   │   └── WordmarkLogo.tsx
+│   ├── commerce
+│   │   └── useCart.ts
+│   ├── layout
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   └── Navigation.tsx
+│   └── ui
+│       ├── Button.tsx
+│       ├── GlobalOrb.motion.snapshot.2026-03-27.tsx
+│       ├── GlobalOrb.tsx
+│       ├── Input.tsx
+│       └── Section.tsx
+├── data
+│   └── page-content.ts
+├── doc
+│   ├── DEV_LOG.md
+│   ├── ORBS_OS_WHITEPAPER_v1.0_2026-09.md
+│   ├── admin-crm.md
+│   ├── cms.md
+│   └── orb-motion-snapshot-2026-03-27.md
+├── lib
+│   ├── admin-vault.ts
+│   ├── commerce.ts
+│   ├── constants.ts
+│   ├── orb-introspection.ts
+│   ├── orb-server.ts
+│   ├── orbital_behavior_skg
+│   │   ├── bridges
+│   │   │   ├── BrowserContext.ts
+│   │   │   ├── KayGeeHybridAdapter.ts
+│   │   │   └── QwenIntentPlugin.ts
+│   │   ├── core
+│   │   │   ├── DesireEngine.ts
+│   │   │   ├── IntentPredictor.ts
+│   │   │   ├── MotionGovernor.ts
+│   │   │   ├── OrbitalDynamics.ts
+│   │   │   ├── PresenceVisuals.ts
+│   │   │   ├── SelfPruner.ts
+│   │   │   └── types.ts
+│   │   ├── deployments
+│   │   │   ├── spruked
+│   │   │   │   └── SprukedOrb.ts
+│   │   │   └── truemark
+│   │   │       └── TrueMarkOrb.ts
+│   │   ├── index.ts
+│   │   └── vaults
+│   │       ├── behavior_patterns.yaml
+│   │       └── motion_memory.jsonl
+│   ├── page-content.ts
+│   ├── supabase
+│   │   └── server.ts
+│   └── website-orb
+│       └── pointer-runtime.ts
+├── next
+├── next-env.d.ts
+├── next.config.js
+├── next.config.mjs
+├── orb_core_standard
+│   ├── primitive_normalization_aliases.json
+│   └── primitive_response_cache.json
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── assets
+│   │   ├── CertificateKNFTsample.png
+│   │   ├── Founder Background, Faith & Professional Statement.pdf
+│   │   ├── Professional Résumé Summary (1).pdf
+│   │   ├── Ulogo1024blk.png
+│   │   ├── Ulogo1024wht.png
+│   │   ├── Ulogo1600blk.png
+│   │   ├── Ulogo1600wht.png
+│   │   ├── Ulogo256blk.png
+│   │   ├── Ulogo256wht.png
+│   │   ├── Ulogo512blk.png
+│   │   ├── Ulogo512wht.png
+│   │   ├── Ulogo96blk.ico
+│   │   ├── Ulogo96wht.ico
+│   │   ├── Untitled.mp4
+│   │   ├── goatlog512.png
+│   │   ├── goatlogo512oval.png
+│   │   └── redorbbluecenter1600.png
+│   ├── favicon.ico
+│   ├── logos
+│   │   ├── spruked-stamp-white.svg
+│   │   ├── spruked-symbol-black.svg
+│   │   ├── spruked-symbol-white.svg
+│   │   └── spruked-wordmark-white.svg
+│   └── orb-skin-studio
+│       ├── account.html
+│       ├── admin.html
+│       ├── assets
+│       │   ├── HLSForb512sample.png
+│       │   ├── bluehlsf512.png
+│       │   ├── blueswirlorb512.png.png
+│       │   ├── gravityfield512.png
+│       │   └── robotfire512.png
+│       ├── cart.html
+│       ├── checkout.html
+│       ├── contact.html
+│       ├── gallery.html
+│       ├── login.html
+│       ├── orb_skin_gen.html
+│       ├── pricing.html
+│       └── upload.html
+├── scripts
+│   └── start-cp3.sh
+├── spruked_repo_tree.txt
+├── spruked_repo_tree_clean.txt
+├── styles
+│   └── globals.css
+├── tailwind.config.ts
+├── tree.txt
+└── tsconfig.json
+
+96 directories, 232 files

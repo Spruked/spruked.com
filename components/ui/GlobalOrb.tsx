@@ -17,7 +17,10 @@ import {
 import { Lidar2DMappingCoordinateCache } from '@/lib/website-orb/lidar_2d_mapping/Lidar2DMappingCoordinateCache';
 
 const IDLE_TIMEOUT_MS = 300000;
-const LISTENING_SEGMENT_MS = 5200;
+const END_OF_SPEECH_SILENCE_MS = 1500;
+const AUDIO_ANALYSIS_INTERVAL_MS = 100;
+const SPEECH_ACTIVITY_THRESHOLD = 0.012;
+const MAX_RECORDING_DURATION_MS = 60000;
 const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
 const DRIFT_MIN_MS = 14000;
@@ -50,6 +53,10 @@ export default function GlobalOrb() {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recordingStreamRef = useRef<MediaStream | null>(null);
   const recordingChunksRef = useRef<Blob[]>([]);
+  const recordingStopRequestedRef = useRef(false);
+  const recordingStartPendingRef = useRef(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const isProcessingRef = useRef(false);
   const isAwakeRef = useRef(false);
   const isRecordingRef = useRef(false);
@@ -59,8 +66,34 @@ export default function GlobalOrb() {
   const driftTimerRef = useRef<NodeJS.Timeout | null>(null);
   const listeningRestartTimerRef = useRef<NodeJS.Timeout | null>(null);
   const stopRecordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioAnalysisTimerRef = useRef<NodeJS.Timeout | null>(null);
   const evadeCooldownRef = useRef(0);
   const guidePulseRef = useRef(0);
+
+  const clearRecordingTimersAndAnalysis = () => {
+    if (stopRecordingTimerRef.current) clearTimeout(stopRecordingTimerRef.current);
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    if (audioAnalysisTimerRef.current) clearInterval(audioAnalysisTimerRef.current);
+    stopRecordingTimerRef.current = null;
+    silenceTimerRef.current = null;
+    audioAnalysisTimerRef.current = null;
+    try {
+      audioSourceRef.current?.disconnect();
+    } catch {}
+    audioSourceRef.current = null;
+    const audioContext = audioContextRef.current;
+    audioContextRef.current = null;
+    if (audioContext && audioContext.state !== 'closed') {
+      void audioContext.close().catch(() => {});
+    }
+  };
+
+  const clearRecordingResources = () => {
+    clearRecordingTimersAndAnalysis();
+    recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+    recordingStreamRef.current = null;
+  };
 
   const sleepPosition = () => {
     if (typeof window === 'undefined') return { x: 0, y: 0 };
@@ -289,12 +322,14 @@ export default function GlobalOrb() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
       if (listeningRestartTimerRef.current) clearTimeout(listeningRestartTimerRef.current);
-      if (stopRecordingTimerRef.current) clearTimeout(stopRecordingTimerRef.current);
       shouldListenRef.current = false;
       if (recorderRef.current?.state === 'recording') {
+        recorderRef.current.onstop = null;
+        recorderRef.current.ondataavailable = null;
         recorderRef.current.stop();
       }
-      recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+      recorderRef.current = null;
+      clearRecordingResources();
     };
   }, []);
 
@@ -488,22 +523,31 @@ export default function GlobalOrb() {
       setStatus('Voice input unavailable');
       return;
     }
-    if (isProcessingRef.current || isSpeakingRef.current) {
+    if (isProcessingRef.current || isSpeakingRef.current || recordingStartPendingRef.current) {
       queueListening(1200);
       return;
     }
+    if (recorderRef.current?.state === 'recording') return;
 
+    recordingStartPendingRef.current = true;
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
         },
       });
+      if (!shouldListenRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        recordingStartPendingRef.current = false;
+        return;
+      }
       const mimeType = preferredRecordingMimeType();
       const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       recordingChunksRef.current = [];
+      recordingStopRequestedRef.current = false;
       recordingStreamRef.current = stream;
       recorderRef.current = recorder;
 
@@ -515,10 +559,11 @@ export default function GlobalOrb() {
       recorder.onstop = () => {
         const chunks = recordingChunksRef.current;
         recordingChunksRef.current = [];
-        recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
-        recordingStreamRef.current = null;
+        clearRecordingResources();
         recorderRef.current = null;
+        recordingStopRequestedRef.current = false;
         setIsRecording(false);
+        isRecordingRef.current = false;
 
         if (chunks.length === 0) {
           setStatus('No voice input detected');
@@ -531,37 +576,84 @@ export default function GlobalOrb() {
       };
 
       recorder.start();
+      recordingStartPendingRef.current = false;
       setVoiceInputReady(true);
       setIsRecording(true);
+      isRecordingRef.current = true;
       setStatus('Listening...');
       setPulseColor('#67c6ff');
       wakeOrb();
-      if (stopRecordingTimerRef.current) clearTimeout(stopRecordingTimerRef.current);
-      stopRecordingTimerRef.current = setTimeout(() => {
-        if (recorderRef.current?.state === 'recording') {
-          stopRecording();
+
+      let speechDetected = false;
+      try {
+        const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextCtor) {
+          const audioContext = new AudioContextCtor();
+          const analyser = audioContext.createAnalyser();
+          analyser.fftSize = 2048;
+          const source = audioContext.createMediaStreamSource(stream);
+          source.connect(analyser);
+          audioContextRef.current = audioContext;
+          audioSourceRef.current = source;
+          if (audioContext.state === 'suspended') void audioContext.resume().catch(() => {});
+
+          const samples = new Float32Array(analyser.fftSize);
+          audioAnalysisTimerRef.current = setInterval(() => {
+            if (recorderRef.current !== recorder || recorder.state !== 'recording') return;
+            analyser.getFloatTimeDomainData(samples);
+            let sumSquares = 0;
+            for (let index = 0; index < samples.length; index += 1) {
+              sumSquares += samples[index] * samples[index];
+            }
+            const rms = Math.sqrt(sumSquares / samples.length);
+
+            if (rms >= SPEECH_ACTIVITY_THRESHOLD) {
+              speechDetected = true;
+              if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+              silenceTimerRef.current = null;
+            } else if (speechDetected && !silenceTimerRef.current) {
+              silenceTimerRef.current = setTimeout(() => {
+                silenceTimerRef.current = null;
+                stopRecording();
+              }, END_OF_SPEECH_SILENCE_MS);
+            }
+          }, AUDIO_ANALYSIS_INTERVAL_MS);
         }
-      }, LISTENING_SEGMENT_MS);
+      } catch (error) {
+        console.warn('CALI silence detection unavailable; using manual stop or the recording limit.', error);
+      }
+
+      stopRecordingTimerRef.current = setTimeout(() => {
+        stopRecording();
+      }, MAX_RECORDING_DURATION_MS);
     } catch (error) {
+      stream?.getTracks().forEach((track) => track.stop());
+      clearRecordingResources();
+      recorderRef.current = null;
+      recordingStartPendingRef.current = false;
       setVoiceInputReady(false);
+      setIsRecording(false);
+      isRecordingRef.current = false;
       setStatus('Mic permission needed');
       console.warn('CALI mic capture failed.', error);
     }
   };
 
   const stopRecording = () => {
-    if (stopRecordingTimerRef.current) {
-      clearTimeout(stopRecordingTimerRef.current);
-      stopRecordingTimerRef.current = null;
-    }
+    const recorder = recorderRef.current;
+    if (!recorder || recorder.state !== 'recording' || recordingStopRequestedRef.current) return;
+
+    recordingStopRequestedRef.current = true;
+    clearRecordingTimersAndAnalysis();
     try {
-      recorderRef.current?.stop();
+      recorder.stop();
     } catch (error) {
       console.warn('CALI recorder stop failed.', error);
-      recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
-      recordingStreamRef.current = null;
+      clearRecordingResources();
       recorderRef.current = null;
+      recordingStopRequestedRef.current = false;
       setIsRecording(false);
+      isRecordingRef.current = false;
     }
   };
 
@@ -569,6 +661,10 @@ export default function GlobalOrb() {
     void OrbService.primeAudio();
     wakeOrb();
     shouldListenRef.current = true;
+    if (recorderRef.current?.state === 'recording') {
+      stopRecording();
+      return;
+    }
     if (!isRecordingRef.current && !isProcessingRef.current && !isSpeakingRef.current) {
       void startRecording();
     }
@@ -598,6 +694,7 @@ export default function GlobalOrb() {
         },
         onVoicePlaybackState: (active: boolean, meta: { text?: string } = {}) => {
           setIsSpeaking(active);
+          isSpeakingRef.current = active;
           if (meta?.text) {
             setBubbleText(String(meta.text));
           }
@@ -726,7 +823,7 @@ export default function GlobalOrb() {
           <div
             className="pointer-events-none absolute inset-[-18%] z-0 rounded-full border border-sky-300/55 opacity-90"
             style={{
-              boxShadow: '0 0 22px rgba(88,205,255,0.42), inset 0 0 18px rgba(88,205,255,0.2)',
+              boxShadow: '0 0 14px rgba(88,205,255,0.24), inset 0 0 12px rgba(88,205,255,0.12)',
               animation: 'orb-orbit-spin 12s linear infinite',
             }}
           >
@@ -745,14 +842,14 @@ export default function GlobalOrb() {
           <div
             className="pointer-events-none absolute inset-[-27%] z-0 rounded-full border border-sky-400/30"
             style={{
-              boxShadow: '0 0 36px rgba(68,190,255,0.22)',
+              boxShadow: '0 0 22px rgba(68,190,255,0.12)',
               animation: 'orb-orbit-spin-reverse 18s linear infinite',
             }}
           ></div>
           <div
             className="absolute inset-[7%] z-10 rounded-full mix-blend-screen transition-all duration-700"
             style={{
-              boxShadow: `0 0 ${isAwake ? '30px' : '14px'} ${pulseColor}`,
+              boxShadow: `0 0 ${isAwake ? '18px' : '10px'} ${pulseColor}`,
             }}
           ></div>
 
@@ -764,8 +861,8 @@ export default function GlobalOrb() {
             className="relative z-20 h-full w-full select-none object-contain"
             style={{
               filter: isSpeaking
-                ? 'drop-shadow(0 0 22px rgba(76,220,255,0.72)) drop-shadow(0 0 34px rgba(111,231,255,0.28))'
-                : 'drop-shadow(0 0 20px rgba(88,205,255,0.46))',
+                ? 'drop-shadow(0 0 16px rgba(76,220,255,0.48)) drop-shadow(0 0 24px rgba(111,231,255,0.16))'
+                : 'drop-shadow(0 0 14px rgba(88,205,255,0.28))',
             }}
           />
           <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 h-[34%] w-[34%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full mix-blend-screen">
@@ -774,7 +871,7 @@ export default function GlobalOrb() {
               style={{
                 background:
                   'radial-gradient(circle, rgba(181,249,255,0.96) 0%, rgba(58,196,255,0.42) 42%, rgba(58,196,255,0) 72%)',
-                animation: isSpeaking ? 'orb-voice-pulse 720ms infinite ease-in-out' : undefined,
+                animation: isSpeaking ? 'orb-voice-pulse 620ms infinite ease-in-out' : undefined,
               }}
             ></div>
             <div
@@ -786,6 +883,17 @@ export default function GlobalOrb() {
               }}
             ></div>
           </div>
+          <img
+            src={ORB_IMAGE_SRC}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="pointer-events-none absolute inset-0 z-40 h-full w-full select-none object-contain"
+            style={{
+              maskImage: 'radial-gradient(circle at center, transparent 0 15%, black 16%)',
+              WebkitMaskImage: 'radial-gradient(circle at center, transparent 0 15%, black 16%)',
+            }}
+          />
         </div>
       </div>
       </div>
