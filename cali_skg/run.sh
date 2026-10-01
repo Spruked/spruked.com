@@ -16,4 +16,6 @@ if [[ ! -x "$PYTHON_BIN" ]]; then
   PYTHON_BIN="$(command -v python3)"
 fi
 
-exec "$PYTHON_BIN" -m uvicorn cali_skg.api.cali_routes:app --host 0.0.0.0 --port "$CALI_API_PORT"
+# Start through the memory-aware wrapper. It preserves the existing CALI routes
+# while adding inherited prior-conversation recall and SeedVault reasoning context.
+exec "$PYTHON_BIN" -m uvicorn cali_skg.api.cali_routes_memory:app --host 0.0.0.0 --port "$CALI_API_PORT"
