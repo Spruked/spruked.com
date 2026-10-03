@@ -13,7 +13,7 @@ export function PortfolioCard({ entry }: { entry: PortfolioEntry }) {
         <StatusPill status={entry.status} />
       </div>
       <h3 className="text-2xl font-bold tracking-tight text-white group-hover:text-truth">{entry.name}</h3>
-      <p className="mt-4 flex-1 text-sm leading-relaxed text-gray-500">[PROJECT SUMMARY PENDING AUTHOR REVIEW]</p>
+      <p className="mt-4 flex-1 text-sm leading-relaxed text-gray-500">{entry.summary}</p>
       <Link href={portfolioPath(entry)} className="mt-7 inline-flex w-fit items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-300 transition hover:text-truth">
         View work <span aria-hidden="true">↗</span>
       </Link>
