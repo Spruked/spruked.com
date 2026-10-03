@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { OrbService } from '@/Orb_Assistant/api/OrbService';
-import { SprukedOrb } from '@/lib/orbital_behavior_skg';
+import { MotionRuntime } from '@/lib/motion_runtime/MotionRuntime';
 import {
   WEBSITE_ORB_GUIDE_EVENT,
   buildGuideState,
@@ -13,25 +13,16 @@ import {
   resolvePointerTarget,
   scrollPointerTargetIntoView,
   type WebsiteOrbGuideState,
-} from '@/lib/website-orb/pointer-runtime';
-import { Lidar2DMappingCoordinateCache } from '@/lib/website-orb/lidar_2d_mapping/Lidar2DMappingCoordinateCache';
+} from '@/lib/motion_runtime/pointer/pointer-runtime';
 
-const IDLE_TIMEOUT_MS = 300000;
 const END_OF_SPEECH_SILENCE_MS = 4000;
 const AUDIO_ANALYSIS_INTERVAL_MS = 100;
 const SPEECH_ACTIVITY_THRESHOLD = 0.012;
 const MAX_RECORDING_DURATION_MS = 120000;
 const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
-const DRIFT_MIN_MS = 14000;
-const DRIFT_MAX_MS = 26000;
 const ORB_SIZE = 206;
-const ORB_HALO = Math.ceil(ORB_SIZE * 0.3);
-const CURSOR_NUDGE_RADIUS = 104;
-const CURSOR_NUDGE_COOLDOWN_MS = 1400;
-const CURSOR_NUDGE_DISTANCE = 28;
 const VIEWPORT_PADDING = 20;
-const DRIFT_MAX_HEIGHT_RATIO = 0.86;
 const ORB_IMAGE_SRC = '/orb-skin-studio/assets/caliorb1600.png';
 const SESSION_OBSERVATIONS_KEY = 'spruked:cali:session-observations';
 const MAX_SESSION_OBSERVATIONS = 40;
@@ -97,7 +88,6 @@ export default function GlobalOrb() {
   const [orbPosition, setOrbPosition] = useState({ x: 0, y: 0 });
   const [guide, setGuide] = useState<WebsiteOrbGuideState | null>(null);
   const [pendingGuide, setPendingGuide] = useState<{ targetId: string; message?: string } | null>(null);
-  const orbPositionRef = useRef({ x: 0, y: 0 });
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recordingStreamRef = useRef<MediaStream | null>(null);
   const recordingChunksRef = useRef<Blob[]>([]);
@@ -110,13 +100,11 @@ export default function GlobalOrb() {
   const isRecordingRef = useRef(false);
   const isSpeakingRef = useRef(false);
   const shouldListenRef = useRef(false);
-  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const driftTimerRef = useRef<NodeJS.Timeout | null>(null);
   const listeningRestartTimerRef = useRef<NodeJS.Timeout | null>(null);
   const stopRecordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioAnalysisTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const evadeCooldownRef = useRef(0);
+  const motionRuntimeRef = useRef<MotionRuntime | null>(null);
   const guidePulseRef = useRef(0);
   const bubbleClearTimerRef = useRef<NodeJS.Timeout | null>(null);
   const browserRecognitionRef = useRef<BrowserSpeechRecognition | null>(null);
@@ -172,113 +160,15 @@ export default function GlobalOrb() {
     try { browserRecognitionRef.current?.stop(); } catch {}
   };
 
-  const sleepPosition = () => {
-    if (typeof window === 'undefined') return { x: 0, y: 0 };
-    const minX = VIEWPORT_PADDING + ORB_HALO;
-    const minY = VIEWPORT_PADDING + ORB_HALO;
-    const maxX = Math.max(minX, window.innerWidth - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-    return { x: maxX, y: minY };
-  };
-
-  const pickWaypoint = () => {
-    if (typeof window === 'undefined') return { x: 0, y: 0 };
-    const minX = VIEWPORT_PADDING + ORB_HALO;
-    const minY = VIEWPORT_PADDING + ORB_HALO;
-    const maxX = Math.max(minX, window.innerWidth - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-    const maxY = Math.max(
-      minY,
-      Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO,
-    );
-    const x = Math.floor(minX + Math.random() * (maxX - minX));
-    const y = Math.floor(minY + Math.random() * (maxY - minY));
-    return { x, y };
-  };
-
-  const clampPosition = (x: number, y: number) => {
-    if (typeof window === 'undefined') return { x, y };
-    const minX = VIEWPORT_PADDING + ORB_HALO;
-    const minY = VIEWPORT_PADDING + ORB_HALO;
-    const maxX = Math.max(minX, window.innerWidth - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-    const maxY = Math.max(
-      minY,
-      Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO,
-    );
-    return {
-      x: Math.min(maxX, Math.max(minX, x)),
-      y: Math.min(maxY, Math.max(minY, y)),
-    };
-  };
-
-  const clampViewportPosition = (x: number, y: number) => {
-    if (typeof window === 'undefined') return { x, y };
-    const minX = VIEWPORT_PADDING + ORB_HALO;
-    const minY = VIEWPORT_PADDING + ORB_HALO;
-    const maxX = Math.max(minX, window.innerWidth - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-    const maxY = Math.max(minY, window.innerHeight - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-    return {
-      x: Math.min(maxX, Math.max(minX, x)),
-      y: Math.min(maxY, Math.max(minY, y)),
-    };
-  };
-
-  const maybeNudgeCursor = (cursorX: number, cursorY: number) => {
-    const now = Date.now();
-    if (now - evadeCooldownRef.current < CURSOR_NUDGE_COOLDOWN_MS) return;
-
-    const centerX = orbPositionRef.current.x + ORB_SIZE / 2;
-    const centerY = orbPositionRef.current.y + ORB_SIZE / 2;
-    const dx = centerX - cursorX;
-    const dy = centerY - cursorY;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance > CURSOR_NUDGE_RADIUS) return;
-
-    const safeDx = distance < 1 ? 1 : dx / distance;
-    const safeDy = distance < 1 ? -0.6 : dy / distance;
-    const targetX = centerX + safeDx * CURSOR_NUDGE_DISTANCE - ORB_SIZE / 2;
-    const targetY = centerY + safeDy * CURSOR_NUDGE_DISTANCE - ORB_SIZE / 2;
-    const next = clampPosition(targetX, targetY);
-
-    evadeCooldownRef.current = now;
-    setOrbPosition(next);
-    wakeOrb();
-  };
-
-  const queueNextDrift = () => {
-    if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
-    const delay = DRIFT_MIN_MS + Math.floor(Math.random() * (DRIFT_MAX_MS - DRIFT_MIN_MS));
-    driftTimerRef.current = setTimeout(() => {
-      if (isProcessingRef.current || isRecordingRef.current || isSpeakingRef.current) {
-        queueNextDrift();
-        return;
-      }
-      setOrbPosition(pickWaypoint());
-      queueNextDrift();
-    }, delay);
-  };
-
   const wakeOrb = () => {
     setIsAwake(true);
     isAwakeRef.current = true;
-    queueNextDrift();
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-    idleTimerRef.current = setTimeout(() => {
-      // CALI remains present and observant while the visitor reads. She keeps
-      // moving slowly instead of collapsing into a corner or becoming inert.
-      setIsAwake(true);
-      isAwakeRef.current = true;
-      setOrbPosition(pickWaypoint());
-      queueNextDrift();
-    }, IDLE_TIMEOUT_MS);
+    motionRuntimeRef.current?.wake();
   };
 
   useEffect(() => {
     isProcessingRef.current = isProcessing;
   }, [isProcessing]);
-
-  useEffect(() => {
-    orbPositionRef.current = orbPosition;
-  }, [orbPosition]);
 
   useEffect(() => {
     isSpeakingRef.current = isSpeaking;
@@ -293,10 +183,13 @@ export default function GlobalOrb() {
   }, [isAwake]);
 
   useEffect(() => {
+    motionRuntimeRef.current?.setHold(isProcessing || isRecording || isSpeaking);
+  }, [isProcessing, isRecording, isSpeaking]);
+
+  useEffect(() => {
     setIsMounted(true);
     if (typeof window === 'undefined') return;
 
-    setOrbPosition(pickWaypoint());
     const handleWarmStart = (event: Event) => {
       const permission = String((event as CustomEvent<{ permission?: string }>).detail?.permission || '');
       const granted = permission === 'granted';
@@ -345,16 +238,19 @@ export default function GlobalOrb() {
         });
     }
 
-    let behaviorOrb: SprukedOrb | null = null;
+    let motionRuntime: MotionRuntime | null = null;
     try {
-      behaviorOrb = new SprukedOrb((snapshot) => {
+      motionRuntime = new MotionRuntime((position) => {
+        setOrbPosition(position);
+      }, (snapshot) => {
         if (!isProcessingRef.current && !isSpeakingRef.current) {
-          setPulseColor(getMindColor(snapshot.intent));
+          setPulseColor(getMindColor(snapshot.behavior?.intent || 'observing'));
         }
       });
-      behaviorOrb.start();
+      motionRuntimeRef.current = motionRuntime;
+      motionRuntime.start();
     } catch (error) {
-      console.warn('Spruked ORB motion governor failed; holding sleep position.', error);
+      console.warn('Unified ORB motion runtime failed; holding sleep position.', error);
     }
 
     const handleWake = () => {
@@ -362,25 +258,13 @@ export default function GlobalOrb() {
     };
     const handlePointerMove = (event: PointerEvent) => {
       handleWake();
-      maybeNudgeCursor(event.clientX, event.clientY);
+      motionRuntimeRef.current?.handleCursor(event.clientX, event.clientY);
     };
     const primeVoicePlayback = () => {
       void OrbService.primeAudio();
     };
     const handleResize = () => {
-      setOrbPosition((prev) => {
-        const minX = VIEWPORT_PADDING + ORB_HALO;
-        const minY = VIEWPORT_PADDING + ORB_HALO;
-        const maxX = Math.max(minX, window.innerWidth - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO);
-        const maxY = Math.max(
-          minY,
-          Math.floor(window.innerHeight * DRIFT_MAX_HEIGHT_RATIO) - ORB_SIZE - VIEWPORT_PADDING - ORB_HALO,
-        );
-        return {
-          x: Math.min(maxX, Math.max(minX, prev.x)),
-          y: Math.min(maxY, Math.max(minY, prev.y)),
-        };
-      });
+      motionRuntimeRef.current?.handleResize();
     };
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
@@ -392,7 +276,8 @@ export default function GlobalOrb() {
     wakeOrb();
 
     return () => {
-      behaviorOrb?.destroy();
+      motionRuntime?.destroy();
+      motionRuntimeRef.current = null;
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('click', handleWake);
       window.removeEventListener('pointerdown', primeVoicePlayback);
@@ -400,8 +285,6 @@ export default function GlobalOrb() {
       window.removeEventListener('touchstart', primeVoicePlayback);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('spruked-orb-warm-start', handleWarmStart);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-      if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
       if (listeningRestartTimerRef.current) clearTimeout(listeningRestartTimerRef.current);
       if (bubbleClearTimerRef.current) clearTimeout(bubbleClearTimerRef.current);
       if (browserFinalTimerRef.current) clearTimeout(browserFinalTimerRef.current);
@@ -423,14 +306,15 @@ export default function GlobalOrb() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const lidar = Lidar2DMappingCoordinateCache.getInstance();
-    lidar.load(SPRUKED_POINTER_TARGETS.map((target) => ({
+    const runtime = motionRuntimeRef.current;
+    if (!runtime) return;
+    runtime.loadSpatialTargets(SPRUKED_POINTER_TARGETS.map((target) => ({
       target_id: target.id,
       semantic_locator: target.selector,
       anchor_strategy: 'element_center',
     })));
-    lidar.startDriftAudit();
-    return () => lidar.stopDriftAudit();
+    runtime.startSpatialAudit();
+    return () => runtime.stopSpatialAudit();
   }, []);
 
   useEffect(() => {
@@ -514,7 +398,7 @@ export default function GlobalOrb() {
 
         guidePulseRef.current += 1;
         const nextGuide = buildGuideState(target, verified, pendingGuide.message, guidePulseRef.current);
-        const lidarCoordinate = Lidar2DMappingCoordinateCache.getInstance().get(target.id);
+        const lidarCoordinate = motionRuntimeRef.current?.getSpatialCoordinate(target.id);
         if (lidarCoordinate) {
           nextGuide.rect = new DOMRect(
             lidarCoordinate.left,
@@ -527,19 +411,16 @@ export default function GlobalOrb() {
         setStatus(nextGuide.message || 'CALI is ready.');
         setStatus(`LiDAR lock: ${target.label}.`);
         setPulseColor('#d946ef');
-        setOrbPosition(() => {
-          const size = ORB_SIZE;
-          const rightSide = nextGuide.rect.right + 22;
-          const leftSide = nextGuide.rect.left - size - 22;
-          const x = rightSide + size < window.innerWidth ? rightSide : leftSide;
-          const y = nextGuide.rect.top + nextGuide.rect.height / 2 - size / 2;
-          const next = clampViewportPosition(x, y);
-          orbPositionRef.current = next;
-          return next;
-        });
+        motionRuntimeRef.current?.setGuidedTarget(nextGuide.rect);
         setPendingGuide(null);
         window.setTimeout(() => {
-          setGuide((current) => (current?.pulseKey === nextGuide.pulseKey ? null : current));
+          setGuide((current) => {
+            if (current?.pulseKey !== nextGuide.pulseKey) return current;
+            motionRuntimeRef.current?.clearGuidance(
+              isProcessingRef.current || isRecordingRef.current || isSpeakingRef.current,
+            );
+            return null;
+          });
         }, 4600);
       }, 560);
     }, 420);
@@ -556,10 +437,11 @@ export default function GlobalOrb() {
         setGuide(null);
         return;
       }
-      const lidarCoordinate = Lidar2DMappingCoordinateCache.getInstance().get(guide.target.id);
+      const lidarCoordinate = motionRuntimeRef.current?.getSpatialCoordinate(guide.target.id);
       const rect = lidarCoordinate
         ? new DOMRect(lidarCoordinate.left, lidarCoordinate.top, lidarCoordinate.width, lidarCoordinate.height)
         : element.getBoundingClientRect();
+      motionRuntimeRef.current?.setGuidedTarget(rect);
       setGuide((current) => (current ? { ...current, rect } : current));
     };
 
@@ -581,7 +463,6 @@ export default function GlobalOrb() {
       case 'deductive': return '#67c6ff';
       case 'inductive': return '#67c6ff';
       case 'intuitive': return '#d946ef';
-      case 'kaygee': return '#67c6ff';
       case 'tool_router': return '#67c6ff';
       default: return '#c084fc';
     }

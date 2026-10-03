@@ -1,11 +1,13 @@
 # Orb Motion Snapshot - 2026-03-27
 
+> Historical snapshot only. The active motion authority is now `lib/motion_runtime/MotionRuntime.ts`; this file and its source snapshot are excluded from the active runtime and are retained for regression reference.
+
 Source file snapshot:
 - components/ui/GlobalOrb.motion.snapshot.2026-03-27.tsx
 
 Purpose:
 - Preserve the exact smooth motion behavior before accessibility/control changes.
-- If movement ever regresses, restore from the snapshot file above.
+- Use only as historical regression reference; do not restore its movement loop into `GlobalOrb.tsx`.
 
 Current motion constants and mechanics (do not alter unless intentional):
 - Spring attraction:

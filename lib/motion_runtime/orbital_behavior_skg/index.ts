@@ -1,14 +1,12 @@
-export { MotionGovernor } from './core/MotionGovernor';
 export { OrbitalDynamics } from './core/OrbitalDynamics';
 export { PresenceVisuals } from './core/PresenceVisuals';
 export { IntentPredictor } from './core/IntentPredictor';
 export { DesireEngine } from './core/DesireEngine';
 export { SelfPruner } from './core/SelfPruner';
 export { BrowserContext } from './bridges/BrowserContext';
-export { KayGeeHybridAdapter } from './bridges/KayGeeHybridAdapter';
 export { QwenIntentPlugin } from './bridges/QwenIntentPlugin';
-export { SprukedOrb } from './deployments/spruked/SprukedOrb';
-export { TrueMarkOrb } from './deployments/truemark/TrueMarkOrb';
+export { SPRUKED_ORB_DEPLOYMENT } from './deployments/spruked/SprukedOrb';
+export { TRUEMARK_ORB_DEPLOYMENT } from './deployments/truemark/TrueMarkOrb';
 export type {
   CursorIntent,
   CursorSample,

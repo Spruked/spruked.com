@@ -10,6 +10,7 @@ A modern web application built with Next.js, featuring brand identity, ORB cogni
 - Lint status: `npm run lint` passes (warnings only for `<img>` optimization)
 - Core commerce routes live: `/cart`, `/checkout`
 - Orb API routing active: `/api/orb` with admin-context routing support
+- Unified ORB motion runtime under `lib/motion_runtime/`
 - Founder and About content published under `/about`
 - Admin CRM pipeline, appointment scheduling, and inbound mailbox poll integrated
 
@@ -68,6 +69,19 @@ A modern web application built with Next.js, featuring brand identity, ORB cogni
 ├── public/              # Static assets
 └── styles/              # Global styles
 ```
+
+### ORB Motion Runtime
+
+All active non-voice ORB physical behavior is owned by `lib/motion_runtime/`:
+
+- `MotionRuntime.ts` — single final motion authority and precedence coordinator
+- `orbital_behavior_skg/` — behavioral intelligence, dynamics, presence, memory, and deployment data
+- `lidar/` — live spatial mapping, world/viewport coordinates, resize rebuilds, drift audits, and re-localization
+- `pointer/` — semantic target resolution, live DOM verification, and guided Pointer/Ping choreography
+
+`GlobalOrb.tsx` forwards browser/application events, consumes motion snapshots, connects the separate voice subsystem, and renders the ORB. Voice, STT/TTS, CALI cognition, and AIMS remain outside `motion_runtime`.
+
+Motion precedence is `GUIDED / POINTER` over `ENGAGED / HOLD` over `AMBIENT`. Ambient motion uses the preserved Orbital Behavior SKG algorithms; guided motion requires live target verification and LiDAR geometry.
 
 ## Available Scripts
 
@@ -162,13 +176,12 @@ Run this before each release:
 
 The site orb UI/behavior can stay unchanged while cognition/voice is routed by API config.
 
-- `SPRUKED_ORB_COGNITION_PROVIDER=kaygee_hybrid`
-- `KAYGEE_API_BASE` (default `http://127.0.0.1:8011`)
-- `KAYGEE_VOICE_ENABLED` (`1` or `0`)
-- `KAYGEE_VOICE` (default `af_bella`)
+- `SPRUKED_ORB_COGNITION_PROVIDER=cali`
+- `CALI_VOICE_ENABLED` (`1` or `0`)
+- `CALI_VOICE` (default `af_bella`)
 - `CALI_API_URL` (default `http://127.0.0.1:8022`)
-- `KAYGEE_HYBRID_RESPOND_PATH` (default `/cali/orb/respond`)
-- `CALI_LLM_PROVIDER=llama_cpp` routes CALI hybrid cognition to local llama.cpp
+- `CALI_ORB_RESPOND_PATH` (default `/cali/orb/respond`)
+- `CALI_LLM_PROVIDER=llama_cpp` routes CALI cognition to local llama.cpp
 - `LLAMA_CPP_API_BASE` (default `http://127.0.0.1:8080`)
 - `CALI_LLAMA_CPP_MODEL_NAME` (default `local-llama-cpp`)
 - `CALI_LOCAL_KOKORO_URL` (default `http://127.0.0.1:8880/api/kokoro/tts`)

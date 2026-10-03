@@ -1,5 +1,15 @@
 # Spruked Website Dev Log
 
+## 2026-10-03
+
+- Consolidated active Website ORB physical behavior under `lib/motion_runtime/`.
+- Relocated Orbital Behavior SKG, LiDAR mapping, and Pointer target runtime into the motion-runtime boundary without duplicating their implementations.
+- Replaced `MotionGovernor` as an authority: `MotionRuntime.ts` now directly owns the extracted RAF loop, ORB state, intent/desire orchestration, dynamics integration, learning/pruning timers, cursor response, resize/clamping, and final motion snapshots.
+- Enforced physical precedence in the unified runtime: `guided`/Pointer over `hold`/engaged over ambient behavior. Guided placement uses LiDAR-verified geometry and pauses ambient dynamics.
+- Reduced `GlobalOrb.tsx` to event forwarding, voice/application integration, motion-state consumption, and rendering; it no longer calculates waypoints, drift, cursor nudge, or target placement.
+- Preserved voice/STT/TTS, CALI cognition, AIMS, commerce, and unrelated website systems outside the motion-runtime migration.
+- Verification passed: `npx tsc --noEmit`, `npm run lint` (existing image optimization and hook warnings only), and `npm run build`.
+
 ## 2026-09-01
 
 - Restored local-only Website ORB runtime under Next dev server port `3001`.
