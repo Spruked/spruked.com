@@ -14,7 +14,7 @@ Speaker rule: only the admin (Bryan) can create durable memory. Website visitors
 only leave short-term context, so the public ORB can never write into Bryan's vault.
 
 This is a mixin for CaliPersonalSKG. It relies only on members the class already has:
-_connect(), _rows(), _generate_hash(), _next_id(), _log_memory(), vault_path, kaygee_config.
+_connect(), _rows(), _generate_hash(), _next_id(), _log_memory(), vault_path, cognition_config.
 """
 
 from __future__ import annotations
@@ -69,7 +69,7 @@ ACCEPT_BOUNDS = (0.70, 0.85)  # self_tune can never move the accept threshold ou
 DUPLICATE_SIMILARITY = 0.85
 
 RELEVANCE_TERMS = {
-    "bryan", "cali", "orb", "orbs", "aims", "tpc", "kaygee", "spruked", "truemark",
+    "bryan", "cali", "orb", "orbs", "aims", "tpc", "spruked", "truemark",
     "goat", "weaver", "vault", "skg", "doctrine", "dandy", "prefer", "decision",
 }
 
@@ -326,7 +326,7 @@ class CaliMemoryLoopMixin:
         }
 
     def submit_memory_candidate(self, candidate: Dict[str, Any], speaker: str = "admin") -> Dict[str, Any]:
-        """Anything CALI/KayGee proposes lands here. Short-term writes through; long-term is graded."""
+        """Anything CALI proposes lands here. Short-term writes through; long-term is graded."""
         cand = self._normalize_candidate(candidate)
         if cand is None:
             return {"decision": "reject", "target": None, "score": 0.0, "reason": "Invalid or empty candidate."}
@@ -458,7 +458,7 @@ class CaliMemoryLoopMixin:
             return {**base, "decision": "defer", "target": None,
                     "reason": "Contradicts an existing memory on the same subject - needs review."}
 
-        if cand["confidence"] < float(self.kaygee_config.get("confidence_threshold", 0.75)):
+        if cand["confidence"] < float(self.cognition_config.get("confidence_threshold", 0.75)):
             if score >= defer_at:
                 return {**base, "decision": "defer", "target": None, "reason": "Confidence below threshold - held for review."}
             return {**base, "decision": "reject", "target": None, "reason": "Low confidence and low score."}

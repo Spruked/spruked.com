@@ -133,7 +133,7 @@ class CaliToolRegistry:
         return tools
 
     def describe_for_prompt(self) -> str:
-        """Compact tool list for KayGee/DeepSeek prompts: only tools actually callable right now."""
+        """Compact tool list for configured-provider prompts: only tools callable right now."""
         usable = [t for t in self.list_tools() if t["enabled"] and t["granted"]]
         return "\n".join(f"- {t['name']}: {t['description']}" for t in usable) or "(no tools available)"
 

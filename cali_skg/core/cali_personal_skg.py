@@ -1,5 +1,5 @@
 """
-CALI Personal SKG - KayGee cognition personal assistant core.
+CALI Personal SKG - provider-neutral personal assistant core.
 """
 
 from __future__ import annotations
@@ -45,9 +45,7 @@ class CaliPersonalSKG(CaliCognitionMixin):
         self._init_database()
         self._init_cognition()
         self.identity = self._load_identity()
-        self.kaygee_config = {
-            "endpoint": "http://127.0.0.1:8011",
-            "timeout": 30,
+        self.cognition_config = {
             "confidence_threshold": 0.75,
         }
 
@@ -224,14 +222,14 @@ class CaliPersonalSKG(CaliCognitionMixin):
             "name": "Cali",
             "full_name": "Cognitively Aligned Linear Intelligence",
             "version": "1.0.0-Personal",
-            "cognition_provider": "KayGee-1.0",
+            "cognition_provider": "configured-local-provider",
             "purpose": "Personal administrative assistant for Bryan Spruk",
             "domain": "spruked.com admin",
             "created": datetime.utcnow().isoformat(),
             "principles": [
                 "Restricted learning - no self-modification",
                 "Immutable memory - append-only records",
-                "KayGee cognition routing",
+                "Provider-neutral cognition routing",
                 "Admin-only data isolation",
             ],
             "capabilities": [

@@ -66,16 +66,12 @@ def _use_llm_for_unknown() -> bool:
     return str(os.getenv("CALI_HYBRID_USE_LLM", "1")).strip() == "1"
 
 
-def _kaygee_api_base() -> str:
-    return str(os.getenv("KAYGEE_API_BASE", "http://127.0.0.1:8011")).strip().rstrip("/")
+def _voice_enabled() -> bool:
+    return str(os.getenv("CALI_VOICE_ENABLED", "1")).strip() == "1"
 
 
-def _kaygee_voice_enabled() -> bool:
-    return str(os.getenv("KAYGEE_VOICE_ENABLED", "1")).strip() == "1"
-
-
-def _kaygee_voice() -> str:
-    return str(os.getenv("KAYGEE_VOICE", "af_bella")).strip() or "af_bella"
+def _voice() -> str:
+    return str(os.getenv("CALI_VOICE", "af_bella")).strip() or "af_bella"
 
 
 def _local_kokoro_tts_url() -> str:
@@ -759,6 +755,26 @@ Take pride in becoming better through legitimate learning and memory. What is be
                 },
                 timeout=120.0,
             )
+            if response.status_code >= 400:
+                _LOGGER.error(
+                    "[CALI cognition] chat upstream rejected status=%d response=%s payload_bytes=%d system_chars=%d user_chars=%d",
+                    response.status_code,
+                    response.text[:4000],
+                    len(json.dumps({
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": full_prompt},
+                        ],
+                        "stream": False,
+                        "reasoning_format": "deepseek",
+                        "max_tokens": max_tokens,
+                        "temperature": _llm_temperature(),
+                        "top_p": 0.9,
+                    }, ensure_ascii=False).encode("utf-8")),
+                    len(system_prompt),
+                    len(full_prompt),
+                )
             response.raise_for_status()
             result = response.json()
             choices = result.get("choices") or []
@@ -797,6 +813,13 @@ Take pride in becoming better through legitimate learning and memory. What is be
                     },
                     timeout=120.0,
                 )
+                if response.status_code >= 400:
+                    _LOGGER.error(
+                        "[CALI cognition] completion upstream rejected status=%d response=%s prompt_chars=%d",
+                        response.status_code,
+                        response.text[:4000],
+                        len(f"{system_prompt}\n\n{full_prompt}\nCali:"),
+                    )
                 response.raise_for_status()
                 result = response.json()
                 response_text = result.get("content") or result.get("response") or result.get("text") or ""
@@ -843,9 +866,9 @@ Take pride in becoming better through legitimate learning and memory. What is be
 
 
 async def _synthesize_voice(text: str, voice: Optional[str] = None) -> Dict[str, Optional[str]]:
-    if not _kaygee_voice_enabled() or not text:
+    if not _voice_enabled() or not text:
         return {"audio_url": None, "audio_engine": None}
-    selected_voice = (voice or _kaygee_voice()).strip() or _kaygee_voice()
+    selected_voice = (voice or _voice()).strip() or _voice()
     tts_started_at = time.perf_counter()
     _LOGGER.info("[CALI LIVE] TTS start engine_order=kokoro_local->qwen3_tts chars=%d voice=%s", len(text), selected_voice)
 
@@ -925,7 +948,7 @@ def _kokoro_warmup_url() -> str:
 
 
 async def _warmup_voice(voice: Optional[str] = None) -> Dict[str, Any]:
-    selected_voice = (voice or _kaygee_voice()).strip() or _kaygee_voice()
+    selected_voice = (voice or _voice()).strip() or _voice()
     started = time.monotonic()
     details: Dict[str, Any] = {
         "kokoro": {"status": "not_attempted"},
@@ -1512,8 +1535,8 @@ async def cali_orb_respond(
         "audio_url": voice_payload.get("audio_url"),
         "audio_engine": voice_payload.get("audio_engine"),
         "metadata": {
-            "provider": "kaygee_hybrid",
-            "cognition": "llama.cpp-core + cali-skg-articulation",
+            "provider": "cali",
+            "cognition": "configured provider + cali-skg-articulation",
             "llm_core": llm_core,
             "leading_mind": "cali",
             "confidence": 0.86 if llm_core != "fallback" else 0.65,
@@ -1539,7 +1562,7 @@ async def cali_orb_tts(payload: OrbTtsRequest) -> Dict[str, Any]:
         "metadata": {
             "provider": "cali-tts",
             "voice_provider_order": "kokoro_local -> qwen3_tts",
-            "voice": payload.voice or _kaygee_voice(),
+            "voice": payload.voice or _voice(),
             "voice_ready": bool(voice_payload.get("audio_url")),
             "audio_engine": voice_payload.get("audio_engine"),
         },
@@ -1581,7 +1604,7 @@ def cognition_status(_: str = Depends(verify_admin)) -> Dict[str, Any]:
 
 @router.post("/memory/candidates")
 def submit_memory_candidate(payload: MemoryCandidateIn, _: str = Depends(verify_admin)) -> Dict[str, Any]:
-    """KayGee/CALI proposes a memory. Short-term writes through; long-term is graded before AIMS."""
+    """CALI proposes a memory. Short-term writes through; long-term is graded before AIMS."""
     return get_cali_skg().submit_memory_candidate(payload.model_dump(), speaker="admin")
 
 

@@ -13,7 +13,7 @@ import { getSprukedCrawlContext } from '@/lib/website-orb/crawl-context';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-type CognitionProvider = 'kaygee_hybrid';
+type CognitionProvider = string;
 
 function badRequest(message: string) {
   return NextResponse.json({ status: 'error', message }, { status: 400 });
@@ -71,23 +71,23 @@ function normalizeCompanionText(rawText: string, prompt: string): string {
 }
 
 function cognitionProvider(): CognitionProvider {
-  return 'kaygee_hybrid';
+  return String(process.env.SPRUKED_ORB_COGNITION_PROVIDER || 'cali').trim() || 'cali';
 }
 
-function kaygeeVoiceEnabled(): boolean {
-  return String(process.env.KAYGEE_VOICE_ENABLED || '1').trim() === '1';
+function caliVoiceEnabled(): boolean {
+  return String(process.env.CALI_VOICE_ENABLED || '1').trim() === '1';
 }
 
-function kaygeeVoice(): string {
-  return String(process.env.KAYGEE_VOICE || 'af_bella').trim() || 'af_bella';
+function caliVoice(): string {
+  return String(process.env.CALI_VOICE || 'af_bella').trim() || 'af_bella';
 }
 
 function caliApiBase(): string {
   return trimTrailingSlash(process.env.CALI_API_URL || 'http://127.0.0.1:8022');
 }
 
-function kayGeeHybridRespondPath(): string {
-  const raw = String(process.env.KAYGEE_HYBRID_RESPOND_PATH || '/cali/orb/respond').trim();
+function caliRespondPath(): string {
+  const raw = String(process.env.CALI_ORB_RESPOND_PATH || '/cali/orb/respond').trim();
   const normalized = raw.startsWith('/') ? raw : `/${raw}`;
   if (normalized === '/orb/respond') {
     return '/cali/orb/respond';
@@ -108,11 +108,11 @@ function annotateProviderResponse(
   };
 }
 
-async function queryKayGeeHybrid(prompt: string, context: Record<string, unknown>, emotion: string) {
+async function queryConfiguredCognition(prompt: string, context: Record<string, unknown>, emotion: string) {
   const base = caliApiBase();
   const timeoutMs = Number(process.env.SPRUKED_ORB_PROVIDER_TIMEOUT_MS || '18000') || 18000;
 
-  const response = await fetch(`${base}${kayGeeHybridRespondPath()}`, {
+  const response = await fetch(`${base}${caliRespondPath()}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -125,7 +125,7 @@ async function queryKayGeeHybrid(prompt: string, context: Record<string, unknown
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data?.detail || data?.message || `KayGee hybrid request failed (${response.status})`);
+    throw new Error(data?.detail || data?.message || `Configured cognition request failed (${response.status})`);
   }
 
   const text = String(data?.response || data?.response_text || data?.text || '').trim();
@@ -136,8 +136,8 @@ async function queryKayGeeHybrid(prompt: string, context: Record<string, unknown
       leading_mind: String(data?.metadata?.leading_mind || 'cali'),
       confidence: Number(data?.metadata?.confidence ?? 0.82),
       truth_likelihood: Number(data?.metadata?.truth_likelihood ?? 0.82),
-      provider: String(data?.metadata?.provider || 'kaygee_hybrid'),
-      cognition: String(data?.metadata?.cognition || 'llama.cpp-core + kaygee-governance + cali-skg-articulation'),
+      provider: String(data?.metadata?.provider || cognitionProvider()),
+      cognition: String(data?.metadata?.cognition || 'configured provider + cali-skg-articulation'),
       llm_core: String(data?.metadata?.llm_core || 'llama.cpp:local'),
       doctrine_ddr: Number(data?.metadata?.doctrine_ddr ?? 0),
       doctrine_state: String(data?.metadata?.doctrine_state || ''),
@@ -160,7 +160,7 @@ async function synthesizeCaliVoice(text: string, voice?: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       text,
-      voice: voice || kaygeeVoice(),
+      voice: voice || caliVoice(),
     }),
     signal: AbortSignal.timeout(Math.max(5000, timeoutMs)),
   });
@@ -195,7 +195,7 @@ async function warmCaliVoice(voice?: string) {
   const response = await fetch(`${base}/cali/orb/tts/warmup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ voice: voice || kaygeeVoice() }),
+    body: JSON.stringify({ voice: voice || caliVoice() }),
     signal: AbortSignal.timeout(Math.max(5000, timeoutMs)),
   });
 
@@ -275,11 +275,11 @@ async function queryCaliPersonal(
     data: data?.data || null,
     intent: data?.intent || null,
     metadata: {
-      leading_mind: 'kaygee',
+      leading_mind: 'cali',
       confidence: 0.9,
       truth_likelihood: 0.9,
       provider: 'cali-personal',
-      cognition: 'kaygee-1.0',
+      cognition: 'cali-personal',
     },
   };
 }
@@ -288,7 +288,7 @@ async function queryCaliPersonal(
 function providerReasoningMode(providerValue: string): OrbReasoningMode {
   if (providerValue.includes('fallback')) return 'shared';
   if (providerValue === 'cali-personal') return 'local';
-  if (providerValue === 'kaygee_hybrid') return 'hybrid';
+  if (providerValue === 'cali') return 'hybrid';
   return 'shared';
 }
 
@@ -304,8 +304,8 @@ function providerReasoningProfile(providerValue: string, response: Record<string
   const metadata = response?.metadata || {};
   if (metadata.cognition) return String(metadata.cognition);
   if (metadata.llm_core) return String(metadata.llm_core);
-  if (providerValue === 'cali-personal') return 'kaygee-1.0 admin CALI personal query';
-  if (providerValue === 'kaygee_hybrid') return 'llama.cpp-core + kaygee-governance + cali-skg-articulation';
+  if (providerValue === 'cali-personal') return 'CALI personal query';
+  if (providerValue === 'cali') return 'configured provider + CALI SKG articulation';
   return providerValue || 'unknown';
 }
 
@@ -317,13 +317,13 @@ function responseVoiceEngine(response: Record<string, any> | null, action: strin
   const engine = response?.audio_engine || response?.voice?.engine || response?.metadata?.audio_engine;
   if (engine) return String(engine);
   if (action === 'speak') return 'Kokoro local TTS via CALI';
-  return kaygeeVoiceEnabled() ? 'Kokoro local TTS via CALI; Qwen3-TTS backup' : 'server TTS disabled';
+  return caliVoiceEnabled() ? 'Kokoro local TTS via CALI; Qwen3-TTS backup' : 'server TTS disabled';
 }
 
 function responseVoiceProfile(response: Record<string, any> | null): string {
   const voice = response?.voice?.profile || response?.voice?.voice || response?.voice || response?.metadata?.voice;
   if (voice && typeof voice !== 'object') return String(voice);
-  return `${kaygeeVoice()} via Kokoro local voice pack`;
+  return `${caliVoice()} via Kokoro local voice pack`;
 }
 
 function contextSourceForRequest(request: NextRequest, body: any): string {
@@ -385,11 +385,11 @@ async function queryByProvider(prompt: string, context: Record<string, unknown>,
     },
     ...context,
   };
-  const response = annotateProviderResponse(await queryKayGeeHybrid(prompt, websiteContext, emotion), {
+  const response = annotateProviderResponse(await queryConfiguredCognition(prompt, websiteContext, emotion), {
     provider_selected: provider,
-    provider_used: 'kaygee_hybrid',
+    provider_used: provider,
     fallback_reason: null,
-    bridge_used: `${caliApiBase()}${kayGeeHybridRespondPath()}`,
+    bridge_used: `${caliApiBase()}${caliRespondPath()}`,
     cognition_mode: 'hybrid_provider',
   });
   const returnedText = String(response.response || response.text || '').trim();
@@ -424,8 +424,8 @@ export async function GET() {
       context_source: 'Spruked public website context + Orb_Assistant web runtime + /mnt/r/orb_mesh',
       reasoning_mode: providerReasoningMode(cognitionProvider()),
       fallback_state: 'none',
-      voice_engine: kaygeeVoiceEnabled() ? 'Kokoro local TTS via CALI; Qwen3-TTS backup' : 'server TTS disabled',
-      voice_profile: `${kaygeeVoice()} via Kokoro local voice pack`,
+      voice_engine: caliVoiceEnabled() ? 'Kokoro local TTS via CALI; Qwen3-TTS backup' : 'server TTS disabled',
+      voice_profile: `${caliVoice()} via Kokoro local voice pack`,
       tts_ready: false,
       service_health: 'online',
       orb_health: 'ready',

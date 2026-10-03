@@ -65,7 +65,7 @@ def _estimate_observed_tension(prompt: str, response_text: str, llm_core: str, i
 
     if llm_core.startswith("ollama:"):
         tension -= 0.03
-    if llm_core == "kaygee-fallback":
+    if llm_core == "provider-fallback":
         tension += 0.02
     if any(term in combined for term in ("vs", "versus", "tradeoff", "risk", "uncertain", "dilemma")):
         tension += 0.1

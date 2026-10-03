@@ -160,7 +160,7 @@ export default function CaliOperationsHub({ adminToken }: CaliOperationsHubProps
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold text-light">Cali Operations Hub</h2>
-          <p className="text-sm text-gray-400">KayGee cognition personal assistant controls.</p>
+          <p className="text-sm text-gray-400">CALI personal assistant controls.</p>
         </div>
         <button
           type="button"
