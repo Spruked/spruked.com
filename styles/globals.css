@@ -1,4 +1,9 @@
 :root {
+  --spruked-ink: #07080b;
+  --spruked-panel: rgba(14, 16, 21, 0.82);
+  --spruked-line: rgba(255, 255, 255, 0.1);
+  --spruked-muted: #8b929e;
+  --spruked-red: #ff2d2d;
   --spruked-grid: linear-gradient(transparent 24px, rgba(255, 255, 255, 0.04) 25px), linear-gradient(90deg, transparent 24px, rgba(255, 255, 255, 0.04) 25px);
 }
 
@@ -9,6 +14,73 @@
   pointer-events: none;
   background-image: var(--spruked-grid);
   background-size: 25px 25px;
-  opacity: 0.15;
+  opacity: 0.08;
   z-index: -1;
+}
+
+::selection {
+  background: rgba(255, 45, 45, 0.82);
+  color: #fff;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% -8%, rgba(255, 45, 45, 0.12), transparent 28rem),
+    radial-gradient(circle at 90% 18%, rgba(39, 105, 164, 0.1), transparent 32rem),
+    var(--spruked-ink);
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(255, 45, 45, 0.9);
+  outline-offset: 3px;
+}
+
+.spruked-surface {
+  background: linear-gradient(145deg, rgba(20, 23, 30, 0.88), rgba(7, 8, 11, 0.92));
+  border: 1px solid var(--spruked-line);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+}
+
+.spruked-surface-hover {
+  transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+
+.spruked-surface-hover:hover {
+  border-color: rgba(255, 45, 45, 0.45);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.36), 0 0 32px rgba(255, 45, 45, 0.06);
+  transform: translateY(-2px);
+}
+
+.spruked-eyebrow {
+  color: var(--spruked-red);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.spruked-rule {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 45, 45, 0.8), rgba(255, 255, 255, 0.12), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }

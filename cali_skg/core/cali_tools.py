@@ -52,7 +52,11 @@ class CaliToolRegistry:
         raw = os.getenv("CALI_TOOL_TIERS", "read,research") if granted_tiers is None else ",".join(granted_tiers)
         self.granted_tiers = {t.strip() for t in raw.split(",") if t.strip() in TIERS}
         env_roots = [Path(p) for p in os.getenv("CALI_TOOL_FILE_ROOTS", "").split(os.pathsep) if p.strip()]
-        self.file_roots = [p.resolve() for p in (file_roots or [self.base_path / "temp"]) + env_roots]
+        orb_vision_root = Path("/home/bryan/substrate/orb_vision")
+        self.file_roots = [p.resolve() for p in (file_roots or [self.base_path / "temp", orb_vision_root]) + env_roots]
+        configured_tesseract = str(os.getenv("CALI_TESSERACT_BIN", "")).strip()
+        bundled_tesseract = orb_vision_root / "tesseract" / "bin" / "tesseract"
+        self.tesseract_binary = configured_tesseract or (str(bundled_tesseract) if bundled_tesseract.exists() else shutil.which("tesseract"))
         self.manifest_dir = self.base_path / "tools" / "manifests"
         self.manifests: Dict[str, Dict[str, Any]] = {}
         self.manifest_errors: List[str] = []
@@ -109,7 +113,7 @@ class CaliToolRegistry:
         return tier in self.granted_tiers
 
     def list_tools(self) -> List[Dict[str, Any]]:
-        tools = [{"name": "tesseract_ocr", "kind": "builtin", "tier": "read", "enabled": bool(shutil.which("tesseract")),
+        tools = [{"name": "tesseract_ocr", "kind": "builtin", "tier": "read", "enabled": bool(self.tesseract_binary),
                   "granted": self._granted("read"), "description": "Read text from an image file with local Tesseract OCR."}]
         for m in self.manifests.values():
             tier = m.get("tier", "research")
@@ -184,7 +188,7 @@ class CaliToolRegistry:
 
     # ------------------------------------------------------------- tesseract
     def _tesseract(self, args: Dict[str, Any]) -> Dict[str, Any]:
-        binary = shutil.which("tesseract")
+        binary = self.tesseract_binary
         if not binary:
             raise ToolError("tesseract is not installed.")
         path = Path(str(args.get("path", ""))).expanduser()
@@ -342,7 +346,8 @@ class CaliToolRegistry:
         mcp_missing = [m["name"] for m in self.manifests.values()
                        if m["kind"] == "mcp" and m.get("enabled", True) and not shutil.which(m["command"][0])]
         return {
-            "tesseract": bool(shutil.which("tesseract")),
+            "tesseract": bool(self.tesseract_binary),
+            "tesseract_binary": self.tesseract_binary,
             "manifests_loaded": sorted(self.manifests),
             "manifest_errors": list(self.manifest_errors),
             "mcp_commands_missing": mcp_missing,

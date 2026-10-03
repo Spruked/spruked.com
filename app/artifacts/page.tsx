@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import { Section } from '@/components/ui/Section';
+
+export const metadata: Metadata = {
+  title: 'Artifacts — Spruked',
+  description: 'Explore verified certificates, knowledge objects, and interface artifacts produced by the Spruked systems.',
+  alternates: { canonical: '/artifacts' },
+};
 
 export default function ArtifactsPage() {
   return (

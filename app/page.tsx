@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PrimaryLogo } from '@/components/brand/PrimaryLogo';
 import {Button}  from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Section } from '@/components/ui/Section';
 import LandingSplash from '@/components/ui/LandingSplash';
+
+export const metadata: Metadata = {
+  title: 'Spruked — Verified Knowledge and Digital Objects',
+  description: 'Spruked builds local-first systems for verified knowledge, provenance, and intelligent digital objects.',
+  alternates: { canonical: '/' },
+};
 
 export default function Home({
   searchParams,
@@ -15,29 +22,34 @@ export default function Home({
   return (
     <>
       <LandingSplash />
-      <Section bleed className="relative flex min-h-[90vh] flex-col items-center justify-center text-center">
-        <div className="absolute inset-0 opacity-5">
+      <Section bleed className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,45,45,0.12),transparent_24rem)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.035]">
           <PrimaryLogo size={800} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
         </div>
-        <PrimaryLogo size={180} className="mb-8" />
-        <h1 className="mb-6 text-6xl font-black uppercase leading-none tracking-tight sm:text-8xl">
+        <div className="relative z-10 mb-8 flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.28em] text-gray-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-truth shadow-[0_0_12px_rgba(255,45,45,0.9)]" />
+          Local-first / verifiable / human-directed
+        </div>
+        <PrimaryLogo size={180} className="relative z-10 mb-8" />
+        <h1 className="relative z-10 mb-6 text-6xl font-black uppercase leading-[0.9] tracking-[-0.04em] sm:text-8xl">
           You&rsquo;ve been
           <br />
           <span className="text-truth">Spruked</span>
         </h1>
-        <p className="mb-6 max-w-2xl text-2xl font-bold text-white uppercase tracking-widest sm:text-3xl">
+        <p className="relative z-10 mb-6 max-w-2xl text-2xl font-bold text-white uppercase tracking-[0.12em] sm:text-3xl">
           "If better is possible, good is simply not enough."
         </p>
-        <p className="mb-6 max-w-2xl text-xl text-gray-400 sm:text-2xl">
+        <p className="relative z-10 mb-6 max-w-2xl text-xl leading-relaxed text-gray-400 sm:text-2xl">
           Truth with teeth. Precision correction. No fluff. No mercy.
         </p>
-        <p className="mb-3 max-w-3xl text-2xl font-semibold text-white sm:text-3xl">
+        <p className="relative z-10 mb-3 max-w-3xl text-2xl font-semibold text-white sm:text-3xl">
           Spruked <span className="text-truth">-</span> Where Objects Tell the Truth.
         </p>
-        <p className="mb-12 max-w-3xl text-xl text-gray-300 sm:text-2xl">
+        <p className="relative z-10 mb-12 max-w-3xl text-xl leading-relaxed text-gray-300 sm:text-2xl">
           A registry for verified records, provenance, and intelligent object profiles.
         </p>
-        <div className="mb-16 flex flex-col gap-6 sm:flex-row">
+        <div className="relative z-10 mb-16 flex flex-col gap-4 sm:flex-row">
           <Button size="lg" asChild>
             <Link href="#waitlist" data-orb-target="spruked.home.get-spruked">Get Spruked</Link>
           </Button>

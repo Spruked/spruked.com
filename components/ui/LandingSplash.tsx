@@ -6,7 +6,7 @@ import { OrbService } from '@/Orb_Assistant/api/OrbService';
 const SPLASH_KEY = 'spruked:u-macron-splash-seen';
 const ORB_WARM_KEY = 'spruked:orb-voice-warmed';
 const DROP_SOUND_MS = 1680;
-const ORB_HELLO = 'Welcome to spruked.com. I am Cali, and I am here to assist you. You can click me and I will listen to your request and provide you with assistance.';
+const ORB_HELLO = 'Welcome to spruked.com. I am CALI, the voice of this site. Speak naturally whenever you are ready and I will listen. If your microphone is unavailable, you can click the ORB as a fallback.';
 
 function playGlassDrop(delaySeconds = 0) {
   const AudioCtor = window.AudioContext || (window as any).webkitAudioContext;
@@ -186,7 +186,7 @@ export default function LandingSplash() {
       </svg>
       <div aria-hidden="true" className="spruked-word-flight-stage"><span className={`spruked-word-flight ${animate ? 'spruked-word-flight-run' : ''}`}>SPRUKED</span></div>
       <div className="spruked-enter-sync" onAnimationEnd={revealEnter} />
-      <button type="button" className={`spruked-enter-button absolute bottom-4 z-10 rounded-full border border-truth/60 bg-black px-10 py-4 text-sm font-black uppercase tracking-[0.34em] text-white shadow-[0_0_30px_rgba(255,0,0,0.2)] transition hover:border-truth hover:bg-truth hover:text-black ${showEnter ? 'spruked-enter-button-ready' : ''}`} onClick={enterSite} disabled={!showEnter}>Enter + Enable ORB</button>
+      <button type="button" className={`spruked-enter-button absolute bottom-4 z-10 rounded-full border border-truth/60 bg-black px-10 py-4 text-sm font-black uppercase tracking-[0.34em] text-white shadow-[0_0_30px_rgba(255,0,0,0.2)] transition hover:border-truth hover:bg-truth hover:text-black ${showEnter ? 'spruked-enter-button-ready' : ''}`} onClick={enterSite} disabled={!showEnter}>Enter + Enable Voice</button>
     </div>
   </div>;
 }

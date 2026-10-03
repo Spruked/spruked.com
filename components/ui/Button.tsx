@@ -17,8 +17,8 @@ const sizeClasses = {
 };
 
 const variantClasses = {
-  default: "bg-light text-dark hover:bg-truth hover:text-light",
-  outline: "border border-gray-700 text-gray-300 hover:border-light hover:text-light",
+  default: "bg-truth text-white shadow-[0_10px_30px_rgba(255,45,45,0.18)] hover:bg-white hover:text-black hover:shadow-[0_12px_36px_rgba(255,255,255,0.16)]",
+  outline: "border border-white/15 bg-white/[0.03] text-gray-300 hover:border-truth/70 hover:bg-truth/10 hover:text-white",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -30,7 +30,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={twMerge(
           clsx(
-            "inline-flex items-center gap-2 rounded-full font-semibold uppercase tracking-[0.4em]",
+            "inline-flex items-center justify-center gap-2 rounded-full font-semibold uppercase tracking-[0.24em] transition-all duration-200 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
             sizeClasses[size],
             variantClasses[variant],
             className

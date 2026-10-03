@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import Script from 'next/script';
 import './globals.css';
 import '@/styles/globals.css';
 import Header from '@/components/layout/Header';
@@ -40,6 +41,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="body-grid bg-dark text-light antialiased">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-W19LPZKPEQ"
+          strategy="afterInteractive"
+        />
+        <Script id="spruked-google-analytics" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-W19LPZKPEQ', { anonymize_ip: true });`}
+        </Script>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">{children}</main>

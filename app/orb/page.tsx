@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import { Section } from '@/components/ui/Section';
+
+export const metadata: Metadata = {
+  title: 'CALI ORB — Spruked',
+  description: 'Meet CALI, the voice-first Website ORB for exploring Spruked knowledge and systems.',
+  alternates: { canonical: '/orb' },
+};
 
 export default function OrbPresencePage() {
   return (

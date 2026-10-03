@@ -3,8 +3,15 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-900/60 bg-black py-10">
+    <footer className="border-t border-white/[0.08] bg-[#050608] py-14">
       <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-10 grid gap-8 border-b border-white/[0.08] pb-10 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <p className="spruked-eyebrow mb-3">Spruked / Pro Prime Series AI</p>
+            <p className="max-w-md text-2xl font-semibold tracking-tight text-white">Build it right, or don&rsquo;t build it at all.</p>
+          </div>
+          <Link href="/orb" className="inline-flex w-fit items-center rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.2em] text-gray-300 transition hover:border-truth hover:text-white">Meet the ORB <span aria-hidden="true">↗</span></Link>
+        </div>
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-4">
             <p className="text-sm text-gray-500">

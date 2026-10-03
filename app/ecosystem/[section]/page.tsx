@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Section } from '@/components/ui/Section';
 
@@ -15,6 +16,15 @@ const pages = {
 } as const;
 
 export function generateStaticParams() { return Object.keys(pages).map((section) => ({ section })); }
+
+export function generateMetadata({ params }: { params: { section: string } }): Metadata {
+  const page = pages[params.section as keyof typeof pages];
+  return {
+    title: page ? `${page[0]} — Spruked` : 'Ecosystem — Spruked',
+    description: page?.[2] || 'Explore the connected systems that make up the Spruked ecosystem.',
+    alternates: { canonical: `/ecosystem/${params.section}` },
+  };
+}
 
 export default function EcosystemDetailPage({ params }: { params: { section: string } }) {
   const page = pages[params.section as keyof typeof pages];

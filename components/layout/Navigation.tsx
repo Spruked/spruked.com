@@ -62,6 +62,9 @@ function isGroupActive(pathname: string, hrefs: string[]) {
 function orbTargetForHref(href: string): string | undefined {
   const targets: Record<string, string> = {
     '/': 'spruked.nav.home',
+    '/ecosystem': 'spruked.nav.ecosystem',
+    '/technology': 'spruked.nav.technology',
+    '/research': 'spruked.nav.research',
     '/products': 'spruked.nav.products',
     '/cart': 'spruked.nav.cart',
     '/checkout': 'spruked.nav.checkout',
@@ -136,10 +139,19 @@ export function Navigation() {
             <div key={group.label} className="group relative">
               <button
                 type="button"
+                data-orb-target={
+                  group.label === 'Ecosystem'
+                    ? 'spruked.nav.ecosystem'
+                    : group.label === 'Technology'
+                      ? 'spruked.nav.technology'
+                      : group.label === 'Research'
+                        ? 'spruked.nav.research'
+                        : undefined
+                }
                 aria-expanded={openGroup === group.label}
                 aria-haspopup="true"
                 onClick={() => setOpenGroup((current) => (current === group.label ? null : group.label))}
-                className={clsx(
+              className={clsx(
                   'inline-flex items-center gap-1 rounded-md px-3 py-2 transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
                   active || openGroup === group.label ? 'text-light' : 'text-gray-500 hover:text-light',
                 )}
@@ -190,7 +202,7 @@ export function Navigation() {
         <div className="ml-auto flex items-center gap-2 pl-4">
           <Link
             href="/about#contact"
-            className="rounded-md px-3 py-2 whitespace-nowrap text-gray-500 transition-colors duration-200 hover:text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="rounded-full border border-transparent px-3 py-2 whitespace-nowrap text-gray-500 transition-colors duration-200 hover:border-white/10 hover:bg-white/[0.03] hover:text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
           >
             Contact
           </Link>
@@ -198,7 +210,7 @@ export function Navigation() {
             href="/cart"
             data-orb-target="spruked.nav.cart"
             className={clsx(
-              'rounded-md px-3 py-2 transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
+              'rounded-full px-3 py-2 transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
               isActivePath(pathname, '/cart') ? 'text-light' : 'text-gray-500 hover:text-light',
             )}
           >
@@ -209,7 +221,7 @@ export function Navigation() {
             href="/checkout"
             data-orb-target="spruked.nav.checkout"
             className={clsx(
-              'rounded-md border border-gray-800 px-3 py-2 transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
+              'rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
               isActivePath(pathname, '/checkout')
                 ? 'border-gray-600 bg-white/5 text-light'
                 : 'text-gray-400 hover:border-gray-600 hover:text-light',

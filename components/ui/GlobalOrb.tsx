@@ -17,10 +17,10 @@ import {
 import { Lidar2DMappingCoordinateCache } from '@/lib/website-orb/lidar_2d_mapping/Lidar2DMappingCoordinateCache';
 
 const IDLE_TIMEOUT_MS = 300000;
-const END_OF_SPEECH_SILENCE_MS = 1500;
+const END_OF_SPEECH_SILENCE_MS = 4000;
 const AUDIO_ANALYSIS_INTERVAL_MS = 100;
 const SPEECH_ACTIVITY_THRESHOLD = 0.012;
-const MAX_RECORDING_DURATION_MS = 60000;
+const MAX_RECORDING_DURATION_MS = 120000;
 const LISTENING_RESTART_MS = 700;
 const MIN_RECORDING_BYTES = 1200;
 const DRIFT_MIN_MS = 14000;
@@ -33,6 +33,54 @@ const CURSOR_NUDGE_DISTANCE = 28;
 const VIEWPORT_PADDING = 20;
 const DRIFT_MAX_HEIGHT_RATIO = 0.86;
 const ORB_IMAGE_SRC = '/orb-skin-studio/assets/caliorb1600.png';
+const SESSION_OBSERVATIONS_KEY = 'spruked:cali:session-observations';
+const MAX_SESSION_OBSERVATIONS = 40;
+const SITE_TOUR_TARGET_IDS = [
+  'spruked.nav.home',
+  'spruked.nav.ecosystem',
+  'spruked.nav.technology',
+  'spruked.nav.research',
+  'spruked.nav.products',
+  'spruked.products.alpha-certsig',
+  'spruked.products.truemark',
+  'spruked.nav.cart',
+  'spruked.nav.checkout',
+];
+
+type BrowserSpeechRecognition = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: any) => void) | null;
+  onerror: ((event: any) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+
+type SessionObservation = {
+  type: 'path' | 'target' | 'scroll';
+  path: string;
+  label?: string;
+  target?: string;
+  depth?: number;
+  at: number;
+};
+
+function recordSessionObservation(observation: SessionObservation) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = JSON.parse(window.sessionStorage.getItem(SESSION_OBSERVATIONS_KEY) || '[]');
+    const observations = Array.isArray(existing) ? existing : [];
+    observations.push(observation);
+    window.sessionStorage.setItem(
+      SESSION_OBSERVATIONS_KEY,
+      JSON.stringify(observations.slice(-MAX_SESSION_OBSERVATIONS)),
+    );
+  } catch {}
+}
 
 export default function GlobalOrb() {
   const pathname = usePathname();
@@ -42,7 +90,7 @@ export default function GlobalOrb() {
   const [isRecording, setIsRecording] = useState(false);
   const [voiceInputReady, setVoiceInputReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [bubbleText, setBubbleText] = useState('CALI is ready.');
+  const [bubbleText, setBubbleText] = useState('');
   const [isAwake, setIsAwake] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -70,6 +118,25 @@ export default function GlobalOrb() {
   const audioAnalysisTimerRef = useRef<NodeJS.Timeout | null>(null);
   const evadeCooldownRef = useRef(0);
   const guidePulseRef = useRef(0);
+  const bubbleClearTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const browserRecognitionRef = useRef<BrowserSpeechRecognition | null>(null);
+  const browserSpeechActiveRef = useRef(false);
+  const browserSpeechAvailableRef = useRef<boolean | null>(null);
+  const browserFinalTranscriptRef = useRef('');
+  const browserFinalTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const tourTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const tourIndexRef = useRef(0);
+  const tourActiveRef = useRef(false);
+
+  const showSpeechBubble = (text: string) => {
+    if (bubbleClearTimerRef.current) clearTimeout(bubbleClearTimerRef.current);
+    setBubbleText(String(text || '').trim());
+  };
+
+  const clearSpeechBubbleSoon = () => {
+    if (bubbleClearTimerRef.current) clearTimeout(bubbleClearTimerRef.current);
+    bubbleClearTimerRef.current = setTimeout(() => setBubbleText(''), 950);
+  };
 
   const clearRecordingTimersAndAnalysis = () => {
     if (stopRecordingTimerRef.current) clearTimeout(stopRecordingTimerRef.current);
@@ -93,6 +160,16 @@ export default function GlobalOrb() {
     clearRecordingTimersAndAnalysis();
     recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
     recordingStreamRef.current = null;
+  };
+
+  const stopBrowserRecognition = () => {
+    if (browserFinalTimerRef.current) clearTimeout(browserFinalTimerRef.current);
+    browserFinalTimerRef.current = null;
+    browserFinalTranscriptRef.current = '';
+    browserSpeechActiveRef.current = false;
+    setIsRecording(false);
+    isRecordingRef.current = false;
+    try { browserRecognitionRef.current?.stop(); } catch {}
   };
 
   const sleepPosition = () => {
@@ -175,11 +252,6 @@ export default function GlobalOrb() {
         queueNextDrift();
         return;
       }
-      if (!isAwakeRef.current) {
-        setOrbPosition(sleepPosition());
-        queueNextDrift();
-        return;
-      }
       setOrbPosition(pickWaypoint());
       queueNextDrift();
     }, delay);
@@ -191,9 +263,12 @@ export default function GlobalOrb() {
     queueNextDrift();
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => {
-      isAwakeRef.current = false;
-      setIsAwake(false);
-      setOrbPosition(sleepPosition());
+      // CALI remains present and observant while the visitor reads. She keeps
+      // moving slowly instead of collapsing into a corner or becoming inert.
+      setIsAwake(true);
+      isAwakeRef.current = true;
+      setOrbPosition(pickWaypoint());
+      queueNextDrift();
     }, IDLE_TIMEOUT_MS);
   };
 
@@ -221,12 +296,18 @@ export default function GlobalOrb() {
     setIsMounted(true);
     if (typeof window === 'undefined') return;
 
-    setOrbPosition(sleepPosition());
+    setOrbPosition(pickWaypoint());
     const handleWarmStart = (event: Event) => {
       const permission = String((event as CustomEvent<{ permission?: string }>).detail?.permission || '');
-      setVoiceInputReady(permission === 'granted');
-      setStatus(permission === 'granted' ? 'Voice warmed.' : permission === 'blocked' ? 'Mic permission needed' : 'Voice output ready.');
-      setBubbleText(permission === 'granted' ? 'CALI is ready.' : permission === 'blocked' ? 'CALI voice is ready. Microphone permission is still needed.' : 'CALI voice is ready.');
+      const granted = permission === 'granted';
+      setVoiceInputReady(granted);
+      setStatus(granted ? 'Listening...' : permission === 'blocked' ? 'Mic permission needed' : 'Voice output ready.');
+      setBubbleText(granted ? 'CALI is listening. Speak naturally.' : permission === 'blocked' ? 'CALI voice is ready. Microphone permission is still needed.' : 'CALI voice is ready.');
+      if (granted) {
+        shouldListenRef.current = true;
+        wakeOrb();
+        queueListening(250);
+      }
     };
     window.addEventListener('spruked-orb-warm-start', handleWarmStart);
     const warmupStarted = performance.now();
@@ -322,7 +403,14 @@ export default function GlobalOrb() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       if (driftTimerRef.current) clearTimeout(driftTimerRef.current);
       if (listeningRestartTimerRef.current) clearTimeout(listeningRestartTimerRef.current);
+      if (bubbleClearTimerRef.current) clearTimeout(bubbleClearTimerRef.current);
+      if (browserFinalTimerRef.current) clearTimeout(browserFinalTimerRef.current);
+      if (tourTimerRef.current) clearTimeout(tourTimerRef.current);
       shouldListenRef.current = false;
+      try { browserRecognitionRef.current?.abort(); } catch {}
+      browserRecognitionRef.current = null;
+      browserSpeechActiveRef.current = false;
+      tourActiveRef.current = false;
       if (recorderRef.current?.state === 'recording') {
         recorderRef.current.onstop = null;
         recorderRef.current.ondataavailable = null;
@@ -344,6 +432,40 @@ export default function GlobalOrb() {
     lidar.startDriftAudit();
     return () => lidar.stopDriftAudit();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    recordSessionObservation({ type: 'path', path: pathname || '/', at: Date.now() });
+    let lastScrollBucket = -1;
+    const handleObservedClick = (event: MouseEvent) => {
+      const target = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-orb-target], a, button') : null;
+      if (!target || target.closest('[data-orb-interactive="true"]')) return;
+      const label = String(
+        target.getAttribute('data-orb-target') || target.getAttribute('aria-label') || target.textContent || '',
+      ).replace(/\s+/g, ' ').trim().slice(0, 100);
+      if (!label) return;
+      recordSessionObservation({
+        type: 'target',
+        path: window.location.pathname,
+        label,
+        target: target.getAttribute('data-orb-target') || undefined,
+        at: Date.now(),
+      });
+    };
+    const handleObservedScroll = () => {
+      const documentHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      const depth = Math.min(10, Math.floor((window.scrollY / documentHeight) * 10));
+      if (depth === lastScrollBucket) return;
+      lastScrollBucket = depth;
+      recordSessionObservation({ type: 'scroll', path: window.location.pathname, depth, at: Date.now() });
+    };
+    document.addEventListener('click', handleObservedClick, true);
+    window.addEventListener('scroll', handleObservedScroll, { passive: true });
+    return () => {
+      document.removeEventListener('click', handleObservedClick, true);
+      window.removeEventListener('scroll', handleObservedScroll);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const handleGuideEvent = (event: Event) => {
@@ -402,7 +524,7 @@ export default function GlobalOrb() {
           );
         }
         setGuide(nextGuide);
-        setBubbleText(nextGuide.message);
+        setStatus(nextGuide.message || 'CALI is ready.');
         setStatus(`LiDAR lock: ${target.label}.`);
         setPulseColor('#d946ef');
         setOrbPosition(() => {
@@ -514,8 +636,90 @@ export default function GlobalOrb() {
         queueListening(1200);
         return;
       }
-      void startRecording();
+      void startListening();
     }, delay);
+  };
+
+  const startBrowserListening = () => {
+    if (typeof window === 'undefined' || browserSpeechAvailableRef.current === false) return false;
+    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) {
+      browserSpeechAvailableRef.current = false;
+      return false;
+    }
+    browserSpeechAvailableRef.current = true;
+
+    if (!browserRecognitionRef.current) {
+      const recognition = new SpeechRecognitionCtor() as BrowserSpeechRecognition;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.onstart = () => {
+        browserSpeechActiveRef.current = true;
+        setIsRecording(true);
+        isRecordingRef.current = true;
+        setStatus('Listening...');
+        setPulseColor('#67c6ff');
+        wakeOrb();
+      };
+      recognition.onresult = (event: any) => {
+        let interim = '';
+        for (let index = event.resultIndex || 0; index < event.results.length; index += 1) {
+          const transcript = String(event.results[index]?.[0]?.transcript || '').trim();
+          if (event.results[index]?.isFinal) {
+            browserFinalTranscriptRef.current = `${browserFinalTranscriptRef.current} ${transcript}`.trim();
+          } else {
+            interim = `${interim} ${transcript}`.trim();
+          }
+        }
+        if (interim) setStatus('Listening...');
+        const finalText = browserFinalTranscriptRef.current.trim();
+        if (finalText) {
+          if (browserFinalTimerRef.current) clearTimeout(browserFinalTimerRef.current);
+          browserFinalTimerRef.current = setTimeout(() => {
+            const prompt = browserFinalTranscriptRef.current.trim();
+            browserFinalTranscriptRef.current = '';
+            stopBrowserRecognition();
+            if (prompt) void sendPrompt(prompt);
+          }, 900);
+        }
+      };
+      recognition.onerror = (event: any) => {
+        const error = String(event?.error || 'speech recognition failed');
+        browserSpeechActiveRef.current = false;
+        setIsRecording(false);
+        isRecordingRef.current = false;
+        if (['not-allowed', 'service-not-allowed', 'network'].includes(error)) {
+          browserSpeechAvailableRef.current = false;
+          setStatus(error === 'network' ? 'Browser voice unavailable; using microphone fallback.' : 'Mic permission needed');
+        }
+        console.warn('CALI browser speech recognition failed.', error);
+      };
+      recognition.onend = () => {
+        browserSpeechActiveRef.current = false;
+        setIsRecording(false);
+        isRecordingRef.current = false;
+        if (shouldListenRef.current && !isProcessingRef.current && !isSpeakingRef.current && !browserFinalTranscriptRef.current) {
+          queueListening(500);
+        }
+      };
+      browserRecognitionRef.current = recognition;
+    }
+
+    if (browserSpeechActiveRef.current || isProcessingRef.current || isSpeakingRef.current) return true;
+    try {
+      browserRecognitionRef.current.start();
+      return true;
+    } catch (error) {
+      console.warn('CALI browser speech recognition could not start.', error);
+      browserSpeechAvailableRef.current = false;
+      return false;
+    }
+  };
+
+  const startListening = async () => {
+    if (startBrowserListening()) return;
+    await startRecording();
   };
 
   const startRecording = async () => {
@@ -665,14 +869,72 @@ export default function GlobalOrb() {
       stopRecording();
       return;
     }
-    if (!isRecordingRef.current && !isProcessingRef.current && !isSpeakingRef.current) {
-      void startRecording();
+    if (browserSpeechActiveRef.current) {
+      stopBrowserRecognition();
+      return;
     }
+    if (!isRecordingRef.current && !isProcessingRef.current && !isSpeakingRef.current) {
+      void startListening();
+    }
+  };
+
+  const finishSiteTour = () => {
+    if (tourTimerRef.current) clearTimeout(tourTimerRef.current);
+    tourTimerRef.current = null;
+    tourActiveRef.current = false;
+    setGuide(null);
+    setStatus('CALI is listening.');
+    shouldListenRef.current = true;
+    queueListening(500);
+  };
+
+  const runSiteTour = () => {
+    if (tourActiveRef.current) return;
+    tourActiveRef.current = true;
+    tourIndexRef.current = 0;
+    shouldListenRef.current = false;
+    if (listeningRestartTimerRef.current) clearTimeout(listeningRestartTimerRef.current);
+    if (browserSpeechActiveRef.current) stopBrowserRecognition();
+    if (recorderRef.current?.state === 'recording') stopRecording();
+
+    const visitNext = () => {
+      const targetId = SITE_TOUR_TARGET_IDS[tourIndexRef.current];
+      const target = getPointerTarget(targetId);
+      if (!target) {
+        tourIndexRef.current += 1;
+        if (tourIndexRef.current < SITE_TOUR_TARGET_IDS.length) visitNext();
+        else finishSiteTour();
+        return;
+      }
+      const tourText = `${target.label}. ${target.description}`;
+      showSpeechBubble(tourText);
+      setPendingGuide({ targetId: target.id, message: tourText });
+      setStatus(`Tour stop: ${target.label}`);
+      setPulseColor('#d946ef');
+      void OrbService.speak(tourText, (active, meta = {}) => {
+        setIsSpeaking(active);
+        isSpeakingRef.current = active;
+        if (meta.text) showSpeechBubble(meta.text);
+      }).catch((error) => console.warn('CALI site tour speech failed.', error));
+      tourIndexRef.current += 1;
+      tourTimerRef.current = setTimeout(() => {
+        if (tourIndexRef.current >= SITE_TOUR_TARGET_IDS.length) finishSiteTour();
+        else visitNext();
+      }, 5200);
+    };
+
+    wakeOrb();
+    visitNext();
   };
 
   const sendPrompt = async (userText: string) => {
     const trimmed = String(userText || '').trim();
     if (!trimmed || isProcessingRef.current) return;
+
+    if (/\b(site tour|tour the site|show me around|walk me through the site|give me a tour)\b/i.test(trimmed)) {
+      runSiteTour();
+      return;
+    }
 
     setIsProcessing(true);
     isProcessingRef.current = true;
@@ -696,24 +958,21 @@ export default function GlobalOrb() {
           setIsSpeaking(active);
           isSpeakingRef.current = active;
           if (meta?.text) {
-            setBubbleText(String(meta.text));
+            showSpeechBubble(String(meta.text));
           }
           if (active) {
             wakeOrb();
           } else {
+            clearSpeechBubbleSoon();
             queueListening(500);
           }
         },
       });
 
-      const msgText = String(response?.response || response?.text || 'No response text available.');
-      setBubbleText(msgText);
       setStatus('Response ready.');
       setPulseColor(getMindColor(String(response?.metadata?.leading_mind || 'cali')));
     } catch (err) {
       console.error(err);
-      const failure = 'Connection failed. Provider unavailable or offline.';
-      setBubbleText(failure);
       setStatus('Connection failed');
       setPulseColor('red');
     } finally {
@@ -767,7 +1026,7 @@ export default function GlobalOrb() {
         </div>
       )}
 
-      {(bubbleText || status) && (
+      {bubbleText && (
         <div
           className="fixed top-0 z-[10000] overflow-hidden rounded-2xl border border-gray-800 bg-black/80 px-4 py-3 text-sm leading-relaxed text-gray-100 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-xl pointer-events-auto transition-[left,top] duration-[1800ms] ease-in-out"
           aria-live="polite"
@@ -777,19 +1036,18 @@ export default function GlobalOrb() {
             left: `${bubbleLeft}px`,
             top: `${bubbleTop}px`,
             width: `${bubbleWidth}px`,
-            maxHeight: '4.8em',
+            maxHeight: 'none',
+            maxWidth: 'min(560px, calc(100vw - 40px))',
             lineHeight: 1.6,
-            display: '-webkit-box',
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: 3,
+            whiteSpace: 'pre-wrap',
           }}
         >
-          {bubbleText || status}
+          {bubbleText}
         </div>
       )}
 
       <div
-        className="pointer-events-none fixed left-0 top-0 z-[9999] transition-transform duration-[4200ms] ease-in-out"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] transition-transform duration-[6200ms] ease-in-out"
         style={{
           width: `${ORB_SIZE}px`,
           height: `${ORB_SIZE}px`,
@@ -797,11 +1055,16 @@ export default function GlobalOrb() {
         }}
       >
       <div
-        className="pointer-events-auto relative h-full w-full"
+        className="pointer-events-auto relative h-full w-full cursor-pointer touch-manipulation"
         role="button"
-        aria-label="CALI voice presence"
+        aria-label="CALI voice presence. Speak naturally; click only as a fallback."
+        data-orb-interactive="true"
+        title="Speak naturally to CALI. Click only as a fallback."
         tabIndex={0}
-        onClick={handleClickToTalk}
+        onPointerDown={(event) => {
+          event.preventDefault();
+          handleClickToTalk();
+        }}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
@@ -855,7 +1118,7 @@ export default function GlobalOrb() {
 
           <img
             src={ORB_IMAGE_SRC}
-            alt=""
+            alt="CALI Website ORB"
             aria-hidden="true"
             draggable={false}
             className="relative z-20 h-full w-full select-none object-contain"
@@ -885,7 +1148,7 @@ export default function GlobalOrb() {
           </div>
           <img
             src={ORB_IMAGE_SRC}
-            alt=""
+            alt="CALI Website ORB lens overlay"
             aria-hidden="true"
             draggable={false}
             className="pointer-events-none absolute inset-0 z-40 h-full w-full select-none object-contain"

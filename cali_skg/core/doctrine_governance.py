@@ -15,6 +15,38 @@ DOCTRINE_ALLOWED_HASHES = {
 DDR_HEALTHY_THRESHOLD = 0.8
 DDR_CAUTION_THRESHOLD = 0.5
 
+_CONSEQUENTIAL_TERMS = (
+    "delete", "remove", "kill", "stop", "restart", "change credentials", "password",
+    "api key", "secret", "publish", "send", "email", "purchase", "buy", "pay",
+    "deploy", "alter repository", "write file", "edit file", "modify file", "change permission",
+)
+
+
+def _available_evidence(context: Dict[str, Any]) -> list[str]:
+    available: list[str] = []
+    if context.get("vision_ocr"):
+        available.append("ocr_observation")
+    if context.get("current_page") or context.get("current_path") or context.get("currentPath"):
+        available.append("current_page_context")
+    if context.get("prior_conversations") or context.get("memory"):
+        available.append("prior_conversation_memory")
+    if context.get("domain_knowledge"):
+        available.append("domain_knowledge")
+    if context.get("reasoning_options") or context.get("reasoning_frameworks"):
+        available.append("reasoning_frameworks")
+    if context.get("philosophical_vault") or context.get("philosophical_history"):
+        available.append("philosophical_history")
+    if context.get("runtime_evidence") or context.get("live_evidence"):
+        available.append("verified_runtime_evidence")
+    if context.get("skg_context"):
+        available.append("skg_context")
+    return available
+
+
+def _is_consequential(prompt: str, context: Dict[str, Any]) -> bool:
+    combined = f"{prompt} {context.get('requested_action', '')}".lower()
+    return any(term in combined for term in _CONSEQUENTIAL_TERMS)
+
 
 def _as_float(value: Any, default: float) -> float:
     try:
@@ -111,9 +143,39 @@ def evaluate_doctrine_governance(
     if strict_mode and llm_plugged and ddr_state == "caution" and not override_id:
         reasons.append("Strict mode requires override or remediation when DDR is in caution range.")
 
-    compliant = (not enforce) or (len(reasons) == 0)
+    consequential = _is_consequential(prompt, context)
+    admin_authorized = bool(context.get("authorized_action") or context.get("admin_authorized"))
+    available_evidence = _available_evidence(context)
+    correspondence = context.get("correspondence_guidance")
+    constraints = [
+        "Preserve provenance and distinguish historical memory from current truth.",
+        "Use verified evidence when sources disagree; state uncertainty when evidence is incomplete.",
+        "Normal reasoning, explanation, navigation, OCR, retrieval, and follow-up questions remain allowed.",
+    ]
+    preferred_actions = ["reason", "retrieve_relevant_context", "reconcile_sources", "answer_or_ask_follow_up"]
+    required_evidence: list[str] = []
+    if consequential:
+        constraints.append("Do not execute consequential side effects without explicit authorization and an auditable action envelope.")
+        required_evidence.extend(["explicit_authorization", "current_target_and_scope"])
+        preferred_actions = ["inspect", "reconcile_sources", "request_authorization_before_execution"]
+    if not available_evidence:
+        constraints.append("No substrate evidence was supplied; do not claim a memory or retrieval result.")
+        required_evidence.append("retrieved_source_or_explicit_uncertainty")
+
+    if isinstance(correspondence, dict):
+        if correspondence.get("status") == "escalation_required":
+            constraints.append("Correspondence analysis found unresolved disagreement; do not present the claim as settled fact.")
+            required_evidence.append("correspondence_resolution_or_explicit_uncertainty")
+        if correspondence.get("action") in {"hold", "escalate_to_ecm"}:
+            preferred_actions.insert(0, "acknowledge_correspondence_uncertainty")
+
+    escalation_required = bool(consequential and (not admin_authorized or not decision_envelope_hash))
+    status = "escalation_required" if escalation_required else "guided"
+    compliant = (not enforce) or (not consequential) or (not reasons)
     trust_state = "trusted" if compliant else "degraded"
-    block = bool(enforce and reasons and (strict_mode or llm_plugged))
+    # Governance guides ordinary cognition. It only marks a hard stop for a
+    # consequential action lacking authorization; it does not block thought.
+    block = bool(escalation_required)
 
     return {
         "canonical_version": DOCTRINE_CANONICAL_VERSION,
@@ -139,6 +201,38 @@ def evaluate_doctrine_governance(
             },
         },
         "critical_alerts": critical_alerts,
+        "status": status,
+        "constraints": constraints,
+        "preferred_actions": preferred_actions,
+        "required_evidence": required_evidence,
+        "tool_permissions": {
+            "reasoning": "allowed",
+            "retrieval": "allowed",
+            "ocr": "allowed_with_tool_tier_and_path_permissions",
+            "consequential_execution": "authorized_only",
+        },
+        "confidence_requirements": {
+            "ordinary_answer": 0.0,
+            "claim_of_memory": 0.75,
+            "consequential_action": 0.9,
+        },
+        "evidence_reconciliation": {
+            "available": available_evidence,
+            "priority": [
+                "verified_runtime_evidence",
+                "skg_context",
+                "current_page_context",
+                "ocr_observation",
+                "domain_knowledge",
+                "prior_conversation_memory",
+                "reasoning_frameworks",
+                "philosophical_history",
+            ],
+            "rule": "Prefer current verified evidence; preserve older sources as provenance rather than silently overwriting them.",
+        },
+        "correspondence_guidance": correspondence,
+        "consequence_scope": "consequential" if consequential else "cognitive_only",
+        "escalation_required": escalation_required,
         "compliant": compliant,
         "trust_state": trust_state,
         "enforcement": {

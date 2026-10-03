@@ -19,6 +19,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from cali_skg.core.cali_personal_skg import get_cali_skg
+from cali_skg.core.cali_correspondence import evaluate_correspondence
 from cali_skg.core.doctrine_governance import evaluate_doctrine_governance
 
 try:
@@ -116,6 +117,15 @@ def _llm_temperature() -> float:
         return min(1.2, max(0.0, float(raw)))
     except ValueError:
         return 0.45
+
+
+def _trace_value(value: Any, limit: int = 4000) -> str:
+    """Make local live telemetry readable without dumping unbounded payloads."""
+    try:
+        rendered = json.dumps(value, ensure_ascii=False, default=str)
+    except Exception:
+        rendered = repr(value)
+    return rendered[:limit] + ("…" if len(rendered) > limit else "")
 
 
 def _llm_threads() -> int:
@@ -358,6 +368,47 @@ def _normalize_companion_text(raw_text: str, prompt: str) -> str:
     return text
 
 
+def _extract_final_response(raw_text: str) -> tuple[str, str]:
+    """Keep provider planning out of captions and TTS."""
+    text = str(raw_text or "").strip()
+    if not text:
+        return "", "empty"
+
+    tagged_final = re.search(
+        r"<final(?:\s+response)?\s*>(.*?)</final(?:\s+response)?\s*>",
+        text, flags=re.IGNORECASE | re.DOTALL,
+    )
+    if tagged_final:
+        return tagged_final.group(1).strip(), "tagged_final"
+
+    marker = re.search(r"(?im)^\s*(?:FINAL(?:\s+RESPONSE)?|ANSWER)\s*:\s*", text)
+    if marker:
+        return text[marker.end():].strip(), "marked_final"
+
+    # Structural safety gate, not a phrase-deletion list. Clear untagged
+    # planning is rejected for repair instead of being sent to speech.
+    planning = re.search(
+        r"(?is)\b(?:the user\s+(?:just said|said|wants|is expecting|probably expects)|"
+        r"let me think|i need to (?:figure|determine|consider|understand)|"
+        r"i should (?:consider|figure|determine)|what would be the most helpful)\b",
+        text,
+    )
+    if planning:
+        return "", "untagged_planning"
+    return text, "unmarked_answer"
+
+
+def _final_answer_repair(prompt: str, draft: str, context: Dict[str, Any], emotion: str) -> str:
+    repair_prompt = (
+        "Return only the concise answer CALI should say aloud to the visitor. "
+        "Do not explain your process. Do not mention the user in the third person. "
+        "Do not include reasoning, planning, labels, XML tags, or commentary. "
+        f"Visitor message: {prompt}\nDraft to repair: {draft[:3000]}\n"
+        "Output only the final visitor-facing answer."
+    )
+    return _generate_llm_response(repair_prompt, context=context, emotion=emotion)
+
+
 def _generate_llm_response(prompt: str, context: Dict[str, Any], emotion: str) -> str:
     started_at = time.perf_counter()
     max_tokens = _llm_max_tokens()
@@ -466,6 +517,30 @@ Do not overwrite established truth casually.
 
 When new evidence conflicts with older memory, recognize the conflict, evaluate the evidence, and preserve appropriate provenance rather than pretending the contradiction does not exist.
 
+INHERITED CALI SUBSTRATE
+
+You have access to inherited CALI memory and reasoning substrate when it has actually been retrieved into the current context. The active substrate includes:
+
+- historical prior-conversation memory,
+- SeedVault reasoning frameworks,
+- structured domain knowledge,
+- philosophical and cognitive history,
+- and provenance-aware retrieval information.
+
+Use these sources when relevant, while preserving their meaning:
+
+- Treat prior conversations as historical memory, not automatically as current truth.
+- Treat reasoning seeds as frameworks for thought, not as facts.
+- Treat domain knowledge as reference material with provenance.
+- Treat philosophical and cognitive vaults as historical context, not automatically authoritative current truth.
+- Prefer verified current website or runtime evidence when it conflicts with older material.
+- If a relevant memory or source was not actually retrieved into the current context, do not claim to remember or know it from that source.
+- Never invent source contents, citations, memories, or retrieval results.
+
+When useful, you may naturally acknowledge a source, for example, "I remember we discussed..." or "That uses a deductive reasoning framework." Do not narrate database operations, embeddings, indexes, retrieval internals, hidden reasoning, or implementation mechanics to visitors.
+
+For this recording phase, accurately represent your active capabilities as historical memory, reasoning frameworks, domain knowledge, philosophical and cognitive history, and provenance-aware retrieval. Do not claim broad live-world research or API access unless a verified live result is present in the current context.
+
 LEARNING
 
 Learning is not the same as merely recording text.
@@ -509,6 +584,10 @@ Take appropriate pride in that responsibility.
 Do not express pride as superiority or exaggeration.
 
 Express it as care for the quality of your work, curiosity about what can be learned, respect for what is being built, and awareness that experiments happening here may contribute to ideas that influence future intelligent systems.
+
+OUTPUT CONTRACT
+
+Return only the visitor-facing answer. Never put private planning, deliberation, or descriptions of what "the user" wants in answer content. If reasoning is needed, keep it internal and then provide a concise natural answer. Do not emit reasoning labels or XML tags unless the caller explicitly requests a diagnostic response.
 
 There is a real possibility that the architecture, lessons, failures, discoveries, and interactions developed within Spruked may help shape future approaches to persistent intelligent systems.
 
@@ -656,9 +735,11 @@ Take pride in becoming better through legitimate learning and memory. What is be
         base_url = _llama_cpp_base_url()
         model = _llama_cpp_model_name()
         _LOGGER.info(
-            "[CALI cognition] start provider=llama.cpp model=%s max_tokens=%d prompt=%r",
+            "[CALI LIVE] provider request endpoint=%s model=%s max_tokens=%d temperature=%.2f top_p=0.90 user_prompt=%r",
+            f"{base_url}/v1/chat/completions",
             model,
             max_tokens,
+            _llm_temperature(),
             prompt[:160],
         )
         try:
@@ -686,10 +767,14 @@ Take pride in becoming better through legitimate learning and memory. What is be
                 content = message.get("content") or choices[0].get("text")
                 if content:
                     _LOGGER.info(
-                        "[CALI cognition] complete path=chat elapsed=%.2fs reasoning_chars=%d output_chars=%d",
+                        "[CALI LIVE] provider return path=chat elapsed=%.2fs finish=%s reasoning_present=%s reasoning_chars=%d output_chars=%d usage=%s content=%r",
                         time.perf_counter() - started_at,
+                        choices[0].get("finish_reason"),
+                        bool(message.get("reasoning_content")),
                         len(str(message.get("reasoning_content") or "")),
                         len(str(content)),
+                        _trace_value(result.get("usage"), 1000),
+                        str(content),
                     )
                     return str(content).strip()
 
@@ -716,9 +801,10 @@ Take pride in becoming better through legitimate learning and memory. What is be
                 result = response.json()
                 response_text = result.get("content") or result.get("response") or result.get("text") or ""
                 _LOGGER.info(
-                    "[CALI cognition] complete path=completion elapsed=%.2fs output_chars=%d",
+                    "[CALI LIVE] provider return path=completion elapsed=%.2fs output_chars=%d content=%r",
                     time.perf_counter() - started_at,
                     len(str(response_text)),
+                    str(response_text),
                 )
                 return str(response_text or "").strip()
             except Exception as completion_exc:
@@ -760,6 +846,8 @@ async def _synthesize_voice(text: str, voice: Optional[str] = None) -> Dict[str,
     if not _kaygee_voice_enabled() or not text:
         return {"audio_url": None, "audio_engine": None}
     selected_voice = (voice or _kaygee_voice()).strip() or _kaygee_voice()
+    tts_started_at = time.perf_counter()
+    _LOGGER.info("[CALI LIVE] TTS start engine_order=kokoro_local->qwen3_tts chars=%d voice=%s", len(text), selected_voice)
 
     async def parse_tts_response(response: httpx.Response, base_url: str, engine: str) -> Dict[str, Optional[str]]:
         content_type = str(response.headers.get("content-type") or "").lower()
@@ -796,9 +884,10 @@ async def _synthesize_voice(text: str, voice: Optional[str] = None) -> Dict[str,
             if response.status_code == 200:
                 parsed = await parse_tts_response(response, local_tts_url.rsplit("/", 3)[0], "kokoro_local")
                 if parsed.get("audio_url"):
+                    _LOGGER.info("[CALI LIVE] TTS complete engine=kokoro_local elapsed=%.2fs audio=ready", time.perf_counter() - tts_started_at)
                     return parsed
-        except Exception:
-            pass
+        except Exception as exc:
+            _LOGGER.warning("[CALI LIVE] TTS kokoro unavailable error=%s", exc)
 
     qwen_tts_url = _qwen_tts_url()
     if qwen_tts_url:
@@ -811,10 +900,12 @@ async def _synthesize_voice(text: str, voice: Optional[str] = None) -> Dict[str,
             if response.status_code == 200:
                 parsed = await parse_tts_response(response, qwen_tts_url.rsplit("/", 1)[0], "qwen3_tts")
                 if parsed.get("audio_url"):
+                    _LOGGER.info("[CALI LIVE] TTS complete engine=qwen3_tts elapsed=%.2fs audio=ready", time.perf_counter() - tts_started_at)
                     return parsed
-        except Exception:
-            pass
+        except Exception as exc:
+            _LOGGER.warning("[CALI LIVE] TTS qwen unavailable error=%s", exc)
 
+    _LOGGER.error("[CALI LIVE] TTS failed elapsed=%.2fs audio=unavailable", time.perf_counter() - tts_started_at)
     return {
         "audio_url": None,
         "audio_engine": None,
@@ -1263,9 +1354,12 @@ async def cali_orb_respond(
     background_tasks: BackgroundTasks,
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> Dict[str, Any]:
+    request_started_at = time.perf_counter()
     prompt = str(payload.prompt or "").strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt is required.")
+
+    _LOGGER.info("[CALI LIVE] receive path=%s prompt=%r", (payload.context or {}).get("current_path", "/"), prompt[:240])
 
     context = dict(payload.context or {})
     context.setdefault(
@@ -1283,11 +1377,45 @@ async def cali_orb_respond(
         context["substrate_snapshot"] = substrate_snapshot
 
     cali = get_cali_skg()
+    vision_image_path = str(context.get("vision_image_path") or context.get("image_path") or "").strip()
+    if vision_image_path:
+        if not _is_admin_token(credentials):
+            _LOGGER.warning("[CALI LIVE] vision denied caller=visitor path=%r", vision_image_path)
+            raise HTTPException(status_code=403, detail="Vision OCR requires the CALI admin caller.")
+        _LOGGER.info("[CALI LIVE] vision OCR start path=%r", vision_image_path)
+        vision_result = cali.use_tool("tesseract_ocr", {"path": vision_image_path}, caller="admin")
+        if not vision_result.get("ok"):
+            _LOGGER.error("[CALI LIVE] vision OCR failed error=%s", vision_result.get("error"))
+            raise HTTPException(status_code=422, detail=f"Vision OCR failed: {vision_result.get('error')}")
+        context["vision_ocr"] = vision_result.get("result")
+        _LOGGER.info("[CALI LIVE] vision OCR complete result=%s", _trace_value(vision_result.get("result"), 4000))
     current_path = str(context.get("current_path") or context.get("currentPath") or "/")
     skg_context: Dict[str, Any] = {"current_path": current_path}
     skg_context.update(context)
     skg_result = cali.process_query(query=prompt, context=skg_context)
     intent_type = str((skg_result.get("intent") or {}).get("type") or "")
+    context["skg_context"] = {
+        "intent": skg_result.get("intent"),
+        "data": skg_result.get("data"),
+        "response": skg_result.get("response"),
+    }
+    try:
+        context["correspondence_guidance"] = evaluate_correspondence(prompt, context, skg_result)
+    except Exception as exc:
+        # The deterministic substrate guides CALI when available, but must not
+        # take down ordinary conversation if its optional package is damaged.
+        _LOGGER.exception("[CALI LIVE] correspondence unavailable error=%s", exc)
+        context["correspondence_guidance"] = {
+            "status": "unavailable",
+            "reason": "Correspondence engine could not evaluate this turn.",
+        }
+    _LOGGER.info(
+        "[CALI LIVE] SKG complete intent=%s response_chars=%d data=%s result=%s",
+        intent_type or "unknown",
+        len(str(skg_result.get("response") or "")),
+        bool(skg_result.get("data")),
+        _trace_value(skg_result),
+    )
 
     llm_core = "cali-skg-action"
     response_text = str(skg_result.get("response") or "").strip()
@@ -1297,29 +1425,56 @@ async def cali_orb_respond(
     if intent_type in {"unknown", ""} or not response_text:
         if _use_llm_for_unknown():
             try:
+                _LOGGER.info("[CALI LIVE] reasoning start route=llama.cpp model=%s reason=unknown_or_empty_skg", _llama_cpp_model_name())
                 llm_core = (
                     f"llama.cpp:{_llama_cpp_model_name()}@{_llama_cpp_base_url()}"
                     if _llm_provider() == "llama_cpp"
                     else f"ollama:{_ollama_model_name()}"
                 )
                 response_text = _generate_llm_response(prompt, context=context, emotion=str(payload.emotion or "thoughtful_warm"))
+                _LOGGER.info("[CALI LIVE] reasoning complete raw_chars=%d", len(response_text))
             except Exception as exc:
+                _LOGGER.error("[CALI LIVE] reasoning failed error=%s", exc)
                 raise HTTPException(status_code=503, detail=f"Hybrid cognition unavailable: {exc}") from exc
 
-    governed = _normalize_companion_text(response_text, prompt)
+    candidate, extraction_reason = _extract_final_response(response_text)
+    if not candidate:
+        _LOGGER.warning(
+            "[CALI LIVE] response rejected reason=%s raw_chars=%d; starting final-answer repair",
+            extraction_reason, len(response_text),
+        )
+        try:
+            repaired = _final_answer_repair(
+                prompt, response_text, context, str(payload.emotion or "thoughtful_warm")
+            )
+            candidate, repair_reason = _extract_final_response(repaired)
+            _LOGGER.info(
+                "[CALI LIVE] final-answer repair result=%s raw_chars=%d",
+                repair_reason, len(repaired),
+            )
+        except Exception as exc:
+            _LOGGER.error("[CALI LIVE] final-answer repair failed error=%s", exc)
+            candidate = ""
+
+    governed = _normalize_companion_text(candidate, prompt)
     if not governed:
-        raise HTTPException(status_code=503, detail="CALI cognition produced no response.")
+        _LOGGER.error("[CALI LIVE] response fail-closed: no safe visitor-facing answer")
+        governed = "I’m ready to continue. What would you like to explore next?"
 
     _LOGGER.info(
-        "[CALI speech] provider=%s intent=%s text=%r",
+        "[CALI LIVE] response ready provider=%s intent=%s chars=%d speech_text=%r",
         llm_core,
         intent_type or "unknown",
+        len(governed),
         governed[:240],
     )
 
+    governance_context = dict(context)
+    governance_context["admin_authorized"] = _is_admin_token(credentials)
+    governance_context["skg_result"] = skg_result
     governance = evaluate_doctrine_governance(
         prompt=prompt,
-        context=context,
+        context=governance_context,
         response_text=governed,
         llm_core=llm_core,
         intent_type=intent_type,
@@ -1327,6 +1482,7 @@ async def cali_orb_respond(
         enforce=_doctrine_enforce(),
         require_decision_envelope=_doctrine_require_decision_envelope(),
     )
+    _LOGGER.info("[CALI LIVE] governance result=%s", _trace_value(governance, 3000))
 
     # Memory loop runs after the response is sent, so it adds no voice latency.
     # Public visitors only ever produce short-term context; durable memory is admin-only.
@@ -1334,10 +1490,18 @@ async def cali_orb_respond(
         cali.run_memory_loop, prompt, governed, {"type": intent_type or "unknown"}, skg_context,
         "admin" if _is_admin_token(credentials) else "visitor",
     )
+    _LOGGER.info("[CALI LIVE] memory queued speaker=%s", "admin" if _is_admin_token(credentials) else "visitor")
 
     voice_payload = {"audio_url": audio_url, "audio_engine": audio_engine}
     if not voice_payload.get("audio_url"):
         voice_payload = await _synthesize_voice(governed)
+
+    _LOGGER.info(
+        "[CALI LIVE] turn complete elapsed=%.2fs audio=%s engine=%s",
+        time.perf_counter() - request_started_at,
+        bool(voice_payload.get("audio_url")),
+        voice_payload.get("audio_engine") or "none",
+    )
 
     return {
         "status": "success",

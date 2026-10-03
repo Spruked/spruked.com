@@ -38,6 +38,16 @@ function audioSource(data: OrbResponse): string | null {
   return null;
 }
 
+function sessionObservations(): unknown[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const value = JSON.parse(window.sessionStorage.getItem('spruked:cali:session-observations') || '[]');
+    return Array.isArray(value) ? value.slice(-40) : [];
+  } catch {
+    return [];
+  }
+}
+
 async function primeServerAudioPlayback(): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
@@ -149,6 +159,21 @@ async function speakResponse(
 export const OrbService = {
   primeAudio: primeServerAudioPlayback,
 
+  async speak(text: string, onVoicePlaybackState?: VoicePlaybackStateCallback): Promise<OrbResponse> {
+    const response = await fetch('/api/orb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({ action: 'speak', text: String(text || '').trim() }),
+    });
+    const data = (await response.json().catch(() => ({}))) as OrbResponse;
+    if (!response.ok || data?.status === 'error') {
+      throw new Error(String(data?.message || data?.error || `Website ORB speech failed (${response.status}).`));
+    }
+    await speakResponse(data, { speak: true, onVoicePlaybackState });
+    return data;
+  },
+
   async warmVoiceInput(): Promise<OrbResponse> {
     const response = await fetch('/api/orb/stt', {
       method: 'GET',
@@ -218,6 +243,8 @@ export const OrbService = {
       throw new Error('Message is empty.');
     }
 
+    const requestStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+
     const response = await fetch('/api/orb', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -228,6 +255,7 @@ export const OrbService = {
         context: {
           source: 'website',
           currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
+          session_observations: sessionObservations(),
         },
         emotion: 'thoughtful_warm',
       }),
@@ -241,11 +269,30 @@ export const OrbService = {
     }
 
     const mind = String(data?.metadata?.leading_mind || data?.metadata?.provider || 'orb');
+    const providerElapsedMs = Math.round(
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - requestStartedAt,
+    );
+    console.info('[ORB timing] provider response', {
+      elapsed_ms: providerElapsedMs,
+      status: response.status,
+      provider: data?.metadata?.provider,
+      audio_present: Boolean(audioSource(data)),
+      text_chars: responseText(data).length,
+    });
     onMind?.('#ffffff', mind);
     options.onResponseReady?.(data);
 
     if (options.speak) {
+      const speechStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
       await speakResponse(data, options);
+      console.info('[ORB timing] speech playback', {
+        elapsed_ms: Math.round(
+          (typeof performance !== 'undefined' ? performance.now() : Date.now()) - speechStartedAt,
+        ),
+        total_elapsed_ms: Math.round(
+          (typeof performance !== 'undefined' ? performance.now() : Date.now()) - requestStartedAt,
+        ),
+      });
     }
 
     return data;

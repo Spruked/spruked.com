@@ -8,6 +8,7 @@ node_modules/
 
 # Next.js
 /.next/
+.next.stale-*/
 /out/
 
 # Production
@@ -87,6 +88,7 @@ temp/
 # Local runtime/tooling artifacts
 .orb-web-runtime/
 Orb_Assistant/
+node_modules.root-owned-broken-*/
 venv/
 spruked.com@1.0.0
 nohup.out

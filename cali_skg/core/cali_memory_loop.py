@@ -20,6 +20,7 @@ _connect(), _rows(), _generate_hash(), _next_id(), _log_memory(), vault_path, ka
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import threading
@@ -40,6 +41,7 @@ MEMORY_AGENCY_PROMPT = (
 
 SHORT_TERM = "short_term"
 LONG_TERM_CANDIDATE = "long_term_candidate"
+_LOGGER = logging.getLogger("cali.memory")
 LONG_TERM_TARGET = "a_posteriori"
 
 DURABILITY_SCORES = {"persistent": 1.0, "session": 0.4, "turn": 0.1}
@@ -767,10 +769,16 @@ class CaliMemoryLoopMixin:
     def run_memory_loop(self, query: str, response_text: str, intent: Dict[str, Any],
                         context: Optional[Dict[str, Any]] = None, speaker: str = "admin") -> Dict[str, Any]:
         """Post-answer step. Must never break the answer path."""
+        _LOGGER.info("[CALI LIVE] memory start speaker=%s query_chars=%d response_chars=%d", speaker, len(query), len(response_text))
         summary: Dict[str, Any] = {"short_term": 0, "accepted": 0, "revised": 0, "deferred": 0, "rejected": 0}
         try:
             for cand in self.generate_memory_candidates(query, response_text, intent, context, speaker):
                 outcome = self.submit_memory_candidate(cand, speaker=speaker)
+                _LOGGER.info(
+                    "[CALI LIVE] memory candidate type=%s decision=%s target=%s content=%r",
+                    cand.get("memory_type", "unknown"), outcome.get("decision", "unknown"), outcome.get("target") or "none",
+                    str(cand.get("content") or "")[:1000],
+                )
                 if cand["memory_type"] == SHORT_TERM:
                     if outcome["decision"] == "accept":
                         summary["short_term"] += 1
@@ -779,4 +787,6 @@ class CaliMemoryLoopMixin:
                 summary[key] += 1
         except Exception as exc:  # memory is best-effort
             summary["error"] = str(exc)
+            _LOGGER.exception("[CALI LIVE] memory failed error=%s", exc)
+        _LOGGER.info("[CALI LIVE] memory complete summary=%s", summary)
         return summary

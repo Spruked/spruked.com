@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Section } from '@/components/ui/Section';
 
@@ -39,6 +40,15 @@ type Section = keyof typeof pages;
 
 export function generateStaticParams() {
   return Object.keys(pages).map((section) => ({ section }));
+}
+
+export function generateMetadata({ params }: { params: { section: string } }): Metadata {
+  const page = pages[params.section as Section];
+  return {
+    title: page ? `${page.title} — Spruked` : 'Technology — Spruked',
+    description: page?.intro || 'Explore the technology architecture behind Spruked systems.',
+    alternates: { canonical: `/technology/${params.section}` },
+  };
 }
 
 export default async function TechnologyDetailPage({ params }: { params: { section: string } }) {
