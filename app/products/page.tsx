@@ -1,5 +1,6 @@
 import { Section } from '@/components/ui/Section';
 import Link from 'next/link';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 export const metadata = {
   title: 'Products — Spruked',
@@ -9,6 +10,7 @@ export const metadata = {
 export default function ProductsPage() {
   return (
     <>
+      <ProductAreaNav />
       {/* Visual Header linking ORB and the Spruked System layers */}
       <Section className="mx-auto max-w-5xl pt-16 pb-8">
         <h1 className="mb-4 text-5xl font-black leading-tight sm:text-7xl">

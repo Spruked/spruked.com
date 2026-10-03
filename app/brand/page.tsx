@@ -71,6 +71,14 @@ export default function BrandPage() {
         </div>
 
         <div className="py-16">{content}</div>
+        <section className="border-t border-gray-900 py-20">
+          <p className="spruked-eyebrow mb-5">Identity / editorial slot</p>
+          <h2 className="max-w-4xl text-4xl font-black tracking-tight md:text-6xl">SPRUKED U</h2>
+          <p className="mt-5 max-w-3xl text-lg text-gray-500">[SPRUKED U IDENTITY EXPLANATION — FINAL COPY PENDING]</p>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {['Long-U pronunciation', 'The upright U', 'The falling diacritic', 'Truth vs distortion', 'Correction / restoration', 'ORB and Pro Prime relationship'].map((title) => <div key={title} className="rounded-2xl border border-gray-900 bg-black/70 p-6"><h3 className="text-xl font-bold text-white">{title}</h3><p className="mt-3 leading-relaxed text-gray-600">[IDENTITY DETAIL PENDING AUTHOR REVIEW]</p></div>)}
+          </div>
+        </section>
       </div>
     </div>
   );

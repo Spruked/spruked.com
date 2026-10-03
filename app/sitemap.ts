@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { portfolioAliases, portfolioEntries } from '@/data/portfolio';
 
 const ecosystemSections = [
   'orb-weaver',
@@ -17,6 +18,7 @@ const technologySections = ['orb', 'aims', 'governance'];
 const fixedPages = [
   '/',
   '/about',
+  '/contact',
   '/pro-prime-series-ai',
   '/ecosystem',
   '/technology',
@@ -37,6 +39,12 @@ const fixedPages = [
   '/orb-skin-studio/contact.html',
   '/cart',
   '/checkout',
+  '/portfolio',
+  '/ai-intelligent-systems',
+  '/software-platforms',
+  '/books-writing',
+  '/research-architecture',
+  '/archive',
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -45,6 +53,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...fixedPages,
     ...ecosystemSections.map((section) => `/ecosystem/${section}`),
     ...technologySections.map((section) => `/technology/${section}`),
+    ...portfolioEntries.map((entry) => `/portfolio/${entry.slug}`),
+    ...Object.keys(portfolioAliases).map((slug) => `/portfolio/${slug}`),
+    ...portfolioEntries.filter((entry) => entry.category === 'Books & Writing').map((entry) => `/books/${entry.slug}`),
+    ...portfolioEntries.filter((entry) => entry.category === 'Research & Architecture').map((entry) => `/research/${entry.slug}`),
+    '/research/unusual-development-methodology',
   ];
 
   return paths.map((path) => ({

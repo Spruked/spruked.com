@@ -1,10 +1,12 @@
 import { Section } from '@/components/ui/Section';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 export const metadata = { title: 'Pro Prime Series AI — Spruked', description: 'The Pro Prime Series AI approach to local-first, verifiable cognition.' };
 
 export default function ProPrimeSeriesAIPage() {
   return (
     <div className="pb-24">
+      <ProductAreaNav />
       <Section className="mx-auto max-w-4xl pt-24 pb-12">
         <p className="mb-4 text-sm uppercase tracking-[0.35em] text-truth">Company</p>
         <h1 className="mb-6 text-5xl font-black leading-tight sm:text-7xl">Pro Prime <span className="text-truth">Series AI</span></h1>

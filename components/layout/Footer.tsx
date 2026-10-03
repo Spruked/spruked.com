@@ -7,8 +7,8 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 grid gap-8 border-b border-white/[0.08] pb-10 md:grid-cols-[1fr_auto] md:items-end">
           <div>
-            <p className="spruked-eyebrow mb-3">Spruked / Pro Prime Series AI</p>
-            <p className="max-w-md text-2xl font-semibold tracking-tight text-white">Build it right, or don&rsquo;t build it at all.</p>
+            <p className="spruked-eyebrow mb-3">Spruked / body of work</p>
+            <p className="max-w-md text-2xl font-semibold tracking-tight text-white">[SPRUKED CLOSING STATEMENT — FINAL COPY PENDING]</p>
           </div>
           <Link href="/orb" className="inline-flex w-fit items-center rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.2em] text-gray-300 transition hover:border-truth hover:text-white">Meet the ORB <span aria-hidden="true">↗</span></Link>
         </div>
@@ -27,16 +27,16 @@ export default function Footer() {
               Brand Bible
             </Link> */}
             <Link href="/about" className="hover:text-light">
-              About
+              About Bryan
             </Link>
-            <Link href="/products" className="hover:text-light">
-              Products
+            <Link href="/portfolio" className="hover:text-light">
+              Portfolio
             </Link>
-            <Link href="/products/alpha-certsig" className="hover:text-light">
-              Alpha CertSig
+            <Link href="/research-architecture" className="hover:text-light">
+              Research
             </Link>
-            <Link href="/products/truemark-mint" className="hover:text-light">
-              TrueMark
+            <Link href="/archive" className="hover:text-light">
+              Archive
             </Link>
             <Link href="/artifacts" className="hover:text-light flex items-center gap-2 text-truth">
               <span className="w-1.5 h-1.5 rounded-full bg-truth animate-pulse"></span>

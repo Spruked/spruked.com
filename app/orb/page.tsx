@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Section } from '@/components/ui/Section';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 export const metadata: Metadata = {
   title: 'CALI ORB — Spruked',
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function OrbPresencePage() {
   return (
     <>
+      <ProductAreaNav />
       <Section className="mx-auto max-w-5xl py-24 text-center">
         <h1 className="mb-4 text-5xl font-black leading-tight sm:text-7xl">
           <span className="text-truth">CALI</span> ORB

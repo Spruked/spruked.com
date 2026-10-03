@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Section } from '@/components/ui/Section';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 const pages = {
   orb: {
@@ -57,6 +58,7 @@ export default async function TechnologyDetailPage({ params }: { params: { secti
 
   return (
     <div className="pb-24">
+      {params.section === 'aims' ? <ProductAreaNav /> : null}
       <Section className="mx-auto max-w-4xl pt-24 pb-12">
         <Link href="/technology" className="text-sm uppercase tracking-[0.25em] text-gray-500 hover:text-light">← Technology</Link>
         <p className="mt-12 mb-4 text-sm uppercase tracking-[0.35em] text-truth">{page.eyebrow}</p>

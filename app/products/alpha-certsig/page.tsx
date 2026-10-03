@@ -1,6 +1,7 @@
 import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 export const metadata = {
   title: 'Alpha CertSig Mint Engine — Spruked',
@@ -10,6 +11,7 @@ export const metadata = {
 export default function AlphaCertSigPage() {
   return (
     <div className="pb-24">
+      <ProductAreaNav />
       {/* Hero */}
       <Section id="overview" className="mx-auto max-w-4xl pt-24 pb-12">
         <div className="mb-0">

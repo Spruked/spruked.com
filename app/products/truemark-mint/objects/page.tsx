@@ -1,5 +1,6 @@
 import { Section } from '@/components/ui/Section';
 import Link from 'next/link';
+import ProductAreaNav from '@/components/layout/ProductAreaNav';
 
 export const metadata = {
   title: 'What Are TrueMark Objects? — Spruked',
@@ -9,6 +10,7 @@ export const metadata = {
 export default function TrueMarkObjectsPage() {
   return (
     <div className="pb-24">
+      <ProductAreaNav />
       {/* Top Visual Contrast Block */}
       <div className="bg-[#050505] border-b border-gray-900 py-6">
         <div className="mx-auto max-w-4xl px-4 flex justify-between items-center gap-6">
